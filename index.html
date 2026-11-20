@@ -50,6 +50,7 @@
       color: var(--text-main);
       min-height: 100vh;
       overflow-x: hidden;
+      overflow-y: auto;
       font-size: 14px;
       line-height: 1.5;
     }
@@ -83,11 +84,13 @@
     .auth-page-container {
       width: 100%;
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
-      align-center: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 40px 20px;
       background: var(--bg-warm);
+      flex-shrink: 0;
     }
 
     .auth-dual-grid {
@@ -406,8 +409,11 @@
       position: sticky;
       top: 0;
       height: 100vh;
+      height: 100dvh;
       z-index: 100;
       transition: transform 0.25s ease;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .sidebar-top {
@@ -415,6 +421,9 @@
       display: flex;
       flex-direction: column;
       gap: 26px;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .sidebar-brand {
@@ -505,6 +514,7 @@
     .sidebar-bottom {
       padding: 20px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
     }
 
     .sidebar-logout-btn {
@@ -637,6 +647,26 @@
 
     .topbar-user-profile:hover {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .topbar-logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      color: #b91c1c;
+      background: #ffffff;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .topbar-logout-btn:hover {
+      background: #fef2f2;
     }
 
     .topbar-avatar {
@@ -1257,6 +1287,15 @@
       }
       .topbar-search-box {
         display: none;
+      }
+      .topbar-actions-group {
+        gap: 8px;
+      }
+      .topbar-user-meta {
+        display: none;
+      }
+      .topbar-user-profile {
+        padding: 3px;
       }
       .app-topbar {
         padding: 14px 16px;
@@ -2624,17 +2663,24 @@
       // -------------------------------------------------------------
       // ENROLL STUDENT (MULTI-EVENT TAGGING WITH SINGLE APPROVAL)
       // -------------------------------------------------------------
-      addEventToStudentFromDropdown(dropdownVal) {
-        if (!dropdownVal) return;
-        if (!this.state.selectedEventsForStudent.includes(dropdownVal)) {
-          this.state.selectedEventsForStudent.push(dropdownVal);
-          this.render();
+      toggleEventForStudent(eventName, isSelected) {
+        const selectedEvents = this.state.selectedEventsForStudent;
+        if (isSelected && !selectedEvents.includes(eventName)) {
+          selectedEvents.push(eventName);
+        } else if (!isSelected) {
+          this.state.selectedEventsForStudent = selectedEvents.filter(event => event !== eventName);
         }
+
+        const dropdownWasOpen = document.getElementById('enrollEventsDropdown')?.open;
+        const scrollPosition = window.scrollY;
+        this.render();
+        const dropdown = document.getElementById('enrollEventsDropdown');
+        if (dropdown) dropdown.open = !!dropdownWasOpen;
+        window.scrollTo(0, scrollPosition);
       },
 
       removeEventFromStudent(evName) {
-        this.state.selectedEventsForStudent = this.state.selectedEventsForStudent.filter(e => e !== evName);
-        this.render();
+        this.toggleEventForStudent(evName, false);
       },
 
       submitEnrollment() {
@@ -2891,7 +2937,7 @@
         this.openModal(html);
       },
 
-      // Manage Events for an enrolled student (Add/Remove events on the student's single record)
+      // Edit all event assignments on the student's single registration record
       openManageStudentEventsModal(regId) {
         const reg = this.state.data.registrations.find(r => r.regId === regId || r._id === regId);
         if (!reg) return;
@@ -2906,77 +2952,46 @@
           </div>
 
           <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 14px;">
-            Note: Student is approved <b>once</b>. Any event added or removed stays covered under the student's single approval status.
+            Select every event this student should be registered for. The student's existing approval status is preserved.
           </p>
 
-          <div style="display: flex; flex-direction: column; gap: 16px;">
-            <div>
-              <label style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 6px; display: block;">
-                Currently Enrolled Events (${currentEvents.length}):
-              </label>
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                ${currentEvents.map(ev => `
-                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-                    <span style="font-weight: 700; color: #1e1b4b; font-size: 0.88rem;">${ev}</span>
-                    <button class="btn-action-pill" style="height: 28px; padding: 0 10px; color: #b91c1c; border-color: #fecaca;" onclick="Software.removeEventFromExistingStudent('${reg.regId}', '${ev}')">
-                      <i class="fa-solid fa-xmark"></i> Remove
-                    </button>
-                  </div>
-                `).join('')}
-              </div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">
+              Choose Events (${currentEvents.length} selected)
+            </label>
+            <div style="max-height: 320px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px;">
+              ${allEvents.map(event => `
+                <label style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer;">
+                  <input type="checkbox" name="managedStudentEvents" value="${event.name}" ${currentEvents.includes(event.name) ? 'checked' : ''} />
+                  <span style="font-size: 0.86rem; color: #1e293b;">${event.name} <span style="color: #64748b;">(${event.category})</span></span>
+                </label>
+              `).join('')}
             </div>
-
-            <div style="border-top: 1px solid #f1f5f9; padding-top: 14px;">
-              <label style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 6px; display: block;">
-                Add Another Event from Fest Catalogue:
-              </label>
-              <div style="display: flex; gap: 10px;">
-                <select id="manageAddEventSelect" class="filter-select" style="flex: 1; height: 42px;">
-                  ${allEvents.filter(e => !currentEvents.includes(e.name)).map(e => `
-                    <option value="${e.name}">${e.name} (${e.category})</option>
-                  `).join('')}
-                </select>
-                <button class="btn-action-pill btn-purple-fill" style="height: 42px;" onclick="Software.addEventToExistingStudent('${reg.regId}', document.getElementById('manageAddEventSelect').value)">
-                  + Add Event
-                </button>
-              </div>
-            </div>
+            <button class="btn-action-pill btn-purple-fill" style="height: 42px; justify-content: center;" onclick="Software.saveManagedStudentEvents('${regId}')">
+              <i class="fa-solid fa-check"></i> Save Event Changes
+            </button>
           </div>
         `;
         this.openModal(html);
       },
 
-      addEventToExistingStudent(regId, eventName) {
-        if (!eventName) return;
+      saveManagedStudentEvents(regId) {
         const reg = this.state.data.registrations.find(r => r.regId === regId || r._id === regId);
         if (!reg) return;
 
-        if (!Array.isArray(reg.events)) {
-          reg.events = reg.eventName ? reg.eventName.split(', ') : [reg.event || 'Solo Dance Face-off'];
+        const selectedEvents = [...document.querySelectorAll('#appModalContent input[name="managedStudentEvents"]:checked')]
+          .map(input => input.value);
+        if (!selectedEvents.length) {
+          this.showToast('Select at least one event for this student.', true);
+          return;
         }
 
-        if (!reg.events.includes(eventName)) {
-          reg.events.push(eventName);
-          reg.eventName = reg.events.join(', ');
-          this.saveData();
-          this.showToast(`Added '${eventName}' for ${reg.studentName}!`);
-          this.openManageStudentEventsModal(regId);
-          this.render();
-        }
-      },
-
-      removeEventFromExistingStudent(regId, eventName) {
-        const reg = this.state.data.registrations.find(r => r.regId === regId || r._id === regId);
-        if (!reg) return;
-
-        if (Array.isArray(reg.events)) {
-          reg.events = reg.events.filter(e => e !== eventName);
-          reg.eventName = reg.events.join(', ');
-          this.saveData();
-          this.showToast(`Removed '${eventName}' from ${reg.studentName}`);
-          this.openManageStudentEventsModal(regId);
-          this.render();
-        }
+        reg.events = selectedEvents;
+        reg.eventName = selectedEvents.join(', ');
+        this.saveData();
+        this.closeModal();
+        this.showToast(`${reg.studentName}'s events updated.`);
+        this.render();
       },
 
       // -------------------------------------------------------------
@@ -3132,14 +3147,17 @@
                 <span style="position: absolute; top: -4px; right: -4px; width: 8px; height: 8px; background: #2563eb; border-radius: 50%;"></span>
               </div>
 
-              <div class="topbar-user-profile" onclick="Software.handleLogout()" title="Click to logout">
+              <div class="topbar-user-profile">
                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" class="topbar-avatar" alt="Avatar" />
                 <div class="topbar-user-meta">
                   <span class="topbar-user-name">${(user && user.name) || (isGs ? 'Rohit Sharma' : 'Alex Carter')}</span>
                   <span class="topbar-user-role">${isGs ? 'College GS' : 'Event Administrator'}</span>
                 </div>
-                <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem; color: #94a3b8; margin-left: 2px;"></i>
               </div>
+              <button class="topbar-logout-btn" onclick="Software.handleLogout()" title="Log out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Logout</span>
+              </button>
             </div>
           </header>
         `;
@@ -3691,14 +3709,21 @@
               <!-- FEST EVENTS DROPDOWN (Events appear in dropdown automatically) -->
               <div style="border-top: 1px solid #f1f5f9; padding-top: 14px;">
                 <label style="font-size: 0.85rem; font-weight: 800; color: #0f172a; margin-bottom: 6px; display: block;">
-                  Select Events from Fest Catalogue * (Multi-event selection)
+                  Select Events for This Student * (Multi-select)
                 </label>
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                  <select id="enrollEventSelectorDropdown" class="filter-select" style="flex: 1; height: 44px; font-size: 0.92rem;" onchange="Software.addEventToStudentFromDropdown(this.value)">
-                    <option value="">-- Click to select and tag event --</option>
-                    ${events.map(e => `<option value="${e.name}">${e.name} (${e.category})</option>`).join('')}
-                  </select>
-                </div>
+                <details id="enrollEventsDropdown" style="margin-bottom: 10px;">
+                  <summary style="height: 44px; display: flex; align-items: center; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #ffffff; cursor: pointer; font-size: 0.88rem;">
+                    Choose events (${selectedEvents.length} selected)
+                  </summary>
+                  <div style="max-height: 240px; overflow-y: auto; margin-top: 6px; border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff;">
+                    ${events.map(event => `
+                      <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer;">
+                        <input type="checkbox" name="enrollEvents" value="${event.name}" ${selectedEvents.includes(event.name) ? 'checked' : ''} onchange="Software.toggleEventForStudent('${event.name}', this.checked)" />
+                        <span style="font-size: 0.84rem; color: #1e293b;">${event.name} <span style="color: #64748b;">(${event.category})</span></span>
+                      </label>
+                    `).join('')}
+                  </div>
+                </details>
 
                 <!-- Selected Events Badges (Add & Remove events chips) -->
                 <div style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 40px; padding: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px;">

@@ -1844,7 +1844,7 @@ function CollegeGSDashboardView({ currentUser, currentCollege, setCurrentCollege
     year: "2024",
     phone: "+91 98765 4210",
     email: "aryan.k@aecmetro.edu",
-    eventId: "ev_dance",
+    eventIds: ["ev_dance"],
     teamName: "AEC Solo Performer",
     idCardData: ""
   });
@@ -1884,12 +1884,16 @@ function CollegeGSDashboardView({ currentUser, currentCollege, setCurrentCollege
 
   const handleAddParticipant = async (e) => {
     e.preventDefault();
+    if (!participantForm.eventIds.length) {
+      triggerToast("Please select at least one event.", "error");
+      return;
+    }
     setIsSubmittingParticipant(true);
     try {
       const res = await MelangeAPI.addGSParticipant(participantForm);
       if (res.success) {
         setShowSuccessBanner(true);
-        triggerToast("Participant enrolled successfully in event!", "success");
+        triggerToast(`Participant enrolled successfully in ${participantForm.eventIds.length} event${participantForm.eventIds.length === 1 ? "" : "s"}!`, "success");
         // Refresh GS list
         const refreshed = await MelangeAPI.getGSDashboard();
         if (refreshed.success) setGsData(refreshed);
@@ -2194,19 +2198,35 @@ function CollegeGSDashboardView({ currentUser, currentCollege, setCurrentCollege
             React.createElement(
               "div",
               null,
-              React.createElement("label", { className: "block text-[11px] font-bold text-slate-700 mb-1" }, "Select Event"),
+              React.createElement("label", { className: "block text-[11px] font-bold text-slate-700 mb-1" }, "Select Events"),
               React.createElement(
-                "select",
-                {
-                  value: participantForm.eventId,
-                  onChange: (e) => setParticipantForm({ ...participantForm, eventId: e.target.value }),
-                  className: "w-full px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white"
-                },
-                availableEvents.map(ev => React.createElement(
-                  "option",
-                  { key: ev._id, value: ev._id },
-                  `${ev.name} (${ev.category}) - ${ev.remainingSlots || 0} slots left`
-                ))
+                "details",
+                { className: "relative" },
+                React.createElement(
+                  "summary",
+                  { className: "w-full px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white cursor-pointer list-none" },
+                  `${participantForm.eventIds.length} event${participantForm.eventIds.length === 1 ? "" : "s"} selected`
+                ),
+                React.createElement(
+                  "div",
+                  { className: "mt-1 max-h-48 overflow-y-auto border border-slate-200 rounded-xl bg-white shadow-lg" },
+                  availableEvents.map(ev => React.createElement(
+                    "label",
+                    { key: ev._id, className: "flex items-center gap-2 px-3 py-2 text-xs hover:bg-slate-50 cursor-pointer" },
+                    React.createElement("input", {
+                      type: "checkbox",
+                      checked: participantForm.eventIds.includes(ev._id),
+                      onChange: (e) => setParticipantForm({
+                        ...participantForm,
+                        eventIds: e.target.checked
+                          ? [...participantForm.eventIds, ev._id]
+                          : participantForm.eventIds.filter(id => id !== ev._id)
+                      }),
+                      className: "accent-purple-700"
+                    }),
+                    React.createElement("span", { className: "text-slate-700" }, `${ev.name} (${ev.category}) - ${ev.remainingSlots || 0} slots left`)
+                  ))
+                )
               ),
               React.createElement("div", { className: "mt-3" },
                 React.createElement("label", { className: "block text-[11px] font-bold text-slate-700 mb-1" }, "Team Name (optional)"),
@@ -2270,7 +2290,7 @@ function CollegeGSDashboardView({ currentUser, currentCollege, setCurrentCollege
                   year: "2024",
                   phone: "",
                   email: "",
-                  eventId: availableEvents[0]?._id || "",
+                  eventIds: [availableEvents[0]?._id || "ev_dance"],
                   teamName: "",
                   idCardData: ""
                 }),

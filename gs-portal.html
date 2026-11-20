@@ -387,6 +387,71 @@
       color: #ffffff;
     }
 
+    .event-multi-select {
+      position: relative;
+    }
+
+    .event-multi-select summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 48px;
+      padding: 0 16px;
+      border: 1.5px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      background: var(--bg-glass-input);
+      color: var(--text-main);
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .event-multi-select summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .event-multi-options {
+      max-height: 240px;
+      overflow-y: auto;
+      margin-top: 6px;
+      padding: 6px;
+      border: 1px solid var(--border-glass-light);
+      border-radius: var(--radius-md);
+      background: #0f172a;
+    }
+
+    .event-multi-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      color: var(--text-sub);
+      cursor: pointer;
+    }
+
+    .event-multi-option:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .event-multi-option input {
+      accent-color: var(--primary-indigo);
+    }
+
+    .btn-edit-student-events {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: var(--radius-md);
+      background: rgba(99, 102, 241, 0.12);
+      color: #c7d2fe;
+      font: inherit;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
     /* Status Badges */
     .status-badge {
       display: inline-flex;
@@ -427,7 +492,8 @@
       padding: calc(32px + env(safe-area-inset-top, 0px)) 20px calc(32px + env(safe-area-inset-bottom, 0px));
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: safe center;
+      overflow-y: auto;
       position: relative;
     }
 
@@ -528,6 +594,7 @@
     }
 
     .login-card {
+      flex-shrink: 0;
       padding: 24px 20px;
       margin-bottom: 18px;
     }
@@ -698,6 +765,11 @@
 
     .tab-viewport.active {
       display: block;
+    }
+
+    #tabAdd,
+    #tabStudents {
+      padding-bottom: calc(82px + env(safe-area-inset-bottom, 12px));
     }
 
     @keyframes fadeIn {
@@ -1957,7 +2029,7 @@
       </div>
 
       <div class="login-footer-info">
-        Melange '26 Central Directorate &bull; <a href="index.html">Main Fest System</a>
+        Melange '26 Central Directorate
       </div>
     </div>
 
@@ -2256,16 +2328,21 @@
               </div>
             </div>
 
-            <!-- Event Selection (Dropdown grouped by zone) -->
+            <!-- Event Selection (Multi-select dropdown grouped by zone) -->
             <div class="form-group">
-              <label class="form-label" for="addStudentEvent">
-                <span>Allocated Event</span>
+              <label class="form-label">
+                <span>Events to Compete In</span>
                 <span class="req">*</span>
               </label>
-              <select id="addStudentEvent" class="glass-select" required style="padding-left: 16px;">
-                <option value="" disabled selected>Select an Event to compete in...</option>
-                <!-- Dynamically populated with optgroups -->
-              </select>
+              <details id="addStudentEventsDropdown" class="event-multi-select">
+                <summary id="addStudentEventsSummary">
+                  <span>Select one or more events</span>
+                  <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem; color: var(--text-muted);"></i>
+                </summary>
+                <div id="addStudentEventOptions" class="event-multi-options">
+                  <!-- Dynamically populated with grouped event checkboxes -->
+                </div>
+              </details>
             </div>
 
             <!-- Role Selector -->
@@ -2439,6 +2516,27 @@
         <button type="button" class="btn-ghost" onclick="closeDeleteModal()">Cancel</button>
         <button type="button" class="btn-danger-outline" id="confirmDeleteBtn">
           <i class="fa-solid fa-trash-can"></i> Remove
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL: EDIT STUDENT EVENTS
+       ====================================================================== -->
+  <div class="modal-backdrop" id="studentEventsModalBackdrop" onclick="closeStudentEventsModal(event)">
+    <div class="modal-box glass-card" onclick="event.stopPropagation()">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
+        <div>
+          <h3 class="modal-title" id="studentEventsModalTitle">Edit Student Events</h3>
+          <p class="modal-desc" style="margin-bottom: 0;">Select the events this student is registered for.</p>
+        </div>
+        <button type="button" class="btn-ghost" onclick="closeStudentEventsModal()">Close</button>
+      </div>
+      <div id="editStudentEventsOptions" class="event-multi-options" style="max-height: 340px;"></div>
+      <div class="modal-actions" style="margin-top: 16px;">
+        <button type="button" class="btn-gradient-primary" onclick="saveStudentEventChanges()">
+          <i class="fa-solid fa-check"></i> Save Events
         </button>
       </div>
     </div>
@@ -2744,6 +2842,7 @@
     let currentStatusFilter = 'all';
     let currentSearchQuery = '';
     let studentIdToDelete = null;
+    let studentIdEditingEvents = null;
 
     /* ==========================================================================
        INITIALIZATION
@@ -2804,6 +2903,26 @@
       } catch (e) {
         return SEED_STUDENTS;
       }
+    }
+
+    function getStudentEventIds(student) {
+      if (Array.isArray(student.assignedEventIds) && student.assignedEventIds.length) {
+        return [...new Set(student.assignedEventIds)];
+      }
+      return student.assignedEventId ? [student.assignedEventId] : [];
+    }
+
+    function getStudentEventNames(student) {
+      if (Array.isArray(student.assignedEventNames) && student.assignedEventNames.length) {
+        return student.assignedEventNames;
+      }
+      if (student.assignedEventName) {
+        return student.assignedEventName.split(', ');
+      }
+      const allEvents = getStoredEvents();
+      return getStudentEventIds(student)
+        .map(eventId => allEvents.find(event => event.id === eventId)?.title)
+        .filter(Boolean);
     }
 
     /**
@@ -2924,8 +3043,7 @@
       currentSession = null;
       localStorage.removeItem(STORAGE_KEY_SESSION);
       localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
-      showToast('Logged out of GS Portal', 'info');
-      showLoginView();
+      window.location.href = 'home.html';
     }
 
     function showLoginView() {
@@ -3104,14 +3222,17 @@
       // Group students by event
       const eventMap = {};
       collegeStudents.forEach(stu => {
-        if (!eventMap[stu.assignedEventId]) {
-          eventMap[stu.assignedEventId] = {
-            eventId: stu.assignedEventId,
-            eventName: stu.assignedEventName,
-            students: []
-          };
-        }
-        eventMap[stu.assignedEventId].students.push(stu);
+        getStudentEventIds(stu).forEach(eventId => {
+          if (!eventMap[eventId]) {
+            const eventMeta = allEvents.find(event => event.id === eventId) || {};
+            eventMap[eventId] = {
+              eventId: eventId,
+              eventName: eventMeta.title || getStudentEventNames(stu).join(', '),
+              students: []
+            };
+          }
+          eventMap[eventId].students.push(stu);
+        });
       });
 
       const enrolledEventIds = Object.keys(eventMap);
@@ -3191,7 +3312,7 @@
               </div>
               <div class="activity-details">
                 <div class="activity-name">${escapeHtml(s.name)}</div>
-                <div class="activity-sub">${escapeHtml(s.assignedEventName)} &bull; ${s.enrolledAt || 'Just now'}</div>
+                <div class="activity-sub">${escapeHtml(getStudentEventNames(s).join(', '))} &bull; ${s.enrolledAt || 'Just now'}</div>
               </div>
             </div>
             <span class="status-badge ${statusClass}">${s.approvalStatus}</span>
@@ -3269,7 +3390,7 @@
 
       // Filter by Event
       if (eventFilterVal && eventFilterVal !== 'all') {
-        students = students.filter(s => s.assignedEventId === eventFilterVal);
+        students = students.filter(s => getStudentEventIds(s).includes(eventFilterVal));
       }
 
       // Filter by Search Query
@@ -3278,7 +3399,7 @@
           (s.name && s.name.toLowerCase().includes(currentSearchQuery)) ||
           (s.rollNo && s.rollNo.toLowerCase().includes(currentSearchQuery)) ||
           (s.dept && s.dept.toLowerCase().includes(currentSearchQuery)) ||
-          (s.assignedEventName && s.assignedEventName.toLowerCase().includes(currentSearchQuery)) ||
+          getStudentEventNames(s).some(eventName => eventName.toLowerCase().includes(currentSearchQuery)) ||
           (s.studentId && s.studentId.toLowerCase().includes(currentSearchQuery))
         );
       }
@@ -3296,6 +3417,7 @@
         const status = student.approvalStatus || 'Pending';
         const statusLower = status.toLowerCase();
         const canDelete = status === 'Pending' || status === 'Rejected';
+        const eventNames = getStudentEventNames(student);
 
         // Admin remark box if remark exists
         let remarkHtml = '';
@@ -3313,7 +3435,7 @@
         let actionBtnHtml = '';
         if (canDelete) {
           actionBtnHtml = `
-            <button type="button" class="btn-delete-student" onclick="confirmDeleteStudent('${student.studentId}', '${escapeHtml(student.name)}', '${escapeHtml(student.assignedEventName)}')">
+            <button type="button" class="btn-delete-student" onclick="confirmDeleteStudent('${student.studentId}', '${escapeHtml(student.name)}', '${escapeHtml(eventNames.join(', '))}')">
               <i class="fa-regular fa-trash-can"></i> Remove
             </button>
           `;
@@ -3347,7 +3469,7 @@
             <!-- Meta Pills Row -->
             <div class="student-pills-row">
               <span class="meta-pill"><i class="fa-solid fa-graduation-cap"></i> ${escapeHtml(student.dept)} &bull; ${escapeHtml(student.year || '3rd Year')}</span>
-              <span class="meta-pill event"><i class="fa-solid fa-trophy"></i> ${escapeHtml(student.assignedEventName)}</span>
+              <span class="meta-pill event"><i class="fa-solid fa-trophy"></i> ${escapeHtml(eventNames.join(', '))}</span>
               <span class="meta-pill role"><i class="fa-solid fa-user-tag"></i> ${escapeHtml(student.role || 'Participant')}</span>
             </div>
 
@@ -3359,13 +3481,98 @@
               <div class="student-enrolled-time">
                 <i class="fa-regular fa-clock"></i> ${student.enrolledAt || 'Enrolled'}
               </div>
-              <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn-edit-student-events" onclick="openStudentEventsEditor('${student.studentId}')">
+                  <i class="fa-regular fa-pen-to-square"></i> Edit Events
+                </button>
                 ${actionBtnHtml}
               </div>
             </div>
           </div>
         `;
       }).join('');
+    }
+
+    function openStudentEventsEditor(studentId) {
+      const student = getStoredStudents().find(item =>
+        item.studentId === studentId && item.collegeId === currentSession?.id
+      );
+      if (!student) {
+        showToast('Student record not found in your college contingent.', 'error');
+        return;
+      }
+
+      studentIdEditingEvents = studentId;
+      const selectedEventIds = getStudentEventIds(student);
+      const options = document.getElementById('editStudentEventsOptions');
+      document.getElementById('studentEventsModalTitle').textContent = `Edit Events for ${student.name}`;
+      options.innerHTML = getStoredEvents().map(event => `
+        <label class="event-multi-option">
+          <input type="checkbox" name="editStudentEvents" value="${escapeHtml(event.id)}" ${selectedEventIds.includes(event.id) ? 'checked' : ''} />
+          <span>${escapeHtml(event.title)} <span style="color: var(--text-muted);">(${escapeHtml(event.zone || 'Other Events')})</span></span>
+        </label>
+      `).join('');
+      document.getElementById('studentEventsModalBackdrop').classList.add('active');
+    }
+
+    function closeStudentEventsModal(event) {
+      const modal = document.getElementById('studentEventsModalBackdrop');
+      if (event && event.target !== modal) return;
+      modal.classList.remove('active');
+      studentIdEditingEvents = null;
+    }
+
+    function saveStudentEventChanges() {
+      if (!studentIdEditingEvents || !currentSession) return;
+
+      const selectedEventIds = [...document.querySelectorAll('#editStudentEventsOptions input[name="editStudentEvents"]:checked')]
+        .map(input => input.value);
+      if (!selectedEventIds.length) {
+        showToast('Select at least one event for this student.', 'error');
+        return;
+      }
+
+      const allStudents = getStoredStudents();
+      const student = allStudents.find(item =>
+        item.studentId === studentIdEditingEvents && item.collegeId === currentSession.id
+      );
+      if (!student) {
+        showToast('Student record not found in your college contingent.', 'error');
+        closeStudentEventsModal();
+        return;
+      }
+
+      const selectedEvents = getStoredEvents().filter(event => selectedEventIds.includes(event.id));
+      if (selectedEvents.length !== selectedEventIds.length) {
+        showToast('One or more selected events are no longer available.', 'error');
+        return;
+      }
+
+      const duplicateEvent = selectedEvents.find(event =>
+        allStudents.some(other =>
+          other.studentId !== student.studentId &&
+          other.collegeId === student.collegeId &&
+          String(other.rollNo || '').toLowerCase() === String(student.rollNo || '').toLowerCase() &&
+          getStudentEventIds(other).includes(event.id)
+        )
+      );
+      if (duplicateEvent) {
+        showToast(`${student.rollNo} is already registered in ${duplicateEvent.title}.`, 'error');
+        return;
+      }
+
+      student.assignedEventIds = selectedEvents.map(event => event.id);
+      student.assignedEventNames = selectedEvents.map(event => event.title);
+      student.assignedEventId = selectedEvents[0].id;
+      student.assignedEventName = student.assignedEventNames.join(', ');
+      saveStoredStudents(allStudents);
+
+      closeStudentEventsModal();
+      showToast(`${student.name}'s events updated.`, 'success');
+      updateDashboardStats();
+      renderHomeEnrolledEvents();
+      renderHomeRecentActivity();
+      renderStudentsList();
     }
 
     /* ==========================================================================
@@ -3441,7 +3648,7 @@
      */
     function populateEventDropdowns() {
       const events = getStoredEvents();
-      const addSelect = document.getElementById('addStudentEvent');
+      const addOptions = document.getElementById('addStudentEventOptions');
       const filterSelect = document.getElementById('studentsEventFilter');
 
       // Group events by zone
@@ -3452,21 +3659,40 @@
         zones[zone].push(ev);
       });
 
-      // Populate Add Form Select with optgroups
-      let addHtml = `<option value="" disabled selected>Select an Event to compete in...</option>`;
+      // Populate Add Form with checkbox groups and keep the Students filter single-select.
+      let addHtml = '';
       let filterHtml = `<option value="all">All Events (Filter by Event)</option>`;
 
       Object.keys(zones).forEach(zoneName => {
-        addHtml += `<optgroup label="── ${zoneName} ──">`;
+        addHtml += `<div style="padding: 8px 10px 4px; color: var(--accent-cyan-light); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;">${escapeHtml(zoneName)}</div>`;
         zones[zoneName].forEach(ev => {
-          addHtml += `<option value="${ev.id}">${ev.title} (${ev.day}, ${ev.time} &bull; Max ${ev.maxMembers})</option>`;
+          addHtml += `
+            <label class="event-multi-option">
+              <input type="checkbox" name="addStudentEvents" value="${escapeHtml(ev.id)}" onchange="updateAddStudentEventsSummary()" />
+              <span>${escapeHtml(ev.title)} <span style="color: var(--text-muted);">(${escapeHtml(ev.day)}, ${escapeHtml(ev.time)} &bull; Max ${ev.maxMembers})</span></span>
+            </label>
+          `;
           filterHtml += `<option value="${ev.id}">${ev.title} [${ev.zone}]</option>`;
         });
-        addHtml += `</optgroup>`;
       });
 
-      if (addSelect) addSelect.innerHTML = addHtml;
+      if (addOptions) addOptions.innerHTML = addHtml;
       if (filterSelect) filterSelect.innerHTML = filterHtml;
+      updateAddStudentEventsSummary();
+    }
+
+    function getSelectedAddStudentEventIds() {
+      return [...document.querySelectorAll('#addStudentEventOptions input[name="addStudentEvents"]:checked')]
+        .map(input => input.value);
+    }
+
+    function updateAddStudentEventsSummary() {
+      const summary = document.getElementById('addStudentEventsSummary');
+      if (!summary) return;
+      const selectedCount = getSelectedAddStudentEventIds().length;
+      summary.firstElementChild.textContent = selectedCount
+        ? `${selectedCount} event${selectedCount === 1 ? '' : 's'} selected`
+        : 'Select one or more events';
     }
 
     /**
@@ -3485,33 +3711,36 @@
       const year = document.getElementById('addStudentYear').value.trim();
       const phone = document.getElementById('addStudentPhone').value.trim();
       const email = document.getElementById('addStudentEmail').value.trim();
-      const eventId = document.getElementById('addStudentEvent').value;
+      const selectedEventIds = getSelectedAddStudentEventIds();
       const role = document.getElementById('addStudentRole').value;
 
       // Validate required fields
-      if (!name || !rollNo || !dept || !year || !phone || !eventId) {
+      if (!name || !rollNo || !dept || !year || !phone) {
         showToast('Please fill in all required fields.', 'error');
         return;
       }
 
       const allEvents = getStoredEvents();
-      const selectedEvent = allEvents.find(e => e.id === eventId);
-      if (!selectedEvent) {
-        showToast('Selected event is invalid.', 'error');
+      const selectedEvents = allEvents.filter(event => selectedEventIds.includes(event.id));
+      if (!selectedEventIds.length) {
+        showToast('Select at least one event for this student.', 'error');
+        return;
+      }
+      if (selectedEvents.length !== selectedEventIds.length) {
+        showToast('One or more selected events are invalid.', 'error');
         return;
       }
 
       const allStudents = getStoredStudents();
 
-      // DUPLICATE CHECK: Duplicate roll number per event check
-      const isDuplicateInEvent = allStudents.some(s => 
-        s.collegeId === currentSession.id &&
-        s.rollNo.toLowerCase() === rollNo.toLowerCase() &&
-        s.assignedEventId === eventId
-      );
-
-      if (isDuplicateInEvent) {
-        showToast(`Roll No. ${rollNo} is already registered in ${selectedEvent.title}!`, 'error');
+      // A student may join multiple events, but not the same event twice.
+      const duplicateEvent = selectedEvents.find(event => allStudents.some(student =>
+        student.collegeId === currentSession.id &&
+        String(student.rollNo || '').toLowerCase() === rollNo.toLowerCase() &&
+        getStudentEventIds(student).includes(event.id)
+      ));
+      if (duplicateEvent) {
+        showToast(`Roll No. ${rollNo} is already registered in ${duplicateEvent.title}!`, 'error');
         return;
       }
 
@@ -3537,7 +3766,8 @@
       const randomSuffix = Math.floor(100 + Math.random() * 900);
       const studentId = `STU-${cleanCode}-${randomSuffix}`;
 
-      // Create Student Object matching exact required schema
+      const eventIds = selectedEvents.map(event => event.id);
+      const eventNames = selectedEvents.map(event => event.title);
       const newStudent = {
         studentId: studentId,
         collegeId: currentSession.id,
@@ -3548,10 +3778,12 @@
         year: year,
         phone: phone,
         email: email || `${rollNo.toLowerCase()}@${currentSession.id}.edu`,
-        assignedEventId: selectedEvent.id,
-        assignedEventName: selectedEvent.title,
+        assignedEventIds: eventIds,
+        assignedEventNames: eventNames,
+        assignedEventId: eventIds[0],
+        assignedEventName: eventNames.join(', '),
         role: role,
-        approvalStatus: "Pending", // Auto-set to 'Pending'
+        approvalStatus: "Pending",
         adminRemark: "",
         enrolledAt: enrolledAtFormatted
       };
@@ -3562,11 +3794,12 @@
 
       // Reset form
       document.getElementById('addStudentForm').reset();
+      updateAddStudentEventsSummary();
       selectStudyYear('3rd Year', document.querySelectorAll('.year-pill-btn')[2]);
       selectContingentRole('Participant', document.querySelectorAll('.role-pill-btn')[0]);
 
       // Success notification
-      showToast(`${name} added to contingent! Status: Pending Approval.`, 'success');
+      showToast(`${name} added to ${selectedEvents.length} event${selectedEvents.length === 1 ? '' : 's'}! Status: Pending Approval.`, 'success');
 
       // Refresh Stats and switch to Students view
       updateDashboardStats();
@@ -3592,7 +3825,7 @@
 
       let csv = 'Student ID,Roll No,Full Name,Department,Year,Assigned Event,Role,Approval Status,Phone,Email,Enrolled At\n';
       students.forEach(s => {
-        csv += `"${s.studentId}","${s.rollNo}","${s.name}","${s.dept}","${s.year}","${s.assignedEventName}","${s.role}","${s.approvalStatus}","${s.phone}","${s.email}","${s.enrolledAt}"\n`;
+        csv += `"${s.studentId}","${s.rollNo}","${s.name}","${s.dept}","${s.year}","${getStudentEventNames(s).join('; ')}","${s.role}","${s.approvalStatus}","${s.phone}","${s.email}","${s.enrolledAt}"\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

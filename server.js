@@ -829,59 +829,67 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 403, { success: false, message: 'Access denied.' });
     }
 
-    const { name, gender, department, year, phone, email, eventId, teamName, idCardData } = body;
-    if (!name || !department || !year || !phone || !email || !eventId) {
+    const { name, gender, department, year, phone, email, eventId, eventIds, teamName, idCardData } = body;
+    if (!name || !department || !year || !phone || !email) {
       return sendJSON(res, 400, { success: false, message: 'All required student details and event must be provided.' });
     }
 
-    const event = db.getCollection('events').findById(eventId);
-    if (!event) {
-      return sendJSON(res, 404, { success: false, message: 'Selected event does not exist.' });
+    const requestedEventIds = eventIds === undefined ? [eventId] : eventIds;
+    if (!Array.isArray(requestedEventIds) || !requestedEventIds.length ||
+        requestedEventIds.some(id => typeof id !== 'string' || !id.trim())) {
+      return sendJSON(res, 400, { success: false, message: 'Please select at least one event.' });
+    }
+    const selectedEventIds = [...new Set(requestedEventIds)];
+    const events = selectedEventIds.map(id => db.getCollection('events').findById(id));
+    if (events.some(event => !event)) {
+      return sendJSON(res, 404, { success: false, message: 'One or more selected events do not exist.' });
     }
 
-    // Check capacity
-    if (event.registeredCount >= event.maxCapacity) {
+    const fullEvent = events.find(event => event.registeredCount >= event.maxCapacity);
+    if (fullEvent) {
       return sendJSON(res, 400, {
         success: false,
-        message: `Event '${event.name}' is already at full capacity (${event.maxCapacity}/${event.maxCapacity}).`
+        message: `Event '${fullEvent.name}' is already at full capacity (${fullEvent.maxCapacity}/${fullEvent.maxCapacity}).`
       });
     }
 
-    const newParticipant = db.getCollection('participants').create({
-      collegeId: currentUser.collegeId,
-      name: name.trim(),
-      gender: gender || 'Active',
-      department: department.trim(),
-      year: year.trim(),
-      phone: phone.trim(),
-      email: email.trim(),
-      eventId: event._id,
-      eventName: event.name,
-      teamName: teamName ? teamName.trim() : 'Solo Participant',
-      status: 'Active',
-      idCardUploaded: !!idCardData,
-      idCardUrl: idCardData || null,
-      registeredAt: new Date().toISOString()
-    });
+    const newParticipants = events.map(event => {
+      const participant = db.getCollection('participants').create({
+        collegeId: currentUser.collegeId,
+        name: name.trim(),
+        gender: gender || 'Active',
+        department: department.trim(),
+        year: year.trim(),
+        phone: phone.trim(),
+        email: email.trim(),
+        eventId: event._id,
+        eventName: event.name,
+        teamName: teamName ? teamName.trim() : 'Solo Participant',
+        status: 'Active',
+        idCardUploaded: !!idCardData,
+        idCardUrl: idCardData || null,
+        registeredAt: new Date().toISOString()
+      });
 
-    // Increment event registration count
-    db.getCollection('events').updateOne(
-      { _id: event._id },
-      { registeredCount: (event.registeredCount || 0) + 1 }
-    );
+      db.getCollection('events').updateOne(
+        { _id: event._id },
+        { registeredCount: (event.registeredCount || 0) + 1 }
+      );
+      return participant;
+    });
 
     // Increment college participants count
     const college = db.getCollection('colleges').findById(currentUser.collegeId);
     if (college) {
       db.getCollection('colleges').updateOne(
         { _id: college._id },
-        { totalParticipants: (college.totalParticipants || 0) + 1 }
+        { totalParticipants: (college.totalParticipants || 0) + newParticipants.length }
       );
     }
 
     // Log Activity
     db.getCollection('activities').create({
-      title: `${college ? college.name : 'College'} added 1 participant for ${event.name}`,
+      title: `${college ? college.name : 'College'} added 1 participant for ${events.map(event => event.name).join(', ')}`,
       time: 'Just now',
       type: 'participants_added',
       icon: 'user-plus',
@@ -890,8 +898,9 @@ const server = http.createServer(async (req, res) => {
 
     return sendJSON(res, 201, {
       success: true,
-      message: 'Participant successfully registered for event!',
-      participant: newParticipant
+      message: `Participant successfully registered for ${events.length} event${events.length === 1 ? '' : 's'}!`,
+      participant: newParticipants[0],
+      participants: newParticipants
     });
   }
 
