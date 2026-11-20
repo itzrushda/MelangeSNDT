@@ -1,0 +1,3699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <title>Melange '26 - General Secretary Portal</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Alex Brush for cursive festive branding -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & CSS VARIABLES
+       ========================================================================== */
+    :root {
+      --bg-dark: #090d16;
+      --bg-deep: #0e1424;
+      --bg-card: rgba(18, 26, 43, 0.85);
+      --bg-card-hover: rgba(26, 37, 62, 0.92);
+      --bg-glass-input: rgba(11, 17, 31, 0.75);
+      
+      --border-glass: rgba(255, 255, 255, 0.1);
+      --border-glass-light: rgba(255, 255, 255, 0.15);
+      --border-glow: rgba(99, 102, 241, 0.35);
+
+      --primary-indigo: #6366f1;
+      --primary-indigo-dark: #4f46e5;
+      --secondary-purple: #a855f7;
+      --secondary-purple-dark: #9333ea;
+      --accent-cyan: #06b6d4;
+      --accent-cyan-light: #22d3ee;
+      --accent-gold: #f59e0b;
+      --accent-gold-light: #fbbf24;
+
+      --status-pending: #f59e0b;
+      --status-pending-bg: rgba(245, 158, 11, 0.15);
+      --status-pending-border: rgba(245, 158, 11, 0.35);
+
+      --status-approved: #10b981;
+      --status-approved-bg: rgba(16, 185, 129, 0.15);
+      --status-approved-border: rgba(16, 185, 129, 0.35);
+
+      --status-rejected: #ef4444;
+      --status-rejected-bg: rgba(239, 68, 68, 0.15);
+      --status-rejected-border: rgba(239, 68, 68, 0.35);
+
+      --text-main: #f8fafc;
+      --text-sub: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+      --shadow-glow: 0 8px 24px -4px rgba(99, 102, 241, 0.38);
+
+      --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Reset & Base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      min-height: 100dvh;
+      position: relative;
+    }
+
+    /* Ambient Glow Blobs */
+    .ambient-glow-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.45;
+      animation: floatPulse 12s ease-in-out infinite alternate;
+    }
+
+    .glow-indigo {
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, rgba(99, 102, 241, 0) 70%);
+      top: -80px;
+      left: 10%;
+    }
+
+    .glow-purple {
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%);
+      bottom: -60px;
+      right: 5%;
+      animation-delay: -6s;
+    }
+
+    .glow-cyan {
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, rgba(6, 182, 212, 0) 70%);
+      top: 45%;
+      left: -60px;
+      animation-delay: -3s;
+    }
+
+    @keyframes floatPulse {
+      0% {
+        transform: translateY(0px) scale(1);
+      }
+      100% {
+        transform: translateY(24px) scale(1.08);
+      }
+    }
+
+    /* Mobile Container Frame */
+    .mobile-frame {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100dvh;
+      background: rgba(9, 13, 22, 0.94);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    /* Common Card Styling */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+
+    .glass-card:hover {
+      border-color: var(--border-glass-light);
+    }
+
+    /* Typography & Branding */
+    .cursive-fest-logo {
+      font-family: 'Alex Brush', cursive;
+      font-size: 2.85rem;
+      line-height: 1.05;
+      background: linear-gradient(135deg, #fef08a 0%, #f59e0b 55%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 8px rgba(245, 158, 11, 0.35));
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .fest-year-badge {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      vertical-align: middle;
+      -webkit-text-fill-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+      display: inline-block;
+      margin-left: 2px;
+    }
+
+    /* Primary Gradient Button */
+    .btn-gradient-primary {
+      background: linear-gradient(135deg, var(--primary-indigo), var(--secondary-purple));
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 13px 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: var(--shadow-glow);
+      transition: var(--transition-smooth);
+      min-height: 48px;
+      width: 100%;
+    }
+
+    .btn-gradient-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 28px -3px rgba(99, 102, 241, 0.55);
+      filter: brightness(1.06);
+    }
+
+    .btn-gradient-primary:active {
+      transform: translateY(1px);
+    }
+
+    .btn-gradient-primary:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Secondary / Ghost Buttons */
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      color: var(--text-sub);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 10px 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      min-height: 44px;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-danger-outline {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #f87171;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      min-height: 40px;
+    }
+
+    .btn-danger-outline:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
+    /* Form Fields */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-label .req {
+      color: #f87171;
+      margin-left: 2px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon-left {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    .input-icon-right {
+      position: absolute;
+      right: 14px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 4px;
+      transition: var(--transition-smooth);
+    }
+
+    .input-icon-right:hover {
+      color: #ffffff;
+    }
+
+    .glass-input, .glass-select {
+      width: 100%;
+      height: 48px;
+      background: var(--bg-glass-input);
+      border: 1.5px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 0 16px 0 44px;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 16px; /* Prevents mobile browser auto-zoom */
+      font-weight: 500;
+      outline: none;
+      transition: var(--transition-smooth);
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .glass-input.no-icon {
+      padding-left: 16px;
+    }
+
+    .glass-input:focus, .glass-select:focus {
+      border-color: var(--primary-indigo);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+      background: rgba(18, 26, 43, 0.9);
+    }
+
+    .glass-input::placeholder {
+      color: var(--text-faint);
+      font-weight: 400;
+    }
+
+    .glass-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    .glass-select option, .glass-select optgroup {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status-badge.pending {
+      background: var(--status-pending-bg);
+      border: 1px solid var(--status-pending-border);
+      color: #fbbf24;
+    }
+
+    .status-badge.approved {
+      background: var(--status-approved-bg);
+      border: 1px solid var(--status-approved-border);
+      color: #34d399;
+    }
+
+    .status-badge.rejected {
+      background: var(--status-rejected-bg);
+      border: 1px solid var(--status-rejected-border);
+      color: #f87171;
+    }
+
+    /* ==========================================================================
+       1. LOGIN VIEW STYLES
+       ========================================================================== */
+    #loginView {
+      min-height: 100dvh;
+      background: linear-gradient(180deg, #1a0533 0%, #0e0720 35%, #090d16 100%);
+      padding: calc(32px + env(safe-area-inset-top, 0px)) 20px calc(32px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .login-brand-crown {
+      width: 48px;
+      height: 48px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-gold);
+      font-size: 1.35rem;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);
+    }
+
+    .login-title-row {
+      margin-bottom: 4px;
+    }
+
+    .login-subtitle {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--accent-cyan-light);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .login-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    /* Quick Login Chips */
+    .quick-chips-box {
+      margin-bottom: 20px;
+    }
+
+    .quick-chips-label {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .quick-chips-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .quick-chips-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .quick-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-full);
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition-smooth);
+    }
+
+    .quick-chip:hover, .quick-chip.active {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: var(--primary-indigo);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .quick-chip .chip-avatar {
+      font-size: 0.95rem;
+    }
+
+    .login-card {
+      padding: 24px 20px;
+      margin-bottom: 18px;
+    }
+
+    .login-card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      margin-bottom: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .login-footer-info {
+      text-align: center;
+      font-size: 0.74rem;
+      color: var(--text-faint);
+    }
+
+    .login-footer-info a {
+      color: var(--text-muted);
+      text-decoration: underline;
+      transition: var(--transition-smooth);
+    }
+
+    .login-footer-info a:hover {
+      color: var(--accent-cyan-light);
+    }
+
+    /* ==========================================================================
+       2. MAIN APP PORTAL VIEW
+       ========================================================================== */
+    #portalView {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      padding-bottom: calc(76px + env(safe-area-inset-bottom, 16px));
+    }
+
+    /* Sticky App Header */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(9, 13, 22, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-glass);
+      padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .header-logo-text {
+      font-family: 'Alex Brush', cursive;
+      font-size: 1.85rem;
+      background: linear-gradient(135deg, #fef08a 0%, #f59e0b 60%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+    }
+
+    .header-gs-pill {
+      background: rgba(99, 102, 241, 0.18);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #c7d2fe;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition-smooth);
+    }
+
+    .header-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+
+    .header-icon-btn .badge-dot {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 8px;
+      height: 8px;
+      background: var(--accent-gold);
+      border-radius: 50%;
+      border: 1.5px solid var(--bg-dark);
+    }
+
+    .header-avatar-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border-glass);
+      padding: 4px 10px 4px 6px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .header-avatar-pill:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .header-avatar-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      background: rgba(99, 102, 241, 0.25);
+    }
+
+    .header-college-code {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Tab Content Viewports */
+    .tab-viewport {
+      display: none;
+      padding: 18px 16px;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .tab-viewport.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       TAB 1: HOME TAB
+       ========================================================================== */
+    .welcome-card {
+      padding: 22px 20px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, rgba(30, 27, 75, 0.85) 0%, rgba(18, 26, 43, 0.95) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      position: relative;
+    }
+
+    .welcome-card::after {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .welcome-badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .verified-lock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .welcome-fest-date {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .welcome-greeting {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+
+    .welcome-college-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--accent-cyan-light);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .welcome-quota-box {
+      background: rgba(11, 17, 31, 0.6);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+    }
+
+    .quota-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+    }
+
+    .quota-progress-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .quota-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--primary-indigo), var(--secondary-purple));
+      border-radius: var(--radius-full);
+      transition: width 0.6s ease;
+    }
+
+    /* 4 Stats Grid (2x2) */
+    .section-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-title-link {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--primary-indigo);
+      cursor: pointer;
+    }
+
+    .stats-grid-2x2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      padding: 16px 14px;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .stat-icon-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .stat-card.total .stat-icon-wrap {
+      background: rgba(99, 102, 241, 0.2);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.35);
+    }
+
+    .stat-card.approved .stat-icon-wrap {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .stat-card.pending .stat-icon-wrap {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .stat-card.rejected .stat-icon-wrap {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .stat-chip {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Your Events Section */
+    .events-summary-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .event-summary-card {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .event-summary-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .event-zone-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      flex-shrink: 0;
+    }
+
+    .event-summary-info {
+      min-width: 0;
+    }
+
+    .event-summary-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .event-summary-meta {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .event-count-pill {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Recent Activity */
+    .recent-activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .recent-activity-item {
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .activity-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .activity-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .activity-details {
+      min-width: 0;
+    }
+
+    .activity-name {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .activity-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Quick Action CTA Box */
+    .quick-cta-card {
+      padding: 18px 20px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+      border: 1px dashed rgba(99, 102, 241, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .quick-cta-card:hover {
+      border-color: var(--primary-indigo);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(168, 85, 247, 0.22) 100%);
+    }
+
+    /* ==========================================================================
+       TAB 2: STUDENTS TAB
+       ========================================================================== */
+    .students-topbar {
+      margin-bottom: 14px;
+    }
+
+    .search-box-wrap {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .search-box-wrap input {
+      height: 44px;
+      padding-left: 40px;
+      padding-right: 36px;
+      font-size: 0.9rem;
+    }
+
+    .search-clear-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    /* Horizontal Filter Chips */
+    .filter-chips-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .filter-chips-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      color: var(--text-sub);
+      border-radius: var(--radius-full);
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition-smooth);
+    }
+
+    .filter-chip:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .filter-chip.active {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: var(--primary-indigo);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .filter-chip .chip-count {
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 1px 6px;
+      border-radius: var(--radius-full);
+    }
+
+    .filter-chip.active .chip-count {
+      background: var(--primary-indigo);
+      color: #ffffff;
+    }
+
+    /* Secondary Event Filter Dropdown */
+    .event-filter-bar {
+      margin-bottom: 14px;
+    }
+
+    .event-filter-select {
+      height: 38px;
+      font-size: 0.82rem;
+      padding-left: 12px;
+    }
+
+    /* Students List & Cards */
+    .students-list-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .student-card {
+      padding: 16px;
+      border: 1px solid var(--border-glass);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .student-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .student-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .student-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .student-avatar.pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 2px solid #f59e0b;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+
+    .student-avatar.approved {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 2px solid #10b981;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    }
+
+    .student-avatar.rejected {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 2px solid #ef4444;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+    }
+
+    .student-main-info {
+      min-width: 0;
+    }
+
+    .student-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .student-name {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .student-roll {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-cyan-light);
+      font-family: monospace;
+      letter-spacing: 0.03em;
+    }
+
+    /* Student Pills Row */
+    .student-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .meta-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      color: var(--text-sub);
+    }
+
+    .meta-pill.event {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.3);
+      color: #c7d2fe;
+    }
+
+    .meta-pill.role {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: rgba(168, 85, 247, 0.3);
+      color: #e9d5ff;
+    }
+
+    /* Admin Remarks Callout */
+    .admin-remark-box {
+      background: rgba(239, 68, 68, 0.08);
+      border-left: 3px solid #ef4444;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 8px 10px;
+      font-size: 0.75rem;
+      color: #fca5a5;
+      font-style: italic;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .admin-remark-box.approved-remark {
+      background: rgba(16, 185, 129, 0.08);
+      border-left-color: #10b981;
+      color: #a7f3d0;
+    }
+
+    /* Student Actions Footer */
+    .student-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .student-enrolled-time {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .approved-locked-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 5px 10px;
+      border-radius: var(--radius-md);
+    }
+
+    .btn-delete-student {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      border-radius: var(--radius-md);
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-delete-student:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
+    /* Empty State */
+    .empty-state-wrap {
+      text-align: center;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-state-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px dashed var(--border-glass-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .empty-state-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .empty-state-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      max-width: 280px;
+      margin-bottom: 18px;
+    }
+
+    /* ==========================================================================
+       TAB 3: ADD STUDENT TAB
+       ========================================================================== */
+    .add-form-card {
+      padding: 22px 18px;
+    }
+
+    .add-form-header {
+      margin-bottom: 18px;
+    }
+
+    .add-form-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .add-form-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Year Selector Pill Buttons */
+    .year-pills-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .year-pill-btn {
+      height: 42px;
+      background: var(--bg-glass-input);
+      border: 1.5px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      color: var(--text-sub);
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .year-pill-btn:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    .year-pill-btn.active {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: var(--primary-indigo);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Role Radio Selector */
+    .role-pills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .role-pill-btn {
+      height: 40px;
+      background: var(--bg-glass-input);
+      border: 1.5px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      color: var(--text-sub);
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      white-space: nowrap;
+    }
+
+    .role-pill-btn:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    .role-pill-btn.active {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: var(--secondary-purple);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+    }
+
+    .form-info-callout {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.76rem;
+      color: #fbbf24;
+    }
+
+    /* ==========================================================================
+       TAB 4: PROFILE TAB
+       ========================================================================== */
+    .profile-hero-card {
+      text-align: center;
+      padding: 26px 20px 22px;
+      margin-bottom: 16px;
+    }
+
+    .profile-avatar-large {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(99, 102, 241, 0.2);
+      border: 2px solid var(--primary-indigo);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+    }
+
+    .profile-college-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .profile-city-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-glass);
+      color: var(--text-sub);
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      margin-bottom: 14px;
+    }
+
+    .profile-gs-dossier {
+      background: rgba(11, 17, 31, 0.6);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      text-align: left;
+    }
+
+    .dossier-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dossier-row:last-child {
+      border-bottom: none;
+    }
+
+    .dossier-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .dossier-value {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .profile-stats-card {
+      padding: 18px 16px;
+      margin-bottom: 16px;
+    }
+
+    .profile-quota-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .quota-stat-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+      text-align: center;
+      flex: 1;
+      margin: 0 4px;
+    }
+
+    .quota-stat-pill .num {
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: block;
+      line-height: 1.1;
+    }
+
+    .quota-stat-pill .lbl {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .profile-fest-links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .profile-link-btn {
+      width: 100%;
+      height: 46px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      color: var(--text-sub);
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .profile-link-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-bottom-admin {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .profile-bottom-admin a {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .profile-bottom-admin a:hover {
+      color: var(--accent-cyan-light);
+    }
+
+    /* ==========================================================================
+       BOTTOM NAVIGATION BAR
+       ========================================================================== */
+    .bottom-nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      height: calc(64px + env(safe-area-inset-bottom, 12px));
+      padding-bottom: env(safe-area-inset-bottom, 12px);
+      background: rgba(9, 13, 22, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 50;
+    }
+
+    .nav-tab-item {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .nav-tab-item:hover {
+      color: #ffffff;
+    }
+
+    .nav-tab-item.active {
+      color: var(--primary-indigo);
+    }
+
+    .nav-tab-item i {
+      font-size: 1.15rem;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-tab-item.active i {
+      transform: translateY(-2px);
+      color: var(--primary-indigo);
+    }
+
+    .nav-tab-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .nav-badge-pending {
+      position: absolute;
+      top: 8px;
+      right: calc(50% - 18px);
+      background: #f59e0b;
+      color: #000000;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: var(--radius-full);
+      line-height: 1.2;
+      border: 1px solid var(--bg-dark);
+    }
+
+    /* Highlighted Add Button */
+    .nav-tab-item.nav-tab-add {
+      position: relative;
+    }
+
+    .nav-add-btn-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-indigo), var(--secondary-purple));
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.45);
+      transition: var(--transition-smooth);
+      margin-top: -12px;
+    }
+
+    .nav-tab-item.nav-tab-add:hover .nav-add-btn-circle,
+    .nav-tab-item.nav-tab-add.active .nav-add-btn-circle {
+      transform: scale(1.08) translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+    }
+
+    /* ==========================================================================
+       TOAST SYSTEM
+       ========================================================================== */
+    .toast-container {
+      position: fixed;
+      top: calc(16px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 420px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast-message {
+      pointer-events: auto;
+      background: rgba(18, 26, 43, 0.95);
+      border: 1px solid var(--border-glass-light);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      color: #ffffff;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      animation: slideInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast-message.success {
+      border-left: 4px solid var(--status-approved);
+    }
+
+    .toast-message.error {
+      border-left: 4px solid var(--status-rejected);
+    }
+
+    .toast-message.warning {
+      border-left: 4px solid var(--status-pending);
+    }
+
+    .toast-message.info {
+      border-left: 4px solid var(--primary-indigo);
+    }
+
+    .toast-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast-close-btn {
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .toast-close-btn:hover {
+      color: #ffffff;
+    }
+
+    @keyframes slideInDown {
+      from { transform: translateY(-24px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ==========================================================================
+       MODAL DIALOGS
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 400px;
+      background: #0f172a;
+      border: 1px solid var(--border-glass-light);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+      position: relative;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 0.84rem;
+      color: var(--text-sub);
+      margin-bottom: 20px;
+      line-height: 1.45;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    /* Loading Spinner */
+    .spinner-sm {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #ffffff;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Glow Background Blobs -->
+  <div class="ambient-glow-wrapper">
+    <div class="ambient-glow glow-indigo"></div>
+    <div class="ambient-glow glow-purple"></div>
+    <div class="ambient-glow glow-cyan"></div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Mobile App Frame Container -->
+  <div class="mobile-frame">
+
+    <!-- ======================================================================
+         1. LOGIN VIEW
+         ====================================================================== -->
+    <div id="loginView">
+      <div class="login-header">
+        <div class="login-brand-crown">
+          <i class="fa-solid fa-crown"></i>
+        </div>
+        <div class="login-title-row">
+          <span class="cursive-fest-logo">Melange <span class="fest-year-badge">'26</span></span>
+        </div>
+        <div class="login-subtitle">General Secretary Portal</div>
+        <p class="login-desc">Contingent registration &amp; delegation management for participating colleges.</p>
+      </div>
+
+      <!-- Quick Demo Access Chips -->
+      <div class="quick-chips-box">
+        <div class="quick-chips-label">
+          <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i> Quick Demo College Login
+        </div>
+        <div class="quick-chips-scroll" id="quickChipsScroll">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Login Form Card -->
+      <div class="glass-card login-card">
+        <div class="login-card-badge">
+          <i class="fa-solid fa-shield-halved"></i> Council Authentication
+        </div>
+
+        <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+          <div class="form-group">
+            <label class="form-label" for="loginGsCode">
+              <span>GS Authorization Code</span>
+              <span class="req">*</span>
+            </label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-id-badge input-icon-left"></i>
+              <input type="text" id="loginGsCode" class="glass-input" placeholder="e.g. GS-COEP-2026" required autocomplete="username" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginPin">
+              <span>Security PIN</span>
+              <span class="req">*</span>
+            </label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-key input-icon-left"></i>
+              <input type="password" id="loginPin" class="glass-input" placeholder="Enter 4-digit PIN" maxlength="6" required autocomplete="current-password" />
+              <i class="fa-solid fa-eye input-icon-right" id="togglePinVisibility" onclick="togglePasswordVisibility('loginPin', this)"></i>
+            </div>
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="btn-gradient-primary" style="margin-top: 10px;">
+            <span>Login as GS</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+      </div>
+
+      <div class="login-footer-info">
+        Melange '26 Central Directorate &bull; <a href="index.html">Main Fest System</a>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         2. MAIN APP PORTAL VIEW (AFTER LOGIN)
+         ====================================================================== -->
+    <div id="portalView" style="display: none;">
+      
+      <!-- Top Sticky App Header -->
+      <header class="app-header">
+        <div class="header-brand">
+          <span class="header-logo-text">Melange</span>
+          <span class="header-gs-pill">GS PORTAL</span>
+        </div>
+
+        <div class="header-actions">
+          <div class="header-icon-btn" onclick="openNotificationsModal()" title="Fest Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span class="badge-dot"></span>
+          </div>
+
+          <div class="header-avatar-pill" onclick="switchTab('profile')" title="View College Profile">
+            <div class="header-avatar-circle" id="headerAvatarCircle">🏛️</div>
+            <span class="header-college-code" id="headerCollegeCode">COEP</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ==================================================================
+           TAB 1: HOME TAB
+           ================================================================== -->
+      <div id="tabHome" class="tab-viewport active">
+        <!-- Welcome Card -->
+        <div class="glass-card welcome-card">
+          <div class="welcome-badge-row">
+            <span class="verified-lock-badge">
+              <i class="fa-solid fa-circle-check"></i> Verified GS
+            </span>
+            <span class="welcome-fest-date">
+              <i class="fa-regular fa-calendar"></i> Nov 20-22, 2026
+            </span>
+          </div>
+
+          <h2 class="welcome-greeting" id="welcomeGsName">Hello, General Secretary! 👋</h2>
+          <div class="welcome-college-name">
+            <i class="fa-solid fa-building-columns"></i>
+            <span id="welcomeCollegeName">COEP Technological University</span>
+          </div>
+
+          <div class="welcome-quota-box">
+            <div class="quota-header">
+              <span>Contingent Capacity Used</span>
+              <span id="welcomeQuotaText">0 / 42 Students</span>
+            </div>
+            <div class="quota-progress-track">
+              <div class="quota-progress-bar" id="welcomeQuotaBar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Stats Grid (2x2) -->
+        <div class="section-title">
+          <span>Contingent Overview</span>
+          <span class="section-title-link" onclick="switchTab('students')">View All &rarr;</span>
+        </div>
+
+        <div class="stats-grid-2x2">
+          <!-- Total -->
+          <div class="glass-card stat-card total" onclick="filterAndSwitchStudents('all')">
+            <div class="stat-card-top">
+              <div class="stat-icon-wrap"><i class="fa-solid fa-users"></i></div>
+              <span class="stat-chip">Enrolled</span>
+            </div>
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-label">Total Students</div>
+          </div>
+
+          <!-- Approved -->
+          <div class="glass-card stat-card approved" onclick="filterAndSwitchStudents('Approved')">
+            <div class="stat-card-top">
+              <div class="stat-icon-wrap"><i class="fa-solid fa-circle-check"></i></div>
+              <span class="stat-chip" style="color: #34d399;">Cleared</span>
+            </div>
+            <div class="stat-value" id="statApproved" style="color: #34d399;">0</div>
+            <div class="stat-label">Approved</div>
+          </div>
+
+          <!-- Pending -->
+          <div class="glass-card stat-card pending" onclick="filterAndSwitchStudents('Pending')">
+            <div class="stat-card-top">
+              <div class="stat-icon-wrap"><i class="fa-solid fa-hourglass-half"></i></div>
+              <span class="stat-chip" style="color: #fbbf24;">In Review</span>
+            </div>
+            <div class="stat-value" id="statPending" style="color: #fbbf24;">0</div>
+            <div class="stat-label">Pending Approval</div>
+          </div>
+
+          <!-- Rejected -->
+          <div class="glass-card stat-card rejected" onclick="filterAndSwitchStudents('Rejected')">
+            <div class="stat-card-top">
+              <div class="stat-icon-wrap"><i class="fa-solid fa-circle-xmark"></i></div>
+              <span class="stat-chip" style="color: #f87171;">Action Req.</span>
+            </div>
+            <div class="stat-value" id="statRejected" style="color: #f87171;">0</div>
+            <div class="stat-label">Rejected</div>
+          </div>
+        </div>
+
+        <!-- Quick Action Add CTA -->
+        <div class="glass-card quick-cta-card" onclick="switchTab('add')" style="margin-bottom: 24px;">
+          <div>
+            <div style="font-weight: 800; color: #ffffff; font-size: 0.95rem; margin-bottom: 2px;">
+              <i class="fa-solid fa-user-plus" style="color: var(--accent-cyan); margin-right: 6px;"></i> Add Contingent Member
+            </div>
+            <div style="font-size: 0.76rem; color: var(--text-sub);">
+              Register another student into your college contingent
+            </div>
+          </div>
+          <i class="fa-solid fa-circle-arrow-right" style="font-size: 1.4rem; color: var(--primary-indigo);"></i>
+        </div>
+
+        <!-- Your Events Section -->
+        <div class="section-title">
+          <span>Your Enrolled Events</span>
+          <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 500;" id="homeEventsCount">0 Events</span>
+        </div>
+
+        <div class="events-summary-list" id="homeEventsList">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="section-title" style="margin-top: 14px;">
+          <span>Recent Activity</span>
+          <span class="section-title-link" onclick="switchTab('students')">See list</span>
+        </div>
+
+        <div class="recent-activity-list" id="homeRecentActivity">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           TAB 2: STUDENTS TAB
+           ================================================================== -->
+      <div id="tabStudents" class="tab-viewport">
+        <div class="students-topbar">
+          <!-- Search Box -->
+          <div class="search-box-wrap">
+            <i class="fa-solid fa-magnifying-glass input-icon-left"></i>
+            <input type="text" id="studentSearchInput" class="glass-input" placeholder="Search by name, roll no, event, dept..." oninput="handleStudentSearch(event)" />
+            <i class="fa-solid fa-circle-xmark search-clear-btn" id="searchClearBtn" onclick="clearStudentSearch()"></i>
+          </div>
+
+          <!-- Filter Chips -->
+          <div class="filter-chips-row">
+            <div class="filter-chip active" id="filterChip-all" onclick="setStudentStatusFilter('all')">
+              <span>All</span>
+              <span class="chip-count" id="countFilterAll">0</span>
+            </div>
+            <div class="filter-chip" id="filterChip-Pending" onclick="setStudentStatusFilter('Pending')">
+              <i class="fa-solid fa-hourglass-half" style="color: #fbbf24; font-size: 0.75rem;"></i>
+              <span>Pending</span>
+              <span class="chip-count" id="countFilterPending">0</span>
+            </div>
+            <div class="filter-chip" id="filterChip-Approved" onclick="setStudentStatusFilter('Approved')">
+              <i class="fa-solid fa-circle-check" style="color: #34d399; font-size: 0.75rem;"></i>
+              <span>Approved</span>
+              <span class="chip-count" id="countFilterApproved">0</span>
+            </div>
+            <div class="filter-chip" id="filterChip-Rejected" onclick="setStudentStatusFilter('Rejected')">
+              <i class="fa-solid fa-circle-xmark" style="color: #f87171; font-size: 0.75rem;"></i>
+              <span>Rejected</span>
+              <span class="chip-count" id="countFilterRejected">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secondary Event Dropdown Filter -->
+        <div class="event-filter-bar">
+          <select id="studentsEventFilter" class="glass-select event-filter-select" onchange="renderStudentsList()">
+            <option value="all">All Events (Filter by Event)</option>
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <!-- Students List Container -->
+        <div class="students-list-wrap" id="studentsListWrap">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state-wrap glass-card" id="studentsEmptyState" style="display: none;">
+          <div class="empty-state-icon">
+            <i class="fa-solid fa-user-slash"></i>
+          </div>
+          <div class="empty-state-title">No Students Found</div>
+          <div class="empty-state-desc">No contingent members match your current search and filter settings.</div>
+          <button type="button" class="btn-ghost" onclick="resetStudentFilters()">
+            <i class="fa-solid fa-arrow-rotate-left"></i> Reset All Filters
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           TAB 3: ADD STUDENT TAB
+           ================================================================== -->
+      <div id="tabAdd" class="tab-viewport">
+        <div class="glass-card add-form-card">
+          <div class="add-form-header">
+            <h3 class="add-form-title">
+              <i class="fa-solid fa-user-plus" style="color: var(--accent-cyan); margin-right: 6px;"></i> Add Contingent Member
+            </h3>
+            <p class="add-form-subtitle">Enrolled students are submitted to the Central Fest Committee with status <strong>Pending</strong>.</p>
+          </div>
+
+          <div class="form-info-callout">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>College: <strong id="addFormCollegeLabel">COEP Technological University</strong></span>
+          </div>
+
+          <form id="addStudentForm" onsubmit="handleAddStudentSubmit(event)">
+            
+            <!-- Full Name -->
+            <div class="form-group">
+              <label class="form-label" for="addStudentName">
+                <span>Student Full Name</span>
+                <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-user input-icon-left"></i>
+                <input type="text" id="addStudentName" class="glass-input" placeholder="e.g. Aditya Patil" required />
+              </div>
+            </div>
+
+            <!-- Roll Number -->
+            <div class="form-group">
+              <label class="form-label" for="addStudentRoll">
+                <span>College Roll / PRN Number</span>
+                <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-id-card input-icon-left"></i>
+                <input type="text" id="addStudentRoll" class="glass-input" placeholder="e.g. 112103045" required />
+              </div>
+            </div>
+
+            <!-- Department -->
+            <div class="form-group">
+              <label class="form-label" for="addStudentDept">
+                <span>Department / Branch</span>
+                <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-graduation-cap input-icon-left"></i>
+                <input type="text" id="addStudentDept" class="glass-input" placeholder="e.g. Computer Engineering" required />
+              </div>
+            </div>
+
+            <!-- Year of Study Pill Selector -->
+            <div class="form-group">
+              <label class="form-label">
+                <span>Year of Study</span>
+                <span class="req">*</span>
+              </label>
+              <input type="hidden" id="addStudentYear" value="3rd Year" />
+              <div class="year-pills-grid">
+                <div class="year-pill-btn" onclick="selectStudyYear('1st Year', this)">1st Year</div>
+                <div class="year-pill-btn" onclick="selectStudyYear('2nd Year', this)">2nd Year</div>
+                <div class="year-pill-btn active" onclick="selectStudyYear('3rd Year', this)">3rd Year</div>
+                <div class="year-pill-btn" onclick="selectStudyYear('4th Year', this)">4th Year</div>
+              </div>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="form-group">
+              <label class="form-label" for="addStudentPhone">
+                <span>Mobile Phone (WhatsApp)</span>
+                <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-phone input-icon-left"></i>
+                <input type="tel" id="addStudentPhone" class="glass-input" placeholder="+91 98901 12345" required />
+              </div>
+            </div>
+
+            <!-- Email Address (Optional) -->
+            <div class="form-group">
+              <label class="form-label" for="addStudentEmail">
+                <span>College / Personal Email</span>
+                <span style="color: var(--text-faint); font-weight: normal; font-size: 0.72rem;">Optional</span>
+              </label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-envelope input-icon-left"></i>
+                <input type="email" id="addStudentEmail" class="glass-input" placeholder="student@college.edu" />
+              </div>
+            </div>
+
+            <!-- Event Selection (Dropdown grouped by zone) -->
+            <div class="form-group">
+              <label class="form-label" for="addStudentEvent">
+                <span>Allocated Event</span>
+                <span class="req">*</span>
+              </label>
+              <select id="addStudentEvent" class="glass-select" required style="padding-left: 16px;">
+                <option value="" disabled selected>Select an Event to compete in...</option>
+                <!-- Dynamically populated with optgroups -->
+              </select>
+            </div>
+
+            <!-- Role Selector -->
+            <div class="form-group">
+              <label class="form-label">
+                <span>Contingent Role</span>
+                <span class="req">*</span>
+              </label>
+              <input type="hidden" id="addStudentRole" value="Participant" />
+              <div class="role-pills-grid">
+                <div class="role-pill-btn active" onclick="selectContingentRole('Participant', this)">Participant</div>
+                <div class="role-pill-btn" onclick="selectContingentRole('Team Leader', this)">Team Leader</div>
+                <div class="role-pill-btn" onclick="selectContingentRole('Alternate', this)">Alternate</div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-gradient-primary" style="margin-top: 14px;">
+              <i class="fa-solid fa-plus"></i>
+              <span>Add Student to Contingent</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           TAB 4: PROFILE TAB
+           ================================================================== -->
+      <div id="tabProfile" class="tab-viewport">
+        <!-- Hero College Card -->
+        <div class="glass-card profile-hero-card">
+          <div class="profile-avatar-large" id="profileCollegeAvatar">🏛️</div>
+          <h2 class="profile-college-name" id="profileCollegeName">COEP Technological University</h2>
+          <div class="profile-city-badge">
+            <i class="fa-solid fa-location-dot" style="color: #f43f5e;"></i>
+            <span id="profileCollegeCity">Pune, Maharashtra</span>
+          </div>
+
+          <!-- General Secretary Dossier -->
+          <div class="profile-gs-dossier">
+            <div class="dossier-row">
+              <span class="dossier-label">General Secretary</span>
+              <span class="dossier-value" id="profileGsName">Priya Deshmukh</span>
+            </div>
+            <div class="dossier-row">
+              <span class="dossier-label">Official Designation</span>
+              <span class="dossier-value" id="profileGsDesignation">Gymkhana General Secretary</span>
+            </div>
+            <div class="dossier-row">
+              <span class="dossier-label">GS Auth Code</span>
+              <span class="dossier-value" style="color: var(--accent-cyan-light); font-family: monospace;" id="profileGsCode">GS-COEP-2026</span>
+            </div>
+            <div class="dossier-row">
+              <span class="dossier-label">Registered Email</span>
+              <span class="dossier-value" id="profileGsEmail">gs.gymkhana@coeptech.ac.in</span>
+            </div>
+            <div class="dossier-row">
+              <span class="dossier-label">Contact Phone</span>
+              <span class="dossier-value" id="profileGsPhone">+91 98231 10022</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quota & Stats Summary Card -->
+        <div class="glass-card profile-stats-card">
+          <div class="profile-quota-row">
+            <span style="font-size: 0.88rem; font-weight: 700; color: #ffffff;">Contingent Quota Status</span>
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent-gold);" id="profileQuotaPercent">0%</span>
+          </div>
+
+          <div class="quota-progress-track" style="margin-bottom: 14px;">
+            <div class="quota-progress-bar" id="profileQuotaBar" style="width: 0%;"></div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between;">
+            <div class="quota-stat-pill">
+              <span class="num" id="profileStatTotal" style="color: #ffffff;">0</span>
+              <span class="lbl">Registered</span>
+            </div>
+            <div class="quota-stat-pill">
+              <span class="num" id="profileStatApproved" style="color: #34d399;">0</span>
+              <span class="lbl">Approved</span>
+            </div>
+            <div class="quota-stat-pill">
+              <span class="num" id="profileStatPending" style="color: #fbbf24;">0</span>
+              <span class="lbl">Pending</span>
+            </div>
+            <div class="quota-stat-pill">
+              <span class="num" id="profileStatQuota" style="color: var(--primary-indigo);">42</span>
+              <span class="lbl">Max Limit</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Links & Logout -->
+        <div class="profile-fest-links">
+          <button type="button" class="profile-link-btn" onclick="openNotificationsModal()">
+            <span style="display: flex; align-items: center; gap: 10px;">
+              <i class="fa-regular fa-bell" style="color: var(--accent-gold);"></i> Fest Announcements &amp; Deadlines
+            </span>
+            <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; color: var(--text-faint);"></i>
+          </button>
+
+          <button type="button" class="profile-link-btn" onclick="exportContingentCsv()">
+            <span style="display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-file-csv" style="color: var(--accent-cyan);"></i> Export Contingent List (CSV)
+            </span>
+            <i class="fa-solid fa-download" style="font-size: 0.8rem; color: var(--text-faint);"></i>
+          </button>
+
+          <button type="button" class="btn-danger-outline" style="width: 100%; height: 46px; margin-top: 8px;" onclick="handleLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout from GS Portal</span>
+          </button>
+        </div>
+
+        <div class="profile-bottom-admin">
+          <a href="index.html" target="_self">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <span>Go to Central Admin / Fest Portal</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           STICKY BOTTOM NAVIGATION (4 TABS)
+           ================================================================== -->
+      <nav class="bottom-nav-bar">
+        <!-- Tab 1: Home -->
+        <div class="nav-tab-item active" id="navItem-home" onclick="switchTab('home')">
+          <i class="fa-solid fa-house"></i>
+          <span class="nav-tab-label">Home</span>
+        </div>
+
+        <!-- Tab 2: Students -->
+        <div class="nav-tab-item" id="navItem-students" onclick="switchTab('students')">
+          <i class="fa-solid fa-users"></i>
+          <span class="nav-tab-label">Students</span>
+          <span class="nav-badge-pending" id="navPendingBadge" style="display: none;">0</span>
+        </div>
+
+        <!-- Tab 3: Add (Raised Gradient Pill) -->
+        <div class="nav-tab-item nav-tab-add" id="navItem-add" onclick="switchTab('add')">
+          <div class="nav-add-btn-circle">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <span class="nav-tab-label">Add</span>
+        </div>
+
+        <!-- Tab 4: Profile -->
+        <div class="nav-tab-item" id="navItem-profile" onclick="switchTab('profile')">
+          <i class="fa-solid fa-circle-user"></i>
+          <span class="nav-tab-label">Profile</span>
+        </div>
+      </nav>
+
+    </div><!-- /#portalView -->
+
+  </div><!-- /.mobile-frame -->
+
+  <!-- ======================================================================
+       MODAL: DELETE CONFIRMATION
+       ====================================================================== -->
+  <div class="modal-backdrop" id="deleteModalBackdrop">
+    <div class="modal-box glass-card">
+      <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 1.3rem; margin-bottom: 14px;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 class="modal-title">Remove Student?</h3>
+      <p class="modal-desc" id="deleteModalDesc">Are you sure you want to remove this student from your contingent? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" onclick="closeDeleteModal()">Cancel</button>
+        <button type="button" class="btn-danger-outline" id="confirmDeleteBtn">
+          <i class="fa-solid fa-trash-can"></i> Remove
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL: NOTIFICATIONS / ANNOUNCEMENTS
+       ====================================================================== -->
+  <div class="modal-backdrop" id="notifModalBackdrop" onclick="closeNotificationsModal(event)">
+    <div class="modal-box glass-card" onclick="event.stopPropagation()">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-bullhorn" style="color: var(--accent-gold); font-size: 1.1rem;"></i>
+          <h3 class="modal-title" style="margin: 0;">Fest Bulletins</h3>
+        </div>
+        <i class="fa-solid fa-xmark" style="color: var(--text-muted); cursor: pointer; padding: 4px;" onclick="closeNotificationsModal()"></i>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto;">
+        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 12px;">
+          <div style="font-size: 0.72rem; color: var(--accent-cyan-light); font-weight: 700; margin-bottom: 2px;">DEADLINE ALERT &bull; Nov 21, 6:00 PM</div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: #ffffff; margin-bottom: 4px;">Contingent Registration Closes Tomorrow</div>
+          <div style="font-size: 0.78rem; color: var(--text-sub);">All student slots must be submitted with valid college PRN before the lock cutoff.</div>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 12px;">
+          <div style="font-size: 0.72rem; color: #34d399; font-weight: 700; margin-bottom: 2px;">RULE UPDATE &bull; Nov 19</div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: #ffffff; margin-bottom: 4px;">RolePlay Photo Editing Guidelines</div>
+          <div style="font-size: 0.78rem; color: var(--text-sub);">Laptops with Adobe Creative Cloud or Affinity Photo allowed. RAW assets provided at venue.</div>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 12px;">
+          <div style="font-size: 0.72rem; color: var(--accent-gold); font-weight: 700; margin-bottom: 2px;">GS DESK INFO</div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: #ffffff; margin-bottom: 4px;">Identity Badges Collection</div>
+          <div style="font-size: 0.78rem; color: var(--text-sub);">General Secretaries can collect contingent RFID passes from Directorate Counter 3 starting 8:00 AM Day 1.</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 18px; text-align: right;">
+        <button type="button" class="btn-gradient-primary" style="min-height: 40px; padding: 8px 16px; font-size: 0.85rem;" onclick="closeNotificationsModal()">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       JAVASCRIPT APPLICATION LOGIC
+       ====================================================================== -->
+  <script>
+    /* ==========================================================================
+       CONSTANTS & SEED DATA DEFINITIONS
+       ========================================================================== */
+    const STORAGE_KEY_STUDENTS = 'melange_v5_students';
+    const STORAGE_KEY_EVENTS = 'melange_v5_events';
+    const STORAGE_KEY_COLLEGES = 'melange_v5_colleges';
+    const STORAGE_KEY_SESSION = 'melange_v5_session';
+    const STORAGE_KEY_IS_ADMIN = 'melange_v5_is_admin';
+
+    // Official College Credentials (Login database)
+    const SEED_COLLEGES = [
+      {"id":"coep","name":"COEP Technological University","shortCode":"COEP","city":"Pune","gsName":"Priya Deshmukh","gsDesignation":"Gymkhana General Secretary","gsCode":"GS-COEP-2026","pin":"2345","email":"gs.gymkhana@coeptech.ac.in","phone":"+91 98231 10022","badgeColor":"#3b82f6","contingentSize":42,"avatar":"🏛️"},
+      {"id":"mit","name":"MIT World Peace University","shortCode":"MIT-WPU","city":"Pune","gsName":"Aryan Sharma","gsDesignation":"President & General Secretary","gsCode":"GS-MIT-2026","pin":"1234","email":"gs.council@mitwpu.edu.in","phone":"+91 98232 20033","badgeColor":"#8b5cf6","contingentSize":38,"avatar":"🕊️"},
+      {"id":"xav","name":"St. Xavier's College","shortCode":"XAV-MUM","city":"Mumbai","gsName":"Rohan Mehta","gsDesignation":"Cultural Affairs Secretary","gsCode":"GS-XAV-2026","pin":"3456","email":"cultural.gs@xaviers.edu","phone":"+91 98233 30044","badgeColor":"#ec4899","contingentSize":35,"avatar":"🎭"},
+      {"id":"bits","name":"BITS Pilani (Goa Campus)","shortCode":"BITS-GOA","city":"Goa","gsName":"Ananya Iyer","gsDesignation":"Council General Secretary","gsCode":"GS-BITS-2026","pin":"4567","email":"gsec.council@goa.bits-pilani.ac.in","phone":"+91 98234 40055","badgeColor":"#f59e0b","contingentSize":40,"avatar":"⚡"},
+      {"id":"iitb","name":"IIT Bombay","shortCode":"IIT-BOMBAY","city":"Mumbai","gsName":"Kabir Verma","gsDesignation":"General Secretary Technical Affairs","gsCode":"GS-IITB-2026","pin":"5678","email":"gseca@iitb.ac.in","phone":"+91 98235 50066","badgeColor":"#10b981","contingentSize":30,"avatar":"🔬"},
+      {"id":"srcc","name":"Shri Ram College of Commerce","shortCode":"SRCC-DU","city":"Delhi","gsName":"Tanvi Kapoor","gsDesignation":"Students Union General Secretary","gsCode":"GS-SRCC-2026","pin":"6789","email":"su.gsec@srcc.du.ac.in","phone":"+91 98236 60077","badgeColor":"#06b6d4","contingentSize":28,"avatar":"📊"}
+    ];
+
+    // Fest Events List
+    const SEED_EVENTS = [
+      {"id":"creative-editing","title":"RolePlay Photo Editing","zone":"Creative Zone","day":"Day 1","time":"10:30 AM","maxMembers":2},
+      {"id":"creative-vfx","title":"CineVFX Studio","zone":"Creative Zone","day":"Day 2","time":"11:00 AM","maxMembers":3},
+      {"id":"creative-graffiti","title":"Canvas & Wall Graffiti","zone":"Creative Zone","day":"Day 1","time":"02:00 PM","maxMembers":3},
+      {"id":"creative-photo","title":"Candid Frames Photography","zone":"Creative Zone","day":"Day 3","time":"10:00 AM","maxMembers":2},
+      {"id":"thinking-debate","title":"Extempore Debate","zone":"Thinking Zone","day":"Day 1","time":"11:00 AM","maxMembers":2},
+      {"id":"thinking-quiz","title":"Chanakya Mega Quiz","zone":"Thinking Zone","day":"Day 2","time":"12:00 PM","maxMembers":3},
+      {"id":"entertainment-dance","title":"Mega Dance Battle","zone":"Entertainment Zone","day":"Day 2","time":"03:00 PM","maxMembers":8},
+      {"id":"entertainment-singing","title":"Acoustic Singing Duel","zone":"Entertainment Zone","day":"Day 1","time":"05:00 PM","maxMembers":2},
+      {"id":"entertainment-drama","title":"Nukkad Natak","zone":"Entertainment Zone","day":"Day 3","time":"04:00 PM","maxMembers":12},
+      {"id":"discover-treasure","title":"Cryptic Treasure Hunt","zone":"Discover Zone","day":"Day 2","time":"09:00 AM","maxMembers":5},
+      {"id":"discover-escape","title":"Locked Vault Escape Room","zone":"Discover Zone","day":"Day 1","time":"10:00 AM","maxMembers":6},
+      {"id":"discover-robo","title":"Campus Decathlon","zone":"Discover Zone","day":"Day 3","time":"11:00 AM","maxMembers":4}
+    ];
+
+    // Initial Seed Students (COEP & MIT have Pending as primary status, plus some Approved and Rejected for full realistic workflow)
+    const SEED_STUDENTS = [
+      // COEP Technological University
+      {
+        "studentId": "STU-COEP-101",
+        "collegeId": "coep",
+        "collegeName": "COEP Technological University",
+        "name": "Aditya Patil",
+        "rollNo": "112103045",
+        "dept": "Computer Engineering",
+        "year": "3rd Year",
+        "phone": "+91 98901 12345",
+        "email": "aditya@coep.edu",
+        "assignedEventId": "creative-editing",
+        "assignedEventName": "RolePlay Photo Editing",
+        "role": "Participant",
+        "approvalStatus": "Pending",
+        "adminRemark": "",
+        "enrolledAt": "2026-11-20 09:15"
+      },
+      {
+        "studentId": "STU-COEP-102",
+        "collegeId": "coep",
+        "collegeName": "COEP Technological University",
+        "name": "Neha Kulkarni",
+        "rollNo": "112104012",
+        "dept": "Electronics & Telecom",
+        "year": "3rd Year",
+        "phone": "+91 98902 23456",
+        "email": "neha.k@coep.edu",
+        "assignedEventId": "thinking-debate",
+        "assignedEventName": "Extempore Debate",
+        "role": "Team Leader",
+        "approvalStatus": "Approved",
+        "adminRemark": "Verified student ID and college NOC.",
+        "enrolledAt": "2026-11-19 14:20"
+      },
+      {
+        "studentId": "STU-COEP-103",
+        "collegeId": "coep",
+        "collegeName": "COEP Technological University",
+        "name": "Rohan Deshpande",
+        "rollNo": "112201089",
+        "dept": "Mechanical Engineering",
+        "year": "2nd Year",
+        "phone": "+91 98903 34567",
+        "email": "rohan.d@coep.edu",
+        "assignedEventId": "entertainment-dance",
+        "assignedEventName": "Mega Dance Battle",
+        "role": "Participant",
+        "approvalStatus": "Pending",
+        "adminRemark": "",
+        "enrolledAt": "2026-11-20 08:30"
+      },
+      {
+        "studentId": "STU-COEP-104",
+        "collegeId": "coep",
+        "collegeName": "COEP Technological University",
+        "name": "Tanvi Joshi",
+        "rollNo": "112002034",
+        "dept": "Information Technology",
+        "year": "4th Year",
+        "phone": "+91 98904 45678",
+        "email": "tanvi.j@coep.edu",
+        "assignedEventId": "discover-treasure",
+        "assignedEventName": "Cryptic Treasure Hunt",
+        "role": "Team Leader",
+        "approvalStatus": "Approved",
+        "adminRemark": "Contingent captain authorized.",
+        "enrolledAt": "2026-11-18 16:45"
+      },
+      {
+        "studentId": "STU-COEP-105",
+        "collegeId": "coep",
+        "collegeName": "COEP Technological University",
+        "name": "Kunal More",
+        "rollNo": "112105067",
+        "dept": "Instrumentation Engineering",
+        "year": "3rd Year",
+        "phone": "+91 98905 56789",
+        "email": "kunal.m@coep.edu",
+        "assignedEventId": "creative-vfx",
+        "assignedEventName": "CineVFX Studio",
+        "role": "Participant",
+        "approvalStatus": "Rejected",
+        "adminRemark": "Department NOC missing. Please contact fest desk.",
+        "enrolledAt": "2026-11-17 11:10"
+      },
+      {
+        "studentId": "STU-COEP-106",
+        "collegeId": "coep",
+        "collegeName": "COEP Technological University",
+        "name": "Shreya Shinde",
+        "rollNo": "112301018",
+        "dept": "Computer Engineering",
+        "year": "1st Year",
+        "phone": "+91 98906 67890",
+        "email": "shreya.s@coep.edu",
+        "assignedEventId": "entertainment-singing",
+        "assignedEventName": "Acoustic Singing Duel",
+        "role": "Participant",
+        "approvalStatus": "Pending",
+        "adminRemark": "",
+        "enrolledAt": "2026-11-20 09:40"
+      },
+
+      // MIT World Peace University
+      {
+        "studentId": "STU-MIT-201",
+        "collegeId": "mit",
+        "collegeName": "MIT World Peace University",
+        "name": "Aryan Sharma",
+        "rollNo": "2022MIT082",
+        "dept": "Computer Science & Engg",
+        "year": "3rd Year",
+        "phone": "+91 98221 11223",
+        "email": "aryan.s@mitwpu.edu",
+        "assignedEventId": "thinking-quiz",
+        "assignedEventName": "Chanakya Mega Quiz",
+        "role": "Team Leader",
+        "approvalStatus": "Pending",
+        "adminRemark": "",
+        "enrolledAt": "2026-11-20 08:15"
+      },
+      {
+        "studentId": "STU-MIT-202",
+        "collegeId": "mit",
+        "collegeName": "MIT World Peace University",
+        "name": "Riya Sen",
+        "rollNo": "2021MIT104",
+        "dept": "School of Design",
+        "year": "4th Year",
+        "phone": "+91 98222 22334",
+        "email": "riya.sen@mitwpu.edu",
+        "assignedEventId": "creative-graffiti",
+        "assignedEventName": "Canvas & Wall Graffiti",
+        "role": "Participant",
+        "approvalStatus": "Approved",
+        "adminRemark": "Portfolio clearance approved by Creative Head.",
+        "enrolledAt": "2026-11-18 15:30"
+      },
+      {
+        "studentId": "STU-MIT-203",
+        "collegeId": "mit",
+        "collegeName": "MIT World Peace University",
+        "name": "Siddharth Mehta",
+        "rollNo": "2023MIT045",
+        "dept": "Mechanical Engineering",
+        "year": "2nd Year",
+        "phone": "+91 98223 33445",
+        "email": "siddharth.m@mitwpu.edu",
+        "assignedEventId": "discover-robo",
+        "assignedEventName": "Campus Decathlon",
+        "role": "Participant",
+        "approvalStatus": "Pending",
+        "adminRemark": "",
+        "enrolledAt": "2026-11-20 09:05"
+      },
+      {
+        "studentId": "STU-MIT-204",
+        "collegeId": "mit",
+        "collegeName": "MIT World Peace University",
+        "name": "Ananya Roy",
+        "rollNo": "2022MIT133",
+        "dept": "School of Liberal Arts",
+        "year": "3rd Year",
+        "phone": "+91 98224 44556",
+        "email": "ananya.r@mitwpu.edu",
+        "assignedEventId": "entertainment-drama",
+        "assignedEventName": "Nukkad Natak",
+        "role": "Participant",
+        "approvalStatus": "Rejected",
+        "adminRemark": "Script synopsis not attached. Please resubmit.",
+        "enrolledAt": "2026-11-19 12:00"
+      },
+
+      // St. Xavier's College
+      {
+        "studentId": "STU-XAV-301",
+        "collegeId": "xav",
+        "collegeName": "St. Xavier's College",
+        "name": "Kiara Advani",
+        "rollNo": "XAV2022-09",
+        "dept": "Mass Media",
+        "year": "3rd Year",
+        "phone": "+91 98233 11111",
+        "email": "kiara@xaviers.edu",
+        "assignedEventId": "entertainment-drama",
+        "assignedEventName": "Nukkad Natak",
+        "role": "Team Leader",
+        "approvalStatus": "Pending",
+        "adminRemark": "",
+        "enrolledAt": "2026-11-20 09:00"
+      },
+
+      // BITS Pilani (Goa Campus)
+      {
+        "studentId": "STU-BITS-401",
+        "collegeId": "bits",
+        "collegeName": "BITS Pilani (Goa Campus)",
+        "name": "Vivaan Sengupta",
+        "rollNo": "2022A7PS012G",
+        "dept": "Computer Science",
+        "year": "3rd Year",
+        "phone": "+91 98234 99887",
+        "email": "vivaan@goa.bits-pilani.ac.in",
+        "assignedEventId": "discover-escape",
+        "assignedEventName": "Locked Vault Escape Room",
+        "role": "Team Leader",
+        "approvalStatus": "Approved",
+        "adminRemark": "Authorized delegation captain.",
+        "enrolledAt": "2026-11-20 09:10"
+      }
+    ];
+
+    /* ==========================================================================
+       APP STATE
+       ========================================================================== */
+    let currentSession = null;
+    let currentStatusFilter = 'all';
+    let currentSearchQuery = '';
+    let studentIdToDelete = null;
+
+    /* ==========================================================================
+       INITIALIZATION
+       ========================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      initLocalStorage();
+      renderQuickLoginChips();
+      populateEventDropdowns();
+      checkActiveSession();
+    });
+
+    /**
+     * Seed localStorage if keys do not exist
+     */
+    function initLocalStorage() {
+      if (!localStorage.getItem(STORAGE_KEY_COLLEGES)) {
+        localStorage.setItem(STORAGE_KEY_COLLEGES, JSON.stringify(SEED_COLLEGES));
+      }
+      if (!localStorage.getItem(STORAGE_KEY_EVENTS)) {
+        localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(SEED_EVENTS));
+      }
+      if (!localStorage.getItem(STORAGE_KEY_STUDENTS)) {
+        localStorage.setItem(STORAGE_KEY_STUDENTS, JSON.stringify(SEED_STUDENTS));
+      }
+    }
+
+    /**
+     * Get Colleges from storage
+     */
+    function getStoredColleges() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY_COLLEGES);
+        return data ? JSON.parse(data) : SEED_COLLEGES;
+      } catch (e) {
+        return SEED_COLLEGES;
+      }
+    }
+
+    /**
+     * Get Events from storage
+     */
+    function getStoredEvents() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY_EVENTS);
+        return data ? JSON.parse(data) : SEED_EVENTS;
+      } catch (e) {
+        return SEED_EVENTS;
+      }
+    }
+
+    /**
+     * Get Students from storage
+     */
+    function getStoredStudents() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY_STUDENTS);
+        return data ? JSON.parse(data) : SEED_STUDENTS;
+      } catch (e) {
+        return SEED_STUDENTS;
+      }
+    }
+
+    /**
+     * Save Students to storage
+     */
+    function saveStoredStudents(students) {
+      localStorage.setItem(STORAGE_KEY_STUDENTS, JSON.stringify(students));
+    }
+
+    /* ==========================================================================
+       AUTHENTICATION & LOGIN HANDLING
+       ========================================================================== */
+    /**
+     * Check if a GS session is already active in localStorage
+     */
+    function checkActiveSession() {
+      try {
+        const sessionStr = localStorage.getItem(STORAGE_KEY_SESSION);
+        if (sessionStr) {
+          const sessionObj = JSON.parse(sessionStr);
+          if (sessionObj && sessionObj.id) {
+            currentSession = sessionObj;
+            localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
+            showPortalView();
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Session parse error", e);
+      }
+      showLoginView();
+    }
+
+    /**
+     * Render Quick Login Chips for easy testing & access
+     */
+    function renderQuickLoginChips() {
+      const container = document.getElementById('quickChipsScroll');
+      if (!container) return;
+
+      const colleges = getStoredColleges().slice(0, 4); // COEP, MIT, XAV, BITS
+      container.innerHTML = colleges.map(c => `
+        <div class="quick-chip" onclick="applyQuickLogin('${c.shortCode}')" id="chip-${c.shortCode}">
+          <span class="chip-avatar">${c.avatar}</span>
+          <span>${c.shortCode}</span>
+        </div>
+      `).join('');
+    }
+
+    /**
+     * Apply quick login credentials when chip is clicked
+     */
+    function applyQuickLogin(shortCode) {
+      const colleges = getStoredColleges();
+      const college = colleges.find(c => c.shortCode.toUpperCase() === shortCode.toUpperCase());
+      if (!college) return;
+
+      document.getElementById('loginGsCode').value = college.gsCode;
+      document.getElementById('loginPin').value = college.pin;
+
+      // Highlight active chip
+      document.querySelectorAll('.quick-chip').forEach(el => el.classList.remove('active'));
+      const activeChip = document.getElementById(`chip-${shortCode}`);
+      if (activeChip) activeChip.classList.add('active');
+
+      showToast(`Credentials filled for ${college.name} (${college.shortCode})`, 'info');
+    }
+
+    /**
+     * Handle Login Form Submission
+     */
+    function handleLoginSubmit(event) {
+      event.preventDefault();
+      const gsCodeInput = document.getElementById('loginGsCode').value.trim();
+      const pinInput = document.getElementById('loginPin').value.trim();
+      const submitBtn = document.getElementById('loginSubmitBtn');
+
+      if (!gsCodeInput || !pinInput) {
+        showToast('Please enter both GS Code and PIN', 'error');
+        return;
+      }
+
+      // Show loading spinner
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span class="spinner-sm"></span> <span>Verifying Council...</span>`;
+
+      setTimeout(() => {
+        const colleges = getStoredColleges();
+        const matched = colleges.find(c => 
+          c.gsCode.toUpperCase() === gsCodeInput.toUpperCase() && c.pin === pinInput
+        );
+
+        if (matched) {
+          // Login success
+          currentSession = {
+            ...matched,
+            role: 'college_gs',
+            loginTime: new Date().toISOString()
+          };
+          localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(currentSession));
+          localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
+
+          showToast(`Welcome, ${matched.gsName}! Logged in as General Secretary.`, 'success');
+          showPortalView();
+        } else {
+          // Login failed
+          showToast('Invalid GS Code or PIN. Please check credentials.', 'error');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>Login as GS</span> <i class="fa-solid fa-arrow-right"></i>`;
+        }
+      }, 500);
+    }
+
+    /**
+     * Handle Logout
+     */
+    function handleLogout() {
+      currentSession = null;
+      localStorage.removeItem(STORAGE_KEY_SESSION);
+      localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
+      showToast('Logged out of GS Portal', 'info');
+      showLoginView();
+    }
+
+    function showLoginView() {
+      document.getElementById('portalView').style.display = 'none';
+      document.getElementById('loginView').style.display = 'flex';
+      const submitBtn = document.getElementById('loginSubmitBtn');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>Login as GS</span> <i class="fa-solid fa-arrow-right"></i>`;
+      }
+    }
+
+    function showPortalView() {
+      document.getElementById('loginView').style.display = 'none';
+      document.getElementById('portalView').style.display = 'flex';
+      
+      updateHeaderAndProfile();
+      updateDashboardStats();
+      renderHomeEnrolledEvents();
+      renderHomeRecentActivity();
+      renderStudentsList();
+      switchTab('home');
+    }
+
+    function togglePasswordVisibility(inputId, iconEl) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        iconEl.classList.remove('fa-eye');
+        iconEl.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        iconEl.classList.remove('fa-eye-slash');
+        iconEl.classList.add('fa-eye');
+      }
+    }
+
+    /* ==========================================================================
+       TAB NAVIGATION
+       ========================================================================== */
+    function switchTab(tabName) {
+      // Hide all viewports
+      document.querySelectorAll('.tab-viewport').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-tab-item').forEach(el => el.classList.remove('active'));
+
+      const targetViewport = document.getElementById(`tab${capitalize(tabName)}`);
+      const targetNavItem = document.getElementById(`navItem-${tabName}`);
+
+      if (targetViewport) targetViewport.classList.add('active');
+      if (targetNavItem) targetNavItem.classList.add('active');
+
+      // Specific tab refresh triggers
+      if (tabName === 'home') {
+        updateDashboardStats();
+        renderHomeEnrolledEvents();
+        renderHomeRecentActivity();
+      } else if (tabName === 'students') {
+        renderStudentsList();
+      } else if (tabName === 'profile') {
+        updateProfileTab();
+      }
+
+      // Scroll top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function capitalize(str) {
+      if (!str) return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    /* ==========================================================================
+       PORTAL HEADER & DATA SYNCHRONIZATION
+       ========================================================================== */
+    function updateHeaderAndProfile() {
+      if (!currentSession) return;
+
+      // Header
+      document.getElementById('headerAvatarCircle').textContent = currentSession.avatar || '🏛️';
+      document.getElementById('headerCollegeCode').textContent = currentSession.shortCode || 'GS';
+
+      // Welcome Banner (Home)
+      document.getElementById('welcomeGsName').textContent = `Hello, ${currentSession.gsName.split(' ')[0]}! 👋`;
+      document.getElementById('welcomeCollegeName').textContent = currentSession.name;
+
+      // Add Student Form College label
+      document.getElementById('addFormCollegeLabel').textContent = currentSession.name;
+
+      // Profile Tab
+      updateProfileTab();
+    }
+
+    function updateProfileTab() {
+      if (!currentSession) return;
+      document.getElementById('profileCollegeAvatar').textContent = currentSession.avatar || '🏛️';
+      document.getElementById('profileCollegeName').textContent = currentSession.name;
+      document.getElementById('profileCollegeCity').textContent = `${currentSession.city}, India`;
+
+      document.getElementById('profileGsName').textContent = currentSession.gsName;
+      document.getElementById('profileGsDesignation').textContent = currentSession.gsDesignation;
+      document.getElementById('profileGsCode').textContent = currentSession.gsCode;
+      document.getElementById('profileGsEmail').textContent = currentSession.email;
+      document.getElementById('profileGsPhone').textContent = currentSession.phone;
+
+      // Stats on profile
+      const students = getStoredStudents().filter(s => s.collegeId === currentSession.id);
+      const total = students.length;
+      const approved = students.filter(s => s.approvalStatus === 'Approved').length;
+      const pending = students.filter(s => s.approvalStatus === 'Pending').length;
+      const quota = currentSession.contingentSize || 42;
+      const pct = Math.min(100, Math.round((total / quota) * 100));
+
+      document.getElementById('profileStatTotal').textContent = total;
+      document.getElementById('profileStatApproved').textContent = approved;
+      document.getElementById('profileStatPending').textContent = pending;
+      document.getElementById('profileStatQuota').textContent = quota;
+      document.getElementById('profileQuotaPercent').textContent = `${pct}% Used`;
+      document.getElementById('profileQuotaBar').style.width = `${pct}%`;
+    }
+
+    /**
+     * Calculate and update 4 stats grid and quota meters
+     */
+    function updateDashboardStats() {
+      if (!currentSession) return;
+      const allStudents = getStoredStudents();
+      const collegeStudents = allStudents.filter(s => s.collegeId === currentSession.id);
+
+      const total = collegeStudents.length;
+      const approved = collegeStudents.filter(s => s.approvalStatus === 'Approved').length;
+      const pending = collegeStudents.filter(s => s.approvalStatus === 'Pending').length;
+      const rejected = collegeStudents.filter(s => s.approvalStatus === 'Rejected').length;
+      const quota = currentSession.contingentSize || 42;
+      const pct = Math.min(100, Math.round((total / quota) * 100));
+
+      // Home 4 stats
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statApproved').textContent = approved;
+      document.getElementById('statPending').textContent = pending;
+      document.getElementById('statRejected').textContent = rejected;
+
+      // Quota bar on home
+      document.getElementById('welcomeQuotaText').textContent = `${total} / ${quota} Students`;
+      document.getElementById('welcomeQuotaBar').style.width = `${pct}%`;
+
+      // Bottom Nav pending badge
+      const navBadge = document.getElementById('navPendingBadge');
+      if (pending > 0) {
+        navBadge.style.display = 'block';
+        navBadge.textContent = pending > 99 ? '99+' : pending;
+      } else {
+        navBadge.style.display = 'none';
+      }
+
+      // Filter chip counts in Students tab
+      document.getElementById('countFilterAll').textContent = total;
+      document.getElementById('countFilterPending').textContent = pending;
+      document.getElementById('countFilterApproved').textContent = approved;
+      document.getElementById('countFilterRejected').textContent = rejected;
+    }
+
+    /**
+     * Render events enrolled by this college on Home tab
+     */
+    function renderHomeEnrolledEvents() {
+      if (!currentSession) return;
+      const container = document.getElementById('homeEventsList');
+      const countLabel = document.getElementById('homeEventsCount');
+      if (!container) return;
+
+      const allEvents = getStoredEvents();
+      const allStudents = getStoredStudents();
+      const collegeStudents = allStudents.filter(s => s.collegeId === currentSession.id);
+
+      // Group students by event
+      const eventMap = {};
+      collegeStudents.forEach(stu => {
+        if (!eventMap[stu.assignedEventId]) {
+          eventMap[stu.assignedEventId] = {
+            eventId: stu.assignedEventId,
+            eventName: stu.assignedEventName,
+            students: []
+          };
+        }
+        eventMap[stu.assignedEventId].students.push(stu);
+      });
+
+      const enrolledEventIds = Object.keys(eventMap);
+      countLabel.textContent = `${enrolledEventIds.length} Events`;
+
+      if (enrolledEventIds.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card" style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.82rem;">
+            <i class="fa-regular fa-calendar-xmark" style="font-size: 1.4rem; margin-bottom: 6px; display: block; color: var(--text-faint);"></i>
+            No events enrolled yet. Click "Add Contingent Member" above!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = enrolledEventIds.map(eventId => {
+        const item = eventMap[eventId];
+        const eventMeta = allEvents.find(e => e.id === eventId) || {};
+        const count = item.students.length;
+        const approvedCount = item.students.filter(s => s.approvalStatus === 'Approved').length;
+        const pendingCount = item.students.filter(s => s.approvalStatus === 'Pending').length;
+
+        const zoneIcon = getZoneIcon(eventMeta.zone);
+
+        return `
+          <div class="glass-card event-summary-card" onclick="filterByEventAndSwitch('${eventId}')">
+            <div class="event-summary-left">
+              <div class="event-zone-icon">${zoneIcon}</div>
+              <div class="event-summary-info">
+                <div class="event-summary-title">${escapeHtml(item.eventName || eventMeta.title || eventId)}</div>
+                <div class="event-summary-meta">
+                  <span><i class="fa-regular fa-clock" style="font-size: 0.7rem;"></i> ${eventMeta.day || 'Day 1'} &bull; ${eventMeta.time || 'TBD'}</span>
+                  &bull;
+                  <span style="color: var(--accent-cyan);">${escapeHtml(eventMeta.zone || 'Fest')}</span>
+                </div>
+              </div>
+            </div>
+            <div class="event-count-pill">
+              ${count} ${count === 1 ? 'Student' : 'Students'}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /**
+     * Render recent student registrations on Home tab
+     */
+    function renderHomeRecentActivity() {
+      if (!currentSession) return;
+      const container = document.getElementById('homeRecentActivity');
+      if (!container) return;
+
+      const collegeStudents = getStoredStudents()
+        .filter(s => s.collegeId === currentSession.id)
+        .reverse()
+        .slice(0, 3); // Last 3 students
+
+      if (collegeStudents.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card" style="padding: 14px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+            No student activity yet.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = collegeStudents.map(s => {
+        const initials = getInitials(s.name);
+        const statusClass = s.approvalStatus ? s.approvalStatus.toLowerCase() : 'pending';
+
+        return `
+          <div class="glass-card recent-activity-item" onclick="switchTab('students')">
+            <div class="activity-left">
+              <div class="activity-avatar" style="background: ${getStatusColor(s.approvalStatus)}25; border: 1px solid ${getStatusColor(s.approvalStatus)}; color: ${getStatusColor(s.approvalStatus)};">
+                ${initials}
+              </div>
+              <div class="activity-details">
+                <div class="activity-name">${escapeHtml(s.name)}</div>
+                <div class="activity-sub">${escapeHtml(s.assignedEventName)} &bull; ${s.enrolledAt || 'Just now'}</div>
+              </div>
+            </div>
+            <span class="status-badge ${statusClass}">${s.approvalStatus}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* ==========================================================================
+       TAB 2: STUDENTS TAB LOGIC
+       ========================================================================== */
+    function setStudentStatusFilter(status) {
+      currentStatusFilter = status;
+      document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(`filterChip-${status}`);
+      if (activeEl) activeEl.classList.add('active');
+      renderStudentsList();
+    }
+
+    function handleStudentSearch(event) {
+      currentSearchQuery = event.target.value.trim().toLowerCase();
+      const clearBtn = document.getElementById('searchClearBtn');
+      if (clearBtn) {
+        clearBtn.style.display = currentSearchQuery.length > 0 ? 'block' : 'none';
+      }
+      renderStudentsList();
+    }
+
+    function clearStudentSearch() {
+      const searchInput = document.getElementById('studentSearchInput');
+      if (searchInput) searchInput.value = '';
+      currentSearchQuery = '';
+      document.getElementById('searchClearBtn').style.display = 'none';
+      renderStudentsList();
+    }
+
+    function resetStudentFilters() {
+      clearStudentSearch();
+      setStudentStatusFilter('all');
+      document.getElementById('studentsEventFilter').value = 'all';
+      renderStudentsList();
+    }
+
+    function filterAndSwitchStudents(status) {
+      setStudentStatusFilter(status);
+      switchTab('students');
+    }
+
+    function filterByEventAndSwitch(eventId) {
+      const filterSelect = document.getElementById('studentsEventFilter');
+      if (filterSelect) filterSelect.value = eventId;
+      setStudentStatusFilter('all');
+      switchTab('students');
+    }
+
+    /**
+     * Render student cards in Students Tab based on search, status filter, and event filter
+     */
+    function renderStudentsList() {
+      if (!currentSession) return;
+      const listWrap = document.getElementById('studentsListWrap');
+      const emptyState = document.getElementById('studentsEmptyState');
+      if (!listWrap) return;
+
+      const eventFilterVal = document.getElementById('studentsEventFilter').value;
+      const allStudents = getStoredStudents();
+      
+      // Filter by current college
+      let students = allStudents.filter(s => s.collegeId === currentSession.id);
+
+      // Filter by Status
+      if (currentStatusFilter !== 'all') {
+        students = students.filter(s => s.approvalStatus === currentStatusFilter);
+      }
+
+      // Filter by Event
+      if (eventFilterVal && eventFilterVal !== 'all') {
+        students = students.filter(s => s.assignedEventId === eventFilterVal);
+      }
+
+      // Filter by Search Query
+      if (currentSearchQuery) {
+        students = students.filter(s => 
+          (s.name && s.name.toLowerCase().includes(currentSearchQuery)) ||
+          (s.rollNo && s.rollNo.toLowerCase().includes(currentSearchQuery)) ||
+          (s.dept && s.dept.toLowerCase().includes(currentSearchQuery)) ||
+          (s.assignedEventName && s.assignedEventName.toLowerCase().includes(currentSearchQuery)) ||
+          (s.studentId && s.studentId.toLowerCase().includes(currentSearchQuery))
+        );
+      }
+
+      if (students.length === 0) {
+        listWrap.innerHTML = '';
+        emptyState.style.display = 'flex';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+
+      listWrap.innerHTML = students.map(student => {
+        const initials = getInitials(student.name);
+        const status = student.approvalStatus || 'Pending';
+        const statusLower = status.toLowerCase();
+        const canDelete = status === 'Pending' || status === 'Rejected';
+
+        // Admin remark box if remark exists
+        let remarkHtml = '';
+        if (student.adminRemark && student.adminRemark.trim() !== '') {
+          const isAppr = status === 'Approved';
+          remarkHtml = `
+            <div class="admin-remark-box ${isAppr ? 'approved-remark' : ''}">
+              <i class="fa-solid fa-circle-info" style="margin-top: 1px;"></i>
+              <span>Remark: "${escapeHtml(student.adminRemark)}"</span>
+            </div>
+          `;
+        }
+
+        // Action button: Delete if Pending/Rejected, or Approved Check label
+        let actionBtnHtml = '';
+        if (canDelete) {
+          actionBtnHtml = `
+            <button type="button" class="btn-delete-student" onclick="confirmDeleteStudent('${student.studentId}', '${escapeHtml(student.name)}', '${escapeHtml(student.assignedEventName)}')">
+              <i class="fa-regular fa-trash-can"></i> Remove
+            </button>
+          `;
+        } else {
+          actionBtnHtml = `
+            <span class="approved-locked-pill">
+              <i class="fa-solid fa-check-double"></i> Approved ✓
+            </span>
+          `;
+        }
+
+        return `
+          <div class="glass-card student-card" id="studentCard-${student.studentId}">
+            <div class="student-card-header">
+              <div class="student-meta-left">
+                <div class="student-avatar ${statusLower}">
+                  ${initials}
+                </div>
+                <div class="student-main-info">
+                  <div class="student-name-row">
+                    <span class="student-name">${escapeHtml(student.name)}</span>
+                  </div>
+                  <div class="student-roll">ROLL: ${escapeHtml(student.rollNo)}</div>
+                </div>
+              </div>
+              <span class="status-badge ${statusLower}">
+                <i class="${getStatusIcon(status)}"></i> ${status}
+              </span>
+            </div>
+
+            <!-- Meta Pills Row -->
+            <div class="student-pills-row">
+              <span class="meta-pill"><i class="fa-solid fa-graduation-cap"></i> ${escapeHtml(student.dept)} &bull; ${escapeHtml(student.year || '3rd Year')}</span>
+              <span class="meta-pill event"><i class="fa-solid fa-trophy"></i> ${escapeHtml(student.assignedEventName)}</span>
+              <span class="meta-pill role"><i class="fa-solid fa-user-tag"></i> ${escapeHtml(student.role || 'Participant')}</span>
+            </div>
+
+            <!-- Admin Remark (if any) -->
+            ${remarkHtml}
+
+            <!-- Card Footer: Time & Action -->
+            <div class="student-card-footer">
+              <div class="student-enrolled-time">
+                <i class="fa-regular fa-clock"></i> ${student.enrolledAt || 'Enrolled'}
+              </div>
+              <div>
+                ${actionBtnHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* ==========================================================================
+       REMOVE / DELETE STUDENT (Pending & Rejected only)
+       ========================================================================== */
+    function confirmDeleteStudent(studentId, studentName, eventName) {
+      studentIdToDelete = studentId;
+      const modal = document.getElementById('deleteModalBackdrop');
+      const desc = document.getElementById('deleteModalDesc');
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+
+      desc.innerHTML = `Are you sure you want to remove <strong>${studentName}</strong> from <em>${eventName}</em>? This student will be removed from your college contingent.`;
+      
+      confirmBtn.onclick = () => executeDeleteStudent(studentId);
+      modal.classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      studentIdToDelete = null;
+      document.getElementById('deleteModalBackdrop').classList.remove('active');
+    }
+
+    function executeDeleteStudent(studentId) {
+      if (!studentId) return;
+
+      let allStudents = getStoredStudents();
+      const target = allStudents.find(s => s.studentId === studentId);
+
+      if (!target) {
+        showToast('Student record not found', 'error');
+        closeDeleteModal();
+        return;
+      }
+
+      // Security check: cannot delete Approved students
+      if (target.approvalStatus === 'Approved') {
+        showToast('Approved students cannot be removed by GS per fest policy', 'error');
+        closeDeleteModal();
+        return;
+      }
+
+      // Remove from array
+      allStudents = allStudents.filter(s => s.studentId !== studentId);
+      saveStoredStudents(allStudents);
+
+      closeDeleteModal();
+      showToast(`${target.name} removed from contingent`, 'info');
+
+      // Refresh UI
+      updateDashboardStats();
+      renderHomeEnrolledEvents();
+      renderHomeRecentActivity();
+      renderStudentsList();
+    }
+
+    /* ==========================================================================
+       TAB 3: ADD STUDENT TAB LOGIC
+       ========================================================================== */
+    function selectStudyYear(year, element) {
+      document.getElementById('addStudentYear').value = year;
+      document.querySelectorAll('.year-pill-btn').forEach(btn => btn.classList.remove('active'));
+      if (element) element.classList.add('active');
+    }
+
+    function selectContingentRole(role, element) {
+      document.getElementById('addStudentRole').value = role;
+      document.querySelectorAll('.role-pill-btn').forEach(btn => btn.classList.remove('active'));
+      if (element) element.classList.add('active');
+    }
+
+    /**
+     * Populate Event Dropdown grouped by Zone in Add Form & Students Filter
+     */
+    function populateEventDropdowns() {
+      const events = getStoredEvents();
+      const addSelect = document.getElementById('addStudentEvent');
+      const filterSelect = document.getElementById('studentsEventFilter');
+
+      // Group events by zone
+      const zones = {};
+      events.forEach(ev => {
+        const zone = ev.zone || 'Other Events';
+        if (!zones[zone]) zones[zone] = [];
+        zones[zone].push(ev);
+      });
+
+      // Populate Add Form Select with optgroups
+      let addHtml = `<option value="" disabled selected>Select an Event to compete in...</option>`;
+      let filterHtml = `<option value="all">All Events (Filter by Event)</option>`;
+
+      Object.keys(zones).forEach(zoneName => {
+        addHtml += `<optgroup label="── ${zoneName} ──">`;
+        zones[zoneName].forEach(ev => {
+          addHtml += `<option value="${ev.id}">${ev.title} (${ev.day}, ${ev.time} &bull; Max ${ev.maxMembers})</option>`;
+          filterHtml += `<option value="${ev.id}">${ev.title} [${ev.zone}]</option>`;
+        });
+        addHtml += `</optgroup>`;
+      });
+
+      if (addSelect) addSelect.innerHTML = addHtml;
+      if (filterSelect) filterSelect.innerHTML = filterHtml;
+    }
+
+    /**
+     * Handle Add Student Form Submission
+     */
+    function handleAddStudentSubmit(event) {
+      event.preventDefault();
+      if (!currentSession) {
+        showToast('Session expired. Please log in again.', 'error');
+        return;
+      }
+
+      const name = document.getElementById('addStudentName').value.trim();
+      const rollNo = document.getElementById('addStudentRoll').value.trim();
+      const dept = document.getElementById('addStudentDept').value.trim();
+      const year = document.getElementById('addStudentYear').value.trim();
+      const phone = document.getElementById('addStudentPhone').value.trim();
+      const email = document.getElementById('addStudentEmail').value.trim();
+      const eventId = document.getElementById('addStudentEvent').value;
+      const role = document.getElementById('addStudentRole').value;
+
+      // Validate required fields
+      if (!name || !rollNo || !dept || !year || !phone || !eventId) {
+        showToast('Please fill in all required fields.', 'error');
+        return;
+      }
+
+      const allEvents = getStoredEvents();
+      const selectedEvent = allEvents.find(e => e.id === eventId);
+      if (!selectedEvent) {
+        showToast('Selected event is invalid.', 'error');
+        return;
+      }
+
+      const allStudents = getStoredStudents();
+
+      // DUPLICATE CHECK: Duplicate roll number per event check
+      const isDuplicateInEvent = allStudents.some(s => 
+        s.collegeId === currentSession.id &&
+        s.rollNo.toLowerCase() === rollNo.toLowerCase() &&
+        s.assignedEventId === eventId
+      );
+
+      if (isDuplicateInEvent) {
+        showToast(`Roll No. ${rollNo} is already registered in ${selectedEvent.title}!`, 'error');
+        return;
+      }
+
+      // Check contingent quota
+      const collegeStudents = allStudents.filter(s => s.collegeId === currentSession.id);
+      const quota = currentSession.contingentSize || 42;
+      if (collegeStudents.length >= quota) {
+        showToast(`Contingent limit reached (${quota} students maximum). Contact Central Directorate for quota expansion.`, 'warning');
+        return;
+      }
+
+      // Format enrolled timestamp
+      const now = new Date();
+      const yearStr = now.getFullYear();
+      const monthStr = String(now.getMonth() + 1).padStart(2, '0');
+      const dayStr = String(now.getDate()).padStart(2, '0');
+      const hoursStr = String(now.getHours()).padStart(2, '0');
+      const minsStr = String(now.getMinutes()).padStart(2, '0');
+      const enrolledAtFormatted = `${yearStr}-${monthStr}-${dayStr} ${hoursStr}:${minsStr}`;
+
+      // Unique student ID: STU-[SHORTCODE]-[RANDOM 3 DIGITS]
+      const cleanCode = (currentSession.shortCode || 'GS').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+      const randomSuffix = Math.floor(100 + Math.random() * 900);
+      const studentId = `STU-${cleanCode}-${randomSuffix}`;
+
+      // Create Student Object matching exact required schema
+      const newStudent = {
+        studentId: studentId,
+        collegeId: currentSession.id,
+        collegeName: currentSession.name,
+        name: name,
+        rollNo: rollNo,
+        dept: dept,
+        year: year,
+        phone: phone,
+        email: email || `${rollNo.toLowerCase()}@${currentSession.id}.edu`,
+        assignedEventId: selectedEvent.id,
+        assignedEventName: selectedEvent.title,
+        role: role,
+        approvalStatus: "Pending", // Auto-set to 'Pending'
+        adminRemark: "",
+        enrolledAt: enrolledAtFormatted
+      };
+
+      // Save to localStorage
+      allStudents.push(newStudent);
+      saveStoredStudents(allStudents);
+
+      // Reset form
+      document.getElementById('addStudentForm').reset();
+      selectStudyYear('3rd Year', document.querySelectorAll('.year-pill-btn')[2]);
+      selectContingentRole('Participant', document.querySelectorAll('.role-pill-btn')[0]);
+
+      // Success notification
+      showToast(`${name} added to contingent! Status: Pending Approval.`, 'success');
+
+      // Refresh Stats and switch to Students view
+      updateDashboardStats();
+      renderHomeEnrolledEvents();
+      renderHomeRecentActivity();
+      renderStudentsList();
+
+      setTimeout(() => {
+        switchTab('students');
+      }, 700);
+    }
+
+    /* ==========================================================================
+       EXPORT CSV UTILITY
+       ========================================================================== */
+    function exportContingentCsv() {
+      if (!currentSession) return;
+      const students = getStoredStudents().filter(s => s.collegeId === currentSession.id);
+      if (students.length === 0) {
+        showToast('No students registered to export', 'warning');
+        return;
+      }
+
+      let csv = 'Student ID,Roll No,Full Name,Department,Year,Assigned Event,Role,Approval Status,Phone,Email,Enrolled At\n';
+      students.forEach(s => {
+        csv += `"${s.studentId}","${s.rollNo}","${s.name}","${s.dept}","${s.year}","${s.assignedEventName}","${s.role}","${s.approvalStatus}","${s.phone}","${s.email}","${s.enrolledAt}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Melange26_${currentSession.shortCode}_Contingent.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast('Contingent CSV exported successfully', 'success');
+    }
+
+    /* ==========================================================================
+       NOTIFICATIONS MODAL
+       ========================================================================== */
+    function openNotificationsModal() {
+      document.getElementById('notifModalBackdrop').classList.add('active');
+    }
+
+    function closeNotificationsModal(event) {
+      if (event && event.target !== document.getElementById('notifModalBackdrop')) return;
+      document.getElementById('notifModalBackdrop').classList.remove('active');
+    }
+
+    /* ==========================================================================
+       TOAST NOTIFICATION ENGINE
+       ========================================================================== */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = `toast-message ${type}`;
+
+      let iconClass = 'fa-solid fa-circle-info';
+      if (type === 'success') iconClass = 'fa-solid fa-circle-check';
+      if (type === 'error') iconClass = 'fa-solid fa-circle-exclamation';
+      if (type === 'warning') iconClass = 'fa-solid fa-triangle-exclamation';
+
+      toast.innerHTML = `
+        <div class="toast-left">
+          <i class="${iconClass}"></i>
+          <span>${escapeHtml(message)}</span>
+        </div>
+        <i class="fa-solid fa-xmark toast-close-btn" onclick="this.parentElement.remove()"></i>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(-10px)';
+          toast.style.transition = 'all 0.3s ease';
+          setTimeout(() => toast.remove(), 300);
+        }
+      }, 3500);
+    }
+
+    /* ==========================================================================
+       HELPERS & UTILITIES
+       ========================================================================== */
+    function getInitials(name) {
+      if (!name) return 'ST';
+      const parts = name.trim().split(/\s+/);
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function getStatusColor(status) {
+      if (status === 'Approved') return '#10b981';
+      if (status === 'Rejected') return '#ef4444';
+      return '#f59e0b'; // Pending
+    }
+
+    function getStatusIcon(status) {
+      if (status === 'Approved') return 'fa-solid fa-check-double';
+      if (status === 'Rejected') return 'fa-solid fa-circle-xmark';
+      return 'fa-solid fa-hourglass-half'; // Pending
+    }
+
+    function getZoneIcon(zone) {
+      if (!zone) return '✨';
+      if (zone.includes('Creative')) return '🎨';
+      if (zone.includes('Thinking')) return '💡';
+      if (zone.includes('Entertainment')) return '🎭';
+      if (zone.includes('Discover')) return '🧭';
+      return '🏆';
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
