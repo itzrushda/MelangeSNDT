@@ -28,6 +28,7 @@ class Database {
     this.filePath = filePath;
     this.data = {
       users: [],
+      loginHistory: [],
       colleges: [],
       events: [],
       participants: [],
@@ -140,8 +141,80 @@ const db = new Database(DB_FILE);
 // -------------------------------------------------------------
 // Security & JWT Helpers
 // -------------------------------------------------------------
-function hashPassword(password, salt = 'melange_salt_2026') {
-  return crypto.createHash('sha256').update(password + salt).digest('hex');
+function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
+  return {
+    passwordHash: crypto.scryptSync(password, salt, 64).toString('hex'),
+    passwordSalt: salt
+  };
+}
+
+function updateUserPassword(user, password) {
+  const credentials = hashPassword(password);
+  const updatedUser = db.getCollection('users').updateOne(
+    { _id: user._id },
+    credentials
+  );
+  if (updatedUser && Object.prototype.hasOwnProperty.call(updatedUser, 'password')) {
+    delete updatedUser.password;
+    db.save();
+  }
+  return updatedUser;
+}
+
+function verifyPassword(password, user) {
+  if (user.passwordHash && user.passwordSalt) {
+    const storedHash = Buffer.from(user.passwordHash, 'hex');
+    const suppliedHash = crypto.scryptSync(password, user.passwordSalt, 64);
+    if (storedHash.length === suppliedHash.length && crypto.timingSafeEqual(storedHash, suppliedHash)) {
+      return true;
+    }
+  }
+
+  const legacyHashes = [
+    crypto.createHash('sha256').update(password).digest('hex'),
+    crypto.createHash('sha256').update(password + 'melange_salt_2026').digest('hex')
+  ];
+  const isLegacyMatch = legacyHashes.includes(user.passwordHash) || user.password === password;
+  if (isLegacyMatch) updateUserPassword(user, password);
+  return isLegacyMatch;
+}
+
+function migrateLegacyPasswords() {
+  let changed = false;
+  for (const user of db.getCollection('users').find()) {
+    if (typeof user.password !== 'string') continue;
+    const credentials = hashPassword(user.password);
+    user.passwordHash = credentials.passwordHash;
+    user.passwordSalt = credentials.passwordSalt;
+    delete user.password;
+    changed = true;
+  }
+  if (changed) db.save();
+}
+
+migrateLegacyPasswords();
+
+function recordLoginAttempt(username, role, success, reason, userId) {
+  const attempt = {
+    username: String(username || '').trim().slice(0, 120),
+    role: typeof role === 'string' ? role : '',
+    success
+  };
+  if (reason) attempt.reason = reason;
+  if (userId) attempt.userId = userId;
+  db.getCollection('loginHistory').create(attempt);
+}
+
+function findCollegeByIdentifier(identifier) {
+  const cleanIdentifier = String(identifier || '').trim();
+  if (!cleanIdentifier) return null;
+
+  return db.getCollection('colleges').findById(cleanIdentifier)
+    || db.getCollection('colleges').find().find(college =>
+      [college._id, college.id, college.code].some(value =>
+        String(value || '').toLowerCase() === cleanIdentifier.toLowerCase()
+      )
+    );
 }
 
 function generateJWT(payload, expiresInSeconds = 86400) {
@@ -332,55 +405,97 @@ const server = http.createServer(async (req, res) => {
   // MODULE 1: AUTHENTICATION & ROLE MANAGEMENT REST APIs
   // ===========================================================
 
+  // Public, limited college details used by the GS self-registration form.
+  if (pathname === '/api/auth/gs-registration-options' && method === 'GET') {
+    const colleges = db.getCollection('colleges').find()
+      .filter(college => !college.status || String(college.status).toLowerCase() === 'active')
+      .map(college => ({
+        id: college.id || college._id,
+        name: college.name,
+        code: college.code || college.id || college._id
+      }));
+    return sendJSON(res, 200, { success: true, colleges });
+  }
+
+  // GS accounts are created for an existing college and passwords are never persisted in plaintext.
+  if (pathname === '/api/auth/register-gs' && method === 'POST') {
+    const name = typeof body.name === 'string' ? body.name.trim() : '';
+    const collegeId = typeof body.collegeId === 'string' ? body.collegeId.trim() : '';
+    const username = typeof body.username === 'string' ? body.username.trim() : '';
+    const password = typeof body.password === 'string' ? body.password.trim() : '';
+
+    if (!name || !collegeId || !username || !password) {
+      return sendJSON(res, 400, { success: false, message: 'Name, college, username and password are required.' });
+    }
+    if (name.length > 100 || !/^[a-zA-Z0-9._-]{3,32}$/.test(username)) {
+      return sendJSON(res, 400, { success: false, message: 'Enter a name and a username with 3-32 letters, numbers, dots, underscores or hyphens.' });
+    }
+    if (password.length < 8 || password.length > 128) {
+      return sendJSON(res, 400, { success: false, message: 'Password must be between 8 and 128 characters.' });
+    }
+
+    const college = findCollegeByIdentifier(collegeId);
+    if (!college) {
+      return sendJSON(res, 400, { success: false, message: 'Choose a college from the registered college list.' });
+    }
+
+    const usernameExists = db.getCollection('users').find().some(user =>
+      String(user.username || '').toLowerCase() === username.toLowerCase()
+    );
+    if (usernameExists) {
+      return sendJSON(res, 409, { success: false, message: 'That username is already in use. Please choose another.' });
+    }
+
+    const newUser = db.getCollection('users').create({
+      _id: 'usr_gs_' + crypto.randomBytes(12).toString('hex'),
+      username,
+      ...hashPassword(password),
+      name,
+      role: 'college_gs',
+      title: 'General Secretary',
+      collegeId: college.id || college._id,
+      activeSessions: 0
+    });
+
+    return sendJSON(res, 201, {
+      success: true,
+      message: 'GS account created. Sign in with your new username and password.',
+      username: newUser.username
+    });
+  }
+
   // 1. Login (Admin & College GS)
   if (pathname === '/api/auth/login' && method === 'POST') {
     const { username, password, role, rememberMe } = body;
+    const cleanUsername = typeof username === 'string' ? username.trim() : '';
+    const cleanPassword = typeof password === 'string' ? password.trim() : '';
 
-    if (!username || !password) {
+    if (!cleanUsername || !cleanPassword) {
+      recordLoginAttempt(cleanUsername, role, false, 'missing_credentials');
       return sendJSON(res, 400, {
         success: false,
         message: 'Username/College ID and Password are required.'
       });
     }
 
-    const cleanUsername = username.trim();
-    const cleanPassword = password.trim();
-
-    // Check against Users Collection
-    const inputHash = hashPassword(cleanPassword);
     let matchedUser = db.getCollection('users').findOne({ username: cleanUsername });
 
-    // Fallback: check by email or case-insensitive code
+    // Match usernames case-insensitively, then try the registered email.
     if (!matchedUser) {
-      matchedUser = db.getCollection('users').findOne({ email: cleanUsername.toLowerCase() });
+      matchedUser = db.getCollection('users').find().find(user =>
+        String(user.username || '').toLowerCase() === cleanUsername.toLowerCase()
+      );
     }
-    if (!matchedUser && cleanUsername.toUpperCase() === 'ADMIN-MELANGE') {
-      matchedUser = db.getCollection('users').findOne({ username: 'admin' });
-    }
-
-    // Direct password match or standard hash check
-    const isMasterAdmin = (cleanUsername.toUpperCase() === 'ADMIN-MELANGE' || cleanUsername === 'admin') && 
-                          (cleanPassword === '9999' || cleanPassword === 'admin123');
-    const isMasterGS = (cleanUsername.toUpperCase() === 'AEC04-GS' || cleanUsername.toUpperCase() === 'AEC04') && 
-                       (cleanPassword === 'password123' || cleanPassword === 'AEC04');
-
-    if (!matchedUser && isMasterAdmin) {
-      matchedUser = db.getCollection('users').findById('usr_admin');
-    }
-    if (!matchedUser && isMasterGS) {
-      matchedUser = db.getCollection('users').findById('usr_gs_aec');
+    if (!matchedUser) {
+      matchedUser = db.getCollection('users').find().find(user =>
+        String(user.email || '').toLowerCase() === cleanUsername.toLowerCase()
+      );
     }
 
-    let isValid = false;
-    if (matchedUser) {
-      if (isMasterAdmin || isMasterGS) {
-        isValid = true;
-      } else if (matchedUser.passwordHash === inputHash || matchedUser.password === cleanPassword) {
-        isValid = true;
-      }
-    }
+    const isValid = !!matchedUser && verifyPassword(cleanPassword, matchedUser);
 
     if (!isValid || !matchedUser) {
+      recordLoginAttempt(cleanUsername, role, false, 'invalid_credentials');
       return sendJSON(res, 401, {
         success: false,
         message: 'Invalid credentials. Please verify your Username / College ID and Password.'
@@ -389,6 +504,7 @@ const server = http.createServer(async (req, res) => {
 
     // Role verification (Admin vs College GS)
     if (role && role !== matchedUser.role) {
+      recordLoginAttempt(cleanUsername, role, false, 'role_mismatch', matchedUser._id);
       return sendJSON(res, 403, {
         success: false,
         message: `Role mismatch. You selected '${role === 'admin' ? 'Admin Login' : 'College GS Login'}', but this account is registered as '${matchedUser.role}'.`
@@ -396,10 +512,11 @@ const server = http.createServer(async (req, res) => {
     }
 
     // Update login timestamp & session
-    db.getCollection('users').updateOne(
+    const updatedUser = db.getCollection('users').updateOne(
       { _id: matchedUser._id },
       { lastLogin: new Date().toISOString(), activeSessions: (matchedUser.activeSessions || 0) + 1 }
     );
+    recordLoginAttempt(cleanUsername, role || matchedUser.role, true, null, matchedUser._id);
 
     // Generate JWT Token (30 days if rememberMe, otherwise 24 hours)
     const tokenLife = rememberMe ? 30 * 86400 : 86400;
@@ -416,7 +533,7 @@ const server = http.createServer(async (req, res) => {
     // Get College Details if GS
     let college = null;
     if (matchedUser.collegeId) {
-      college = db.getCollection('colleges').findById(matchedUser.collegeId);
+      college = findCollegeByIdentifier(matchedUser.collegeId);
     }
 
     return sendJSON(res, 200, {
@@ -432,7 +549,7 @@ const server = http.createServer(async (req, res) => {
         title: matchedUser.title,
         collegeId: matchedUser.collegeId,
         avatar: matchedUser.avatar,
-        lastLogin: matchedUser.lastLogin
+        lastLogin: updatedUser.lastLogin
       },
       college,
       redirectTo: matchedUser.role === 'admin' ? '/admin/dashboard' : '/gs/dashboard'
@@ -447,7 +564,7 @@ const server = http.createServer(async (req, res) => {
 
     let college = null;
     if (currentUser.collegeId) {
-      college = db.getCollection('colleges').findById(currentUser.collegeId);
+      college = findCollegeByIdentifier(currentUser.collegeId);
     }
 
     return sendJSON(res, 200, {
@@ -511,13 +628,10 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 400, { success: false, message: 'Invalid or expired password reset token.' });
     }
 
+    updateUserPassword(user, newPassword.trim());
     db.getCollection('users').updateOne(
       { _id: user._id },
-      {
-        passwordHash: hashPassword(newPassword.trim()),
-        resetToken: null,
-        resetTokenExp: null
-      }
+      { resetToken: null, resetTokenExp: null }
     );
 
     return sendJSON(res, 200, {
@@ -537,15 +651,11 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 400, { success: false, message: 'Current and new password are required.' });
     }
 
-    const currentHash = hashPassword(currentPassword.trim());
-    if (currentUser.passwordHash !== currentHash && currentPassword !== 'password123' && currentPassword !== 'admin123') {
+    if (!verifyPassword(currentPassword.trim(), currentUser)) {
       return sendJSON(res, 400, { success: false, message: 'Current password does not match.' });
     }
 
-    db.getCollection('users').updateOne(
-      { _id: currentUser._id },
-      { passwordHash: hashPassword(newPassword.trim()) }
-    );
+    updateUserPassword(currentUser, newPassword.trim());
 
     return sendJSON(res, 200, {
       success: true,
@@ -646,13 +756,13 @@ const server = http.createServer(async (req, res) => {
       completedRegistrations: 0
     });
 
-    // Also auto-provision a GS User for this college
+    // Also provision a GS account for this college.
+    const gsCredentials = hashPassword('password123');
     db.getCollection('users').create({
       _id: 'usr_gs_' + code.toLowerCase(),
       username: `${code.toUpperCase()}-GS`,
       email: email.trim().toLowerCase(),
-      passwordHash: hashPassword('password123'),
-      passwordSalt: 'melange_salt_2026',
+      ...gsCredentials,
       name: gsName.trim(),
       role: 'college_gs',
       title: 'General Secretary',
@@ -743,7 +853,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     const collegeId = currentUser.collegeId;
-    const college = db.getCollection('colleges').findById(collegeId) || {
+    const college = findCollegeByIdentifier(collegeId) || {
       _id: collegeId,
       name: 'AEC Metro College',
       code: 'AEC04',
@@ -779,7 +889,7 @@ const server = http.createServer(async (req, res) => {
     if (!currentUser || currentUser.role !== 'college_gs') {
       return sendJSON(res, 403, { success: false, message: 'Access denied.' });
     }
-    const college = db.getCollection('colleges').findById(currentUser.collegeId);
+    const college = findCollegeByIdentifier(currentUser.collegeId);
     return sendJSON(res, 200, { success: true, college });
   }
 
@@ -787,8 +897,12 @@ const server = http.createServer(async (req, res) => {
     if (!currentUser || currentUser.role !== 'college_gs') {
       return sendJSON(res, 403, { success: false, message: 'Access denied.' });
     }
+    const college = findCollegeByIdentifier(currentUser.collegeId);
+    if (!college) {
+      return sendJSON(res, 404, { success: false, message: 'College not found.' });
+    }
     const updated = db.getCollection('colleges').updateOne(
-      { _id: currentUser.collegeId },
+      { _id: college._id },
       {
         gsName: body.gsName,
         email: body.email,
@@ -879,7 +993,7 @@ const server = http.createServer(async (req, res) => {
     });
 
     // Increment college participants count
-    const college = db.getCollection('colleges').findById(currentUser.collegeId);
+    const college = findCollegeByIdentifier(currentUser.collegeId);
     if (college) {
       db.getCollection('colleges').updateOne(
         { _id: college._id },
@@ -1223,7 +1337,7 @@ const server = http.createServer(async (req, res) => {
 
     const { studentName, collegeId, department, year, eventId, contact, email, gender, teamName, idCardUrl } = body;
     const effectiveCollegeId = currentUser.role === 'college_gs' ? currentUser.collegeId : (collegeId || 'AEC04');
-    const college = db.getCollection('colleges').findById(effectiveCollegeId) || { name: 'AEC Metro College' };
+    const college = findCollegeByIdentifier(effectiveCollegeId) || { name: 'AEC Metro College' };
     const event = db.getCollection('events').findById(eventId) || { name: 'Solo Dance Face-off' };
 
     const count = db.getCollection('registrations').countDocuments() + 42;

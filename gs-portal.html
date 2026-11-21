@@ -244,6 +244,19 @@
       transform: none;
     }
 
+    .login-form-toggle {
+      display: block;
+      margin: 14px auto 0;
+      padding: 6px 10px;
+      border: 0;
+      background: transparent;
+      color: #c4b5fd;
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
     /* Secondary / Ghost Buttons */
     .btn-ghost {
       background: rgba(255, 255, 255, 0.06);
@@ -535,62 +548,6 @@
       color: var(--text-muted);
       max-width: 320px;
       margin: 0 auto;
-    }
-
-    /* Quick Login Chips */
-    .quick-chips-box {
-      margin-bottom: 20px;
-    }
-
-    .quick-chips-label {
-      font-size: 0.74rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .quick-chips-scroll {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
-    }
-
-    .quick-chips-scroll::-webkit-scrollbar {
-      display: none;
-    }
-
-    .quick-chip {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-glass);
-      border-radius: var(--radius-full);
-      padding: 6px 12px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-sub);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: var(--transition-smooth);
-    }
-
-    .quick-chip:hover, .quick-chip.active {
-      background: rgba(99, 102, 241, 0.25);
-      border-color: var(--primary-indigo);
-      color: #ffffff;
-      transform: translateY(-1px);
-    }
-
-    .quick-chip .chip-avatar {
-      font-size: 0.95rem;
     }
 
     .login-card {
@@ -1981,16 +1938,6 @@
         <p class="login-desc">Contingent registration &amp; delegation management for participating colleges.</p>
       </div>
 
-      <!-- Quick Demo Access Chips -->
-      <div class="quick-chips-box">
-        <div class="quick-chips-label">
-          <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i> Quick Demo College Login
-        </div>
-        <div class="quick-chips-scroll" id="quickChipsScroll">
-          <!-- Populated by JS -->
-        </div>
-      </div>
-
       <!-- Login Form Card -->
       <div class="glass-card login-card">
         <div class="login-card-badge">
@@ -2000,23 +1947,23 @@
         <form id="loginForm" onsubmit="handleLoginSubmit(event)">
           <div class="form-group">
             <label class="form-label" for="loginGsCode">
-              <span>GS Authorization Code</span>
+              <span>GS Database Username</span>
               <span class="req">*</span>
             </label>
             <div class="input-wrapper">
               <i class="fa-solid fa-id-badge input-icon-left"></i>
-              <input type="text" id="loginGsCode" class="glass-input" placeholder="e.g. GS-COEP-2026" required autocomplete="username" />
+              <input type="text" id="loginGsCode" class="glass-input" placeholder="Username you created" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" />
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="loginPin">
-              <span>Security PIN</span>
+              <span>Password / PIN</span>
               <span class="req">*</span>
             </label>
             <div class="input-wrapper">
               <i class="fa-solid fa-key input-icon-left"></i>
-              <input type="password" id="loginPin" class="glass-input" placeholder="Enter 4-digit PIN" maxlength="6" required autocomplete="current-password" />
+              <input type="password" id="loginPin" class="glass-input" placeholder="Enter your database password" required autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" />
               <i class="fa-solid fa-eye input-icon-right" id="togglePinVisibility" onclick="togglePasswordVisibility('loginPin', this)"></i>
             </div>
           </div>
@@ -2025,6 +1972,42 @@
             <span>Login as GS</span>
             <i class="fa-solid fa-arrow-right"></i>
           </button>
+          <button type="button" class="login-form-toggle" onclick="showGsRegistrationForm()">First time? Create a GS account</button>
+        </form>
+
+        <form id="gsRegistrationForm" onsubmit="handleGsRegistrationSubmit(event)" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="registerGsName">Full name <span class="req">*</span></label>
+            <input type="text" id="registerGsName" class="glass-input no-icon" maxlength="100" required autocomplete="name" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="registerGsCollege">College <span class="req">*</span></label>
+            <select id="registerGsCollege" class="glass-select" required>
+              <option value="">Loading registered colleges...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="registerGsUsername">Choose username <span class="req">*</span></label>
+            <input type="text" id="registerGsUsername" class="glass-input no-icon" minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]{3,32}" title="Use 3-32 letters, numbers, dots, underscores or hyphens." required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="registerGsPassword">Choose password <span class="req">*</span></label>
+            <input type="password" id="registerGsPassword" class="glass-input no-icon" minlength="8" maxlength="128" required autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="registerGsPasswordConfirm">Confirm password <span class="req">*</span></label>
+            <input type="password" id="registerGsPasswordConfirm" class="glass-input no-icon" minlength="8" maxlength="128" required autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" />
+          </div>
+
+          <button type="submit" id="registerGsSubmitBtn" class="btn-gradient-primary" style="margin-top: 10px;">
+            <span>Create GS account</span>
+            <i class="fa-solid fa-user-plus"></i>
+          </button>
+          <button type="button" class="login-form-toggle" onclick="showGsLoginForm()">Back to login</button>
         </form>
       </div>
 
@@ -2595,13 +2578,14 @@
     const STORAGE_KEY_IS_ADMIN = 'melange_v5_is_admin';
 
     // Official College Credentials (Login database)
+    const AUTH_TOKEN_KEY = 'melange_gs_jwt_token';
     const SEED_COLLEGES = [
-      {"id":"coep","name":"COEP Technological University","shortCode":"COEP","city":"Pune","gsName":"Priya Deshmukh","gsDesignation":"Gymkhana General Secretary","gsCode":"GS-COEP-2026","pin":"2345","email":"gs.gymkhana@coeptech.ac.in","phone":"+91 98231 10022","badgeColor":"#3b82f6","contingentSize":42,"avatar":"🏛️"},
-      {"id":"mit","name":"MIT World Peace University","shortCode":"MIT-WPU","city":"Pune","gsName":"Aryan Sharma","gsDesignation":"President & General Secretary","gsCode":"GS-MIT-2026","pin":"1234","email":"gs.council@mitwpu.edu.in","phone":"+91 98232 20033","badgeColor":"#8b5cf6","contingentSize":38,"avatar":"🕊️"},
-      {"id":"xav","name":"St. Xavier's College","shortCode":"XAV-MUM","city":"Mumbai","gsName":"Rohan Mehta","gsDesignation":"Cultural Affairs Secretary","gsCode":"GS-XAV-2026","pin":"3456","email":"cultural.gs@xaviers.edu","phone":"+91 98233 30044","badgeColor":"#ec4899","contingentSize":35,"avatar":"🎭"},
-      {"id":"bits","name":"BITS Pilani (Goa Campus)","shortCode":"BITS-GOA","city":"Goa","gsName":"Ananya Iyer","gsDesignation":"Council General Secretary","gsCode":"GS-BITS-2026","pin":"4567","email":"gsec.council@goa.bits-pilani.ac.in","phone":"+91 98234 40055","badgeColor":"#f59e0b","contingentSize":40,"avatar":"⚡"},
-      {"id":"iitb","name":"IIT Bombay","shortCode":"IIT-BOMBAY","city":"Mumbai","gsName":"Kabir Verma","gsDesignation":"General Secretary Technical Affairs","gsCode":"GS-IITB-2026","pin":"5678","email":"gseca@iitb.ac.in","phone":"+91 98235 50066","badgeColor":"#10b981","contingentSize":30,"avatar":"🔬"},
-      {"id":"srcc","name":"Shri Ram College of Commerce","shortCode":"SRCC-DU","city":"Delhi","gsName":"Tanvi Kapoor","gsDesignation":"Students Union General Secretary","gsCode":"GS-SRCC-2026","pin":"6789","email":"su.gsec@srcc.du.ac.in","phone":"+91 98236 60077","badgeColor":"#06b6d4","contingentSize":28,"avatar":"📊"}
+      {"id":"coep","name":"COEP Technological University","shortCode":"COEP","city":"Pune","gsName":"Priya Deshmukh","gsDesignation":"Gymkhana General Secretary","email":"gs.gymkhana@coeptech.ac.in","phone":"+91 98231 10022","badgeColor":"#3b82f6","contingentSize":42,"avatar":"🏛️"},
+      {"id":"mit","name":"MIT World Peace University","shortCode":"MIT-WPU","city":"Pune","gsName":"Aryan Sharma","gsDesignation":"President & General Secretary","email":"gs.council@mitwpu.edu.in","phone":"+91 98232 20033","badgeColor":"#8b5cf6","contingentSize":38,"avatar":"🕊️"},
+      {"id":"xav","name":"St. Xavier's College","shortCode":"XAV-MUM","city":"Mumbai","gsName":"Rohan Mehta","gsDesignation":"Cultural Affairs Secretary","email":"cultural.gs@xaviers.edu","phone":"+91 98233 30044","badgeColor":"#ec4899","contingentSize":35,"avatar":"🎭"},
+      {"id":"bits","name":"BITS Pilani (Goa Campus)","shortCode":"BITS-GOA","city":"Goa","gsName":"Ananya Iyer","gsDesignation":"Council General Secretary","email":"gsec.council@goa.bits-pilani.ac.in","phone":"+91 98234 40055","badgeColor":"#f59e0b","contingentSize":40,"avatar":"⚡"},
+      {"id":"iitb","name":"IIT Bombay","shortCode":"IIT-BOMBAY","city":"Mumbai","gsName":"Kabir Verma","gsDesignation":"General Secretary Technical Affairs","email":"gseca@iitb.ac.in","phone":"+91 98235 50066","badgeColor":"#10b981","contingentSize":30,"avatar":"🔬"},
+      {"id":"srcc","name":"Shri Ram College of Commerce","shortCode":"SRCC-DU","city":"Delhi","gsName":"Tanvi Kapoor","gsDesignation":"Students Union General Secretary","email":"su.gsec@srcc.du.ac.in","phone":"+91 98236 60077","badgeColor":"#06b6d4","contingentSize":28,"avatar":"📊"}
     ];
 
     // Fest Events List
@@ -2849,7 +2833,6 @@
        ========================================================================== */
     document.addEventListener('DOMContentLoaded', () => {
       initLocalStorage();
-      renderQuickLoginChips();
       populateEventDropdowns();
       checkActiveSession();
     });
@@ -2866,6 +2849,20 @@
       }
       if (!localStorage.getItem(STORAGE_KEY_STUDENTS)) {
         localStorage.setItem(STORAGE_KEY_STUDENTS, JSON.stringify(SEED_STUDENTS));
+      }
+      const savedCollegesJson = localStorage.getItem(STORAGE_KEY_COLLEGES);
+      if (savedCollegesJson) {
+        try {
+          const savedColleges = JSON.parse(savedCollegesJson);
+          if (Array.isArray(savedColleges)) {
+            localStorage.setItem(STORAGE_KEY_COLLEGES, JSON.stringify(savedColleges.map(college => {
+              const { gsCode, pin, ...profile } = college;
+              return profile;
+            })));
+          }
+        } catch (error) {
+          console.error('Could not sanitize saved college profiles:', error);
+        }
       }
     }
 
@@ -2935,66 +2932,157 @@
     /* ==========================================================================
        AUTHENTICATION & LOGIN HANDLING
        ========================================================================== */
-    /**
-     * Check if a GS session is already active in localStorage
-     */
-    function checkActiveSession() {
-      try {
-        const sessionStr = localStorage.getItem(STORAGE_KEY_SESSION);
-        if (sessionStr) {
-          const sessionObj = JSON.parse(sessionStr);
-          if (sessionObj && sessionObj.id) {
-            currentSession = sessionObj;
-            localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
-            showPortalView();
-            return;
-          }
-        }
-      } catch (e) {
-        console.error("Session parse error", e);
+    async function authRequest(path, method = 'GET', payload, token = sessionStorage.getItem(AUTH_TOKEN_KEY)) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers.Authorization = `Bearer ${token}`;
+      const response = await fetch(path, {
+        method,
+        headers,
+        ...(payload ? { body: JSON.stringify(payload) } : {})
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Authentication request failed.');
       }
-      showLoginView();
+      return data;
     }
 
-    /**
-     * Render Quick Login Chips for easy testing & access
-     */
-    function renderQuickLoginChips() {
-      const container = document.getElementById('quickChipsScroll');
-      if (!container) return;
-
-      const colleges = getStoredColleges().slice(0, 4); // COEP, MIT, XAV, BITS
-      container.innerHTML = colleges.map(c => `
-        <div class="quick-chip" onclick="applyQuickLogin('${c.shortCode}')" id="chip-${c.shortCode}">
-          <span class="chip-avatar">${c.avatar}</span>
-          <span>${c.shortCode}</span>
-        </div>
-      `).join('');
+    function authErrorMessage(error) {
+      return error instanceof TypeError
+        ? 'Cannot reach the database server. Start the Node server and try again.'
+        : error.message || 'Authentication request failed.';
     }
 
-    /**
-     * Apply quick login credentials when chip is clicked
-     */
-    function applyQuickLogin(shortCode) {
+    async function showGsRegistrationForm() {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('gsRegistrationForm').style.display = 'block';
+      const collegeSelect = document.getElementById('registerGsCollege');
+      if (collegeSelect.dataset.loaded === 'true') return;
+
+      try {
+        const data = await authRequest('/api/auth/gs-registration-options', 'GET', null, null);
+        collegeSelect.replaceChildren();
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = data.colleges.length ? 'Select your college' : 'No colleges are available';
+        collegeSelect.appendChild(placeholder);
+
+        for (const college of data.colleges) {
+          const option = document.createElement('option');
+          option.value = college.id;
+          option.textContent = `${college.name} (${college.code})`;
+          collegeSelect.appendChild(option);
+        }
+        collegeSelect.disabled = data.colleges.length === 0;
+        collegeSelect.dataset.loaded = 'true';
+      } catch (error) {
+        showToast(authErrorMessage(error), 'error');
+      }
+    }
+
+    function showGsLoginForm() {
+      document.getElementById('gsRegistrationForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+      for (const id of ['loginGsCode', 'loginPin']) {
+        const input = document.getElementById(id);
+        input.value = '';
+        input.setAttribute('readonly', 'readonly');
+      }
+      document.getElementById('registerGsPassword').value = '';
+      document.getElementById('registerGsPasswordConfirm').value = '';
+    }
+
+    async function handleGsRegistrationSubmit(event) {
+      event.preventDefault();
+      const name = document.getElementById('registerGsName').value.trim();
+      const collegeId = document.getElementById('registerGsCollege').value;
+      const username = document.getElementById('registerGsUsername').value.trim();
+      const password = document.getElementById('registerGsPassword').value;
+      const confirmPassword = document.getElementById('registerGsPasswordConfirm').value;
+      const submitButton = document.getElementById('registerGsSubmitBtn');
+
+      if (password !== confirmPassword) {
+        showToast('Passwords do not match.', 'error');
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<span class="spinner-sm"></span> <span>Saving account...</span>';
+      try {
+        const data = await authRequest('/api/auth/register-gs', 'POST', {
+          name,
+          collegeId,
+          username,
+          password
+        }, null);
+        document.getElementById('gsRegistrationForm').reset();
+        showGsLoginForm();
+        showToast(data.message, 'success');
+      } catch (error) {
+        showToast(authErrorMessage(error), 'error');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<span>Create GS account</span> <i class="fa-solid fa-user-plus"></i>';
+      }
+    }
+
+    function createGsSession(user, databaseCollege) {
       const colleges = getStoredColleges();
-      const college = colleges.find(c => c.shortCode.toUpperCase() === shortCode.toUpperCase());
-      if (!college) return;
+      const email = String(user.email || '').toLowerCase();
+      const collegeId = String(user.collegeId || '').toLowerCase();
+      const profile = colleges.find(college => String(college.email || '').toLowerCase() === email)
+        || colleges.find(college => String(college.id || '').toLowerCase() === collegeId)
+        || colleges.find(college => collegeId.startsWith(String(college.shortCode || '').toLowerCase()))
+        || {};
 
-      document.getElementById('loginGsCode').value = college.gsCode;
-      document.getElementById('loginPin').value = college.pin;
+      return {
+        ...profile,
+        id: profile.id || user.collegeId || user.id,
+        name: profile.name || databaseCollege?.name || user.name,
+        shortCode: profile.shortCode || databaseCollege?.code || user.username.replace(/-GS$/i, ''),
+        city: profile.city || databaseCollege?.city || '',
+        gsName: user.name || profile.gsName,
+        gsDesignation: profile.gsDesignation || user.title || 'General Secretary',
+        gsCode: user.username,
+        email: user.email || profile.email || '',
+        phone: profile.phone || databaseCollege?.phone || '',
+        badgeColor: profile.badgeColor || '#06b6d4',
+        contingentSize: profile.contingentSize || 25,
+        avatar: profile.avatar || user.avatar || '🎓',
+        role: user.role,
+        loginTime: new Date().toISOString()
+      };
+    }
 
-      // Highlight active chip
-      document.querySelectorAll('.quick-chip').forEach(el => el.classList.remove('active'));
-      const activeChip = document.getElementById(`chip-${shortCode}`);
-      if (activeChip) activeChip.classList.add('active');
+    async function checkActiveSession() {
+      const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
+      if (!token) {
+        localStorage.removeItem(STORAGE_KEY_SESSION);
+        localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
+        showLoginView();
+        return;
+      }
 
-      showToast(`Credentials filled for ${college.name} (${college.shortCode})`, 'info');
+      try {
+        const data = await authRequest('/api/auth/me', 'GET', null, token);
+        if (data.user.role !== 'college_gs') throw new Error('This account is not a College GS.');
+        currentSession = createGsSession(data.user, data.college);
+        localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(currentSession));
+        localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
+        showPortalView();
+      } catch (error) {
+        sessionStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(STORAGE_KEY_SESSION);
+        localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
+        showLoginView();
+        showToast(authErrorMessage(error), 'error');
+      }
     }
 
     /**
      * Handle Login Form Submission
      */
-    function handleLoginSubmit(event) {
+    async function handleLoginSubmit(event) {
       event.preventDefault();
       const gsCodeInput = document.getElementById('loginGsCode').value.trim();
       const pinInput = document.getElementById('loginPin').value.trim();
@@ -3005,50 +3093,66 @@
         return;
       }
 
-      // Show loading spinner
       submitBtn.disabled = true;
-      submitBtn.innerHTML = `<span class="spinner-sm"></span> <span>Verifying Council...</span>`;
+      submitBtn.innerHTML = `<span class="spinner-sm"></span> <span>Checking database...</span>`;
 
-      setTimeout(() => {
-        const colleges = getStoredColleges();
-        const matched = colleges.find(c => 
-          c.gsCode.toUpperCase() === gsCodeInput.toUpperCase() && c.pin === pinInput
-        );
-
-        if (matched) {
-          // Login success
-          currentSession = {
-            ...matched,
-            role: 'college_gs',
-            loginTime: new Date().toISOString()
-          };
-          localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(currentSession));
-          localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
-
-          showToast(`Welcome, ${matched.gsName}! Logged in as General Secretary.`, 'success');
-          showPortalView();
-        } else {
-          // Login failed
-          showToast('Invalid GS Code or PIN. Please check credentials.', 'error');
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = `<span>Login as GS</span> <i class="fa-solid fa-arrow-right"></i>`;
+      try {
+        const data = await authRequest('/api/auth/login', 'POST', {
+          username: gsCodeInput,
+          password: pinInput,
+          role: 'college_gs'
+        }, null);
+        if (!data.token || data.user.role !== 'college_gs') {
+          throw new Error('The database did not return a College GS session.');
         }
-      }, 500);
+
+        sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
+        currentSession = createGsSession(data.user, data.college);
+        localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(currentSession));
+        localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
+        showToast(`Welcome, ${currentSession.gsName}! Logged in as General Secretary.`, 'success');
+        showPortalView();
+      } catch (error) {
+        showToast(authErrorMessage(error), 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>Login as GS</span> <i class="fa-solid fa-arrow-right"></i>`;
+      }
     }
 
     /**
      * Handle Logout
      */
-    function handleLogout() {
-      currentSession = null;
-      localStorage.removeItem(STORAGE_KEY_SESSION);
-      localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
+    async function handleLogout() {
+      const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
+      let logoutRecorded = true;
+      try {
+        await authRequest('/api/auth/logout', 'POST', {}, token);
+      } catch (error) {
+        logoutRecorded = false;
+        console.error('GS logout request failed:', error);
+      } finally {
+        sessionStorage.removeItem(AUTH_TOKEN_KEY);
+        currentSession = null;
+        localStorage.removeItem(STORAGE_KEY_SESSION);
+        localStorage.setItem(STORAGE_KEY_IS_ADMIN, 'false');
+      }
+      if (!logoutRecorded) {
+        showToast('Signed out here, but the server could not record the logout.', 'error');
+      }
       window.location.href = 'home.html';
     }
 
     function showLoginView() {
       document.getElementById('portalView').style.display = 'none';
       document.getElementById('loginView').style.display = 'flex';
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('gsRegistrationForm').style.display = 'none';
+      for (const id of ['loginGsCode', 'loginPin']) {
+        const input = document.getElementById(id);
+        input.value = '';
+        input.setAttribute('readonly', 'readonly');
+      }
       const submitBtn = document.getElementById('loginSubmitBtn');
       if (submitBtn) {
         submitBtn.disabled = false;

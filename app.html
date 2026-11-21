@@ -1358,60 +1358,7 @@
   <!-- JavaScript Engine -->
   <script>
     const STORAGE_KEY_DATA = 'melange_webapp_store_v5';
-    const STORAGE_KEY_USERS = 'melange_stored_logins_v5';
-    const STORAGE_KEY_SESSION = 'melange_active_user_session_v5';
-
-    // Stored Logins (Admin & College GS)
-    const initialStoredUsers = [
-      {
-        id: 'usr_admin',
-        username: 'admin',
-        password: 'admin123',
-        name: 'Alex Carter',
-        role: 'admin',
-        title: 'Event Administrator',
-        collegeId: null,
-        collegeName: 'Melange Central Directorate',
-        email: 'admin@melange.edu',
-        lastLogin: 'Nov 18, 2026, 09:15 AM'
-      },
-      {
-        id: 'usr_gs_aec',
-        username: 'AEC04-GS',
-        password: 'password123',
-        name: 'Rohit Sharma',
-        role: 'college_gs',
-        title: 'General Secretary',
-        collegeId: 'AEC04',
-        collegeName: 'AEC Metro College',
-        email: 'gs.aec@gmail.com',
-        lastLogin: 'Nov 18, 2026, 08:45 AM'
-      },
-      {
-        id: 'usr_gs_stx',
-        username: 'STX01-GS',
-        password: 'password123',
-        name: 'Rahul Sharma',
-        role: 'college_gs',
-        title: 'General Secretary',
-        collegeId: 'STX01',
-        collegeName: "St. Xavier's College",
-        email: 'rahul.gs@stxaviers.edu',
-        lastLogin: 'Nov 17, 2026, 04:30 PM'
-      },
-      {
-        id: 'usr_gs_coep',
-        username: 'COEP01-GS',
-        password: 'password123',
-        name: 'Priya Deshmukh',
-        role: 'college_gs',
-        title: 'General Secretary',
-        collegeId: 'COEP01',
-        collegeName: 'COEP Technological University',
-        email: 'gs.gymkhana@coeptech.ac.in',
-        lastLogin: 'Nov 17, 2026, 06:12 PM'
-      }
-    ];
+    const AUTH_TOKEN_KEY = 'melange_event_portal_jwt_token';
 
     // Consolidated Seed Data
     const initialFestData = {
@@ -1430,7 +1377,6 @@
       "lastLogin": "2026-11-18T05:16:54.687Z",
       "activeSessions": 3,
       "createdAt": "2026-10-01T00:00:00.000Z",
-      "password": "admin123",
       "collegeName": "Melange Central Directorate",
       "updatedAt": "2026-11-18T05:16:54.687Z"
     },
@@ -1449,7 +1395,6 @@
       "activeSessions": 4,
       "createdAt": "2026-10-01T00:00:00.000Z",
       "updatedAt": "2026-11-18T05:16:54.689Z",
-      "password": "password123",
       "collegeName": "AEC Metro College"
     },
     {
@@ -1471,7 +1416,6 @@
       "_id": "usr_gs_coep",
       "username": "COEP01-GS",
       "email": "gs.gymkhana@coeptech.ac.in",
-      "password": "password123",
       "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
       "passwordSalt": "melange_salt_2026",
       "name": "Priya Deshmukh",
@@ -1485,7 +1429,6 @@
       "_id": "usr_gs_mit",
       "username": "MIT02-GS",
       "email": "gs.council@mitwpu.edu.in",
-      "password": "password123",
       "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
       "passwordSalt": "melange_salt_2026",
       "name": "Aryan Sharma",
@@ -1499,7 +1442,6 @@
       "_id": "usr_gs_sx",
       "username": "SX01-GS",
       "email": "rahul.gs@stxaviers.edu",
-      "password": "password123",
       "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
       "passwordSalt": "melange_salt_2026",
       "name": "Rahul Sharma",
@@ -1914,7 +1856,6 @@
         loginSelectedRole: 'gs', // 'admin' | 'gs' on login tabs
         activeScreen: 'login', // Initial screen is login
         currentUser: null,
-        storedUsers: [],
         sidebarOpen: false,
 
         // Module 5 (Registration Management) state
@@ -1958,31 +1899,13 @@
         data: null
       },
 
-      init() {
-        this.loadStoredUsers();
+      async init() {
+        localStorage.removeItem('melange_stored_logins_v5');
+        localStorage.removeItem('melange_active_user_session_v5');
+        sessionStorage.removeItem('melange_active_user_session_v5');
         this.loadData();
-        this.checkExistingSession();
+        await this.checkExistingSession();
         this.render();
-      },
-
-      loadStoredUsers() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY_USERS);
-          if (raw) {
-            this.state.storedUsers = JSON.parse(raw);
-          } else {
-            this.state.storedUsers = JSON.parse(JSON.stringify(initialStoredUsers));
-            this.saveStoredUsers();
-          }
-        } catch (e) {
-          this.state.storedUsers = JSON.parse(JSON.stringify(initialStoredUsers));
-        }
-      },
-
-      saveStoredUsers() {
-        try {
-          localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(this.state.storedUsers));
-        } catch (e) {}
       },
 
       loadData() {
@@ -2005,18 +1928,48 @@
         } catch (e) {}
       },
 
-      checkExistingSession() {
+      async authRequest(path, method = 'GET', payload, token) {
+        const headers = { 'Content-Type': 'application/json' };
+        const authToken = token || sessionStorage.getItem(AUTH_TOKEN_KEY) || localStorage.getItem(AUTH_TOKEN_KEY);
+        if (authToken) headers.Authorization = `Bearer ${authToken}`;
+        const response = await fetch(path, {
+          method,
+          headers,
+          ...(payload ? { body: JSON.stringify(payload) } : {})
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Authentication request failed.');
+        }
+        return data;
+      },
+
+      authErrorMessage(error) {
+        return error instanceof TypeError
+          ? 'Cannot reach the database server. Start the Node server and try again.'
+          : error.message || 'Authentication request failed.';
+      },
+
+      setAuthenticatedUser(user, college) {
+        this.state.currentUser = {
+          ...user,
+          collegeName: college?.name || user.collegeName || ''
+        };
+        this.state.activeRole = user.role === 'admin' ? 'admin' : 'gs';
+        this.state.activeScreen = user.role === 'admin' ? 'registrations' : 'gs_add_participant';
+      },
+
+      async checkExistingSession() {
+        const token = sessionStorage.getItem(AUTH_TOKEN_KEY) || localStorage.getItem(AUTH_TOKEN_KEY);
+        if (!token) return;
         try {
-          const raw = localStorage.getItem(STORAGE_KEY_SESSION);
-          if (raw) {
-            const user = JSON.parse(raw);
-            if (user && user.username) {
-              this.state.currentUser = user;
-              this.state.activeRole = user.role === 'admin' ? 'admin' : 'gs';
-              this.state.activeScreen = user.role === 'admin' ? 'registrations' : 'gs_add_participant';
-            }
-          }
-        } catch (e) {}
+          const data = await this.authRequest('/api/auth/me', 'GET', null, token);
+          this.setAuthenticatedUser(data.user, data.college);
+        } catch (error) {
+          sessionStorage.removeItem(AUTH_TOKEN_KEY);
+          localStorage.removeItem(AUTH_TOKEN_KEY);
+          this.showToast(this.authErrorMessage(error), true);
+        }
       },
 
       // Navigation
@@ -2048,8 +2001,6 @@
         if (role === 'admin') {
           if (adminTab) adminTab.classList.add('active-tab');
           if (gsTab) gsTab.classList.remove('active-tab');
-          if (userInput) userInput.value = 'admin';
-          if (passInput) passInput.value = 'admin123';
           if (submitBtn) {
             submitBtn.innerHTML = '<span>Login as Admin</span> <i class="fa-solid fa-arrow-right"></i>';
             submitBtn.style.background = 'linear-gradient(135deg, #1e1b4b, #31104b)';
@@ -2057,69 +2008,74 @@
         } else {
           if (gsTab) gsTab.classList.add('active-tab');
           if (adminTab) adminTab.classList.remove('active-tab');
-          if (userInput) userInput.value = 'AEC04-GS';
-          if (passInput) passInput.value = 'password123';
           if (submitBtn) {
             submitBtn.innerHTML = '<span>Login as GS</span> <i class="fa-solid fa-arrow-right"></i>';
             submitBtn.style.background = 'linear-gradient(135deg, #2563eb, #1d4ed8)';
           }
         }
+        if (userInput) userInput.value = '';
+        if (passInput) passInput.value = '';
       },
 
-      handleLoginSubmit() {
+      async handleLoginSubmit() {
         const uInput = document.getElementById('authUsernameInput');
         const pInput = document.getElementById('authPasswordInput');
         const remCheckbox = document.getElementById('rememberMeCheckbox');
+        const submitButton = document.getElementById('loginSubmitBtn');
 
         const uVal = (uInput && uInput.value.trim()) || '';
-        const pVal = (pInput && pInput.value.trim()) || '';
+        const pVal = (pInput && pInput.value) || '';
         const role = this.state.loginSelectedRole;
-        const expectedRoleKey = role === 'admin' ? 'admin' : 'college_gs';
 
         if (!uVal || !pVal) {
           this.showToast('Please enter username and password', true);
           return;
         }
 
-        const matched = this.state.storedUsers.find(u => {
-          return (u.username.toLowerCase() === uVal.toLowerCase() || (u.email && u.email.toLowerCase() === uVal.toLowerCase())) &&
-                 (u.password === pVal);
-        });
-
-        if (!matched) {
-          this.showToast('Invalid credentials! Verify username & password.', true);
-          return;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking database...';
+        try {
+          const data = await this.authRequest('/api/auth/login', 'POST', {
+            username: uVal,
+            password: pVal,
+            role: role === 'admin' ? 'admin' : 'college_gs',
+            rememberMe: !!(remCheckbox && remCheckbox.checked)
+          }, null);
+          if (!data.token || data.user.role !== (role === 'admin' ? 'admin' : 'college_gs')) {
+            throw new Error('The database returned an account with the wrong role.');
+          }
+          if (remCheckbox && remCheckbox.checked) {
+            localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+            sessionStorage.removeItem(AUTH_TOKEN_KEY);
+          } else {
+            sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+          }
+          this.setAuthenticatedUser(data.user, data.college);
+          this.showToast(`Welcome back, ${data.user.name}!`);
+          this.render();
+        } catch (error) {
+          this.showToast(this.authErrorMessage(error), true);
+        } finally {
+          submitButton.disabled = false;
+          submitButton.innerHTML = `<span>Login as ${role === 'admin' ? 'Admin' : 'GS'}</span> <i class="fa-solid fa-arrow-right"></i>`;
         }
-
-        if (matched.role !== expectedRoleKey) {
-          this.showToast(`Role Mismatch: Account is '${matched.role === 'admin' ? 'Central Admin' : 'College GS'}'. Please switch tab.`, true);
-          return;
-        }
-
-        matched.lastLogin = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ', ' +
-                            new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        this.saveStoredUsers();
-
-        this.state.currentUser = matched;
-        this.state.activeRole = role;
-
-        if (remCheckbox && remCheckbox.checked) {
-          localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(matched));
-        } else {
-          sessionStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(matched));
-        }
-
-        this.showToast(`Welcome back, ${matched.name}!`);
-        this.state.activeScreen = (role === 'admin' ? 'registrations' : 'gs_add_participant');
-        this.render();
       },
 
-      handleLogout() {
+      async handleLogout() {
+        const token = sessionStorage.getItem(AUTH_TOKEN_KEY) || localStorage.getItem(AUTH_TOKEN_KEY);
+        let logoutRecorded = true;
+        try {
+          if (token) await this.authRequest('/api/auth/logout', 'POST', {}, token);
+        } catch (error) {
+          logoutRecorded = false;
+          console.error('Event portal logout request failed:', error);
+        }
         this.state.currentUser = null;
-        localStorage.removeItem(STORAGE_KEY_SESSION);
-        sessionStorage.removeItem(STORAGE_KEY_SESSION);
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        sessionStorage.removeItem(AUTH_TOKEN_KEY);
         this.state.activeScreen = 'login';
-        this.showToast('Logged out securely.');
+        this.showToast(logoutRecorded ? 'Logged out securely.' : 'Signed out here, but the server could not record the logout.', !logoutRecorded);
         this.render();
       },
 
@@ -2135,104 +2091,6 @@
             eye.className = 'fa-solid fa-eye';
           }
         }
-      },
-
-      openStoredLoginsModal() {
-        const users = this.state.storedUsers;
-        let html = `
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">Stored Credentials</h3>
-            <button onclick="Software.closeModal()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
-          </div>
-          <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 16px;">
-            Select any registered account to pre-fill credentials instantly:
-          </p>
-          <div style="display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto;">
-            ${users.map(u => `
-              <div style="border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.15s;" onclick="Software.fillCredentials('${u.username}', '${u.password}', '${u.role === 'admin' ? 'admin' : 'gs'}'); Software.closeModal();">
-                <div>
-                  <div style="font-weight: 800; font-size: 0.9rem; color: #0f172a;">${u.name}</div>
-                  <div style="font-size: 0.74rem; color: #64748b;">${u.collegeName || 'Central Directorate'} • <b>${u.username}</b></div>
-                </div>
-                <span class="badge-status ${u.role === 'admin' ? 'badge-approved' : 'badge-pending'}">${u.role === 'admin' ? 'Admin' : 'GS'}</span>
-              </div>
-            `).join('')}
-          </div>
-        `;
-        this.openModal(html);
-      },
-
-      fillCredentials(user, pass, role) {
-        this.setLoginRole(role);
-        const uInput = document.getElementById('authUsernameInput');
-        const pInput = document.getElementById('authPasswordInput');
-        if (uInput) uInput.value = user;
-        if (pInput) pInput.value = pass;
-        this.showToast(`Credentials populated for ${user}`);
-      },
-
-      openRegisterGsModal() {
-        let html = `
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">Register College General Secretary</h3>
-            <button onclick="Software.closeModal()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 14px;">
-            <div>
-              <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">College Name</label>
-              <input type="text" id="newGsCollegeName" class="filter-select" style="width: 100%; height: 42px;" placeholder="e.g. Sardar Patel Institute of Technology" />
-            </div>
-            <div>
-              <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">GS Full Name</label>
-              <input type="text" id="newGsFullName" class="filter-select" style="width: 100%; height: 42px;" placeholder="e.g. Sameer Khanna" />
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-              <div>
-                <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">Username</label>
-                <input type="text" id="newGsUsername" class="filter-select" style="width: 100%; height: 42px;" placeholder="SPIT01-GS" />
-              </div>
-              <div>
-                <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">Password</label>
-                <input type="password" id="newGsPassword" class="filter-select" style="width: 100%; height: 42px;" placeholder="••••••••" />
-              </div>
-            </div>
-            <button class="btn-action-pill btn-purple-fill" style="width: 100%; height: 44px; margin-top: 10px;" onclick="Software.saveNewGsLogin()">
-              <i class="fa-solid fa-check"></i> Create Stored GS Account
-            </button>
-          </div>
-        `;
-        this.openModal(html);
-      },
-
-      saveNewGsLogin() {
-        const cName = document.getElementById('newGsCollegeName').value.trim();
-        const gsName = document.getElementById('newGsFullName').value.trim();
-        const username = document.getElementById('newGsUsername').value.trim();
-        const pass = document.getElementById('newGsPassword').value.trim();
-
-        if (!cName || !gsName || !username || !pass) {
-          this.showToast('Please fill all fields', true);
-          return;
-        }
-
-        const newUser = {
-          id: 'usr_gs_' + Date.now(),
-          username: username,
-          password: pass,
-          name: gsName,
-          role: 'college_gs',
-          title: 'General Secretary',
-          collegeId: username.substring(0, 4).toUpperCase(),
-          collegeName: cName,
-          email: username.toLowerCase() + '@fest.edu',
-          lastLogin: 'Never'
-        };
-
-        this.state.storedUsers.push(newUser);
-        this.saveStoredUsers();
-        this.closeModal();
-        this.showToast(`GS Account '${username}' created! Switching...`);
-        this.fillCredentials(username, pass, 'gs');
       },
 
       // Modal & Toast
@@ -4197,21 +4055,13 @@
                         <i class="fa-solid fa-shield-halved"></i>
                       </div>
                       <div>
-                        <div class="auth-feat-title">Security & Stored Logins:</div>
-                        <div class="auth-feat-desc">Secure tokens, remember-me session persistence, role separation.</div>
+                        <div class="auth-feat-title">Database-backed Sign-in:</div>
+                        <div class="auth-feat-desc">Accounts and sign-in history are managed securely by the portal server.</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-top: 24px; position: relative; z-index: 2;">
-                  <button class="btn-action-pill" style="height: 38px; font-size: 0.8rem; font-weight: 800; background: #f59e0b; color: #1e1b4b; border: none; border-radius: 9999px; padding: 0 16px;" onclick="Software.openStoredLoginsModal()">
-                    <i class="fa-solid fa-key" style="margin-right: 4px;"></i> Stored Logins (${this.state.storedUsers.length})
-                  </button>
-                  <button class="btn-action-pill" style="height: 38px; font-size: 0.8rem; font-weight: 700; background: rgba(255,255,255,0.12); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); border-radius: 9999px; padding: 0 14px;" onclick="Software.openRegisterGsModal()">
-                    <i class="fa-solid fa-user-plus" style="margin-right: 4px;"></i> + New GS
-                  </button>
-                </div>
               </div>
 
               <!-- Right Form Card -->
@@ -4243,7 +4093,7 @@
                     <label style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">Username / Official ID</label>
                     <div class="auth-input-wrap">
                       <i class="fa-solid fa-user input-icon-left"></i>
-                      <input type="text" id="authUsernameInput" placeholder="Username" value="${isGs ? 'AEC04-GS' : 'admin'}" />
+                      <input type="text" id="authUsernameInput" placeholder="Username" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" />
                     </div>
                   </div>
 
@@ -4258,7 +4108,7 @@
                     </div>
                     <div class="auth-input-wrap">
                       <i class="fa-solid fa-lock input-icon-left"></i>
-                      <input type="password" id="authPasswordInput" placeholder="•••••••••" value="${isGs ? 'password123' : 'admin123'}" />
+                      <input type="password" id="authPasswordInput" placeholder="Enter your password" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" />
                     </div>
                   </div>
 

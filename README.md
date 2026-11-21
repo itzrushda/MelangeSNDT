@@ -66,4 +66,4 @@ For local use, **double-click** either:
 * [`run.bat`](run.bat)
 * Or double-click [`index.html`](index.html) directly!
 
-The GS login currently uses browser-local demo data; it is not connected to a secure production authentication backend.
+Admin and GS sign-ins use the Node authentication API. First-time GS users can select a registered college and create their own username and password from the GS login screen; the account is stored in `data/melange_db.json` with a server-generated password hash, and they must sign in afterward. Login history is stored in the same database. Start the Node server for registration and database-backed login. GitHub Pages alone cannot run the API or write to this database.

@@ -642,45 +642,6 @@
       transform: rotate(30deg) translate(100%, 0);
     }
 
-    /* Auto Fill Hint Card */
-    .quick-hint-box {
-      margin-top: 18px;
-      padding: 12px 14px;
-      border-radius: var(--radius-md);
-      background: rgba(245, 158, 11, 0.08);
-      border: 1px dashed rgba(245, 158, 11, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .quick-hint-box:hover {
-      background: rgba(245, 158, 11, 0.14);
-    }
-
-    .hint-text {
-      font-size: 11px;
-      color: var(--text-secondary);
-      line-height: 1.4;
-    }
-
-    .hint-text strong {
-      color: var(--gold-400);
-    }
-
-    .hint-btn-fill {
-      padding: 4px 8px;
-      border-radius: var(--radius-sm);
-      background: rgba(245, 158, 11, 0.2);
-      border: 1px solid rgba(245, 158, 11, 0.4);
-      color: var(--gold-400);
-      font-size: 10px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
     /* Shake Animation for Login Error */
     .shake {
       animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
@@ -1685,6 +1646,28 @@
       gap: 10px;
     }
 
+    .event-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .event-icon {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 11px;
+      font-size: 15px;
+    }
+
+    .event-title-content {
+      min-width: 0;
+    }
+
     .event-title-wrap h3 {
       font-size: 14px;
       font-weight: 800;
@@ -2443,8 +2426,10 @@
                   type="text"
                   id="adminCodeInput"
                   class="form-input"
-                  placeholder="ADMIN-MELANGE or ADMIN"
-                  autocomplete="username"
+                  placeholder="Database username (e.g. admin)"
+                  autocomplete="off"
+                  readonly
+                  onfocus="this.removeAttribute('readonly')"
                   required
                 />
               </div>
@@ -2460,9 +2445,10 @@
                   type="password"
                   id="adminPinInput"
                   class="form-input"
-                  placeholder="4-digit Master PIN (9999)"
-                  autocomplete="current-password"
-                  maxlength="8"
+                  placeholder="Enter your database password"
+                  autocomplete="new-password"
+                  readonly
+                  onfocus="this.removeAttribute('readonly')"
                   required
                 />
                 <button
@@ -2481,15 +2467,6 @@
             </button>
           </form>
 
-          <div class="quick-hint-box" onclick="fillAdminCredentials()">
-            <div class="hint-text">
-              <strong>Super Admin Quick Access:</strong><br />
-              Code: <code>ADMIN-MELANGE</code> / PIN: <code>9999</code>
-            </div>
-            <div class="hint-btn-fill">
-              <i class="fa-solid fa-wand-magic-sparkles"></i> Auto Fill
-            </div>
-          </div>
         </div>
       </div>
 
@@ -2598,7 +2575,7 @@
               <div class="kpi-card" onclick="switchTab('events')">
                 <div class="kpi-header">
                   <div class="kpi-icon-pill icon-purple">
-                    <i class="fa-solid fa-calendar-star"></i>
+                    <i class="fa-solid fa-calendar-days"></i>
                   </div>
                   <span class="kpi-subtext">4 Zones</span>
                 </div>
@@ -2764,7 +2741,7 @@
             <span class="nav-badge" id="navBadgePending" style="display: none;">0</span>
           </button>
           <button class="nav-item" data-tab="events" onclick="switchTab('events')">
-            <i class="fa-solid fa-calendar-star"></i>
+            <i class="fa-solid fa-calendar-days"></i>
             <span>Events</span>
           </button>
           <button class="nav-item" data-tab="colleges" onclick="switchTab('colleges')">
@@ -2910,6 +2887,7 @@
       SESSION: "melange_v5_session",
       IS_ADMIN: "melange_v5_is_admin"
     };
+    const AUTH_TOKEN_KEY = "melange_admin_jwt_token";
 
     /* ==========================================================================
        OFFICIAL SEED DATA
@@ -2952,6 +2930,13 @@
       "Thinking Zone": "#38bdf8",
       "Entertainment Zone": "#8b5cf6",
       "Discover Zone": "#10b981"
+    };
+
+    const ZONE_ICONS = {
+      "Creative Zone": "fa-palette",
+      "Thinking Zone": "fa-brain",
+      "Entertainment Zone": "fa-masks-theater",
+      "Discover Zone": "fa-compass"
     };
 
     /* ==========================================================================
@@ -3020,24 +3005,64 @@
       localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(events));
     }
 
-    function isAdminLoggedIn() {
-      return localStorage.getItem(STORAGE_KEYS.IS_ADMIN) === "true";
+    async function authRequest(path, method = "GET", payload) {
+      const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      const response = await fetch(path, {
+        method,
+        headers,
+        ...(payload ? { body: JSON.stringify(payload) } : {})
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Authentication request failed.");
+      }
+      return data;
+    }
+
+    function authErrorMessage(error) {
+      return error instanceof TypeError
+        ? "Cannot reach the database server. Start the Node server and try again."
+        : error.message || "Authentication request failed.";
     }
 
     /* ==========================================================================
        AUTHENTICATION & LOGIN LOGIC
        ========================================================================== */
-    function checkAuthSession() {
-      if (isAdminLoggedIn()) {
-        showMainApp();
-      } else {
+    async function checkAuthSession() {
+      const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
+      if (!token) {
+        localStorage.removeItem(STORAGE_KEYS.IS_ADMIN);
+        localStorage.removeItem(STORAGE_KEYS.SESSION);
         showLoginScreen();
+        return;
+      }
+
+      try {
+        const data = await authRequest("/api/auth/me");
+        if (data.user.role !== "admin") throw new Error("This account is not an Admin.");
+        localStorage.setItem(STORAGE_KEYS.IS_ADMIN, "true");
+        localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(data.user));
+        showMainApp();
+      } catch (error) {
+        sessionStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(STORAGE_KEYS.IS_ADMIN);
+        localStorage.removeItem(STORAGE_KEYS.SESSION);
+        showLoginScreen();
+        showToast(authErrorMessage(error), "error");
       }
     }
 
     function showLoginScreen() {
       document.getElementById("loginScreen").style.display = "flex";
       document.getElementById("mainAppShell").style.display = "none";
+      for (const id of ["adminCodeInput", "adminPinInput"]) {
+        const input = document.getElementById(id);
+        input.value = "";
+        input.setAttribute("readonly", "readonly");
+      }
     }
 
     function showMainApp() {
@@ -3047,52 +3072,58 @@
       renderAll();
     }
 
-    function handleAdminLogin(e) {
+    async function handleAdminLogin(e) {
       e.preventDefault();
       const codeInput = document.getElementById("adminCodeInput");
       const pinInput = document.getElementById("adminPinInput");
-      const code = (codeInput.value || "").trim().toUpperCase();
+      const code = (codeInput.value || "").trim();
       const pin = (pinInput.value || "").trim();
+      const submitButton = document.getElementById("btnLoginSubmit");
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking database...';
 
-      const isValidCode = (code === "ADMIN-MELANGE" || code === "ADMIN");
-      const isValidPin = (pin === "9999");
+      try {
+        const data = await authRequest("/api/auth/login", "POST", {
+          username: code,
+          password: pin,
+          role: "admin"
+        });
+        if (!data.token || data.user.role !== "admin") {
+          throw new Error("The database did not return an Admin session.");
+        }
 
-      if (isValidCode && isValidPin) {
+        sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
         localStorage.setItem(STORAGE_KEYS.IS_ADMIN, "true");
-        localStorage.setItem(
-          STORAGE_KEYS.SESSION,
-          JSON.stringify({
-            role: "admin",
-            code: "ADMIN-MELANGE",
-            name: "Fest Administrator",
-            loginTime: new Date().toISOString()
-          })
-        );
-
-        showToast("Super Admin Verified! Welcome to Control Center.", "success");
+        localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(data.user));
+        showToast(data.message || "Admin verified. Welcome to Control Center.", "success");
         showMainApp();
-      } else {
+      } catch (error) {
         const loginCard = document.getElementById("loginCard");
         loginCard.classList.remove("shake");
         void loginCard.offsetWidth; // trigger reflow
         loginCard.classList.add("shake");
-        showToast("Access Denied: Invalid Admin Code or PIN.", "error");
+        showToast(authErrorMessage(error), "error");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Unlock Admin Portal';
       }
     }
 
-    function handleAdminLogout() {
+    async function handleAdminLogout() {
       if (confirm("Logout from Fest Admin Control Center?")) {
-        localStorage.removeItem(STORAGE_KEYS.IS_ADMIN);
-        localStorage.removeItem(STORAGE_KEYS.SESSION);
-        showToast("Logged out successfully.", "info");
-        showLoginScreen();
+        try {
+          await authRequest("/api/auth/logout", "POST");
+          showToast("Logged out successfully.", "info");
+        } catch (error) {
+          console.error("Admin logout request failed:", error);
+          showToast("Signed out here, but the server could not record the logout.", "error");
+        } finally {
+          sessionStorage.removeItem(AUTH_TOKEN_KEY);
+          localStorage.removeItem(STORAGE_KEYS.IS_ADMIN);
+          localStorage.removeItem(STORAGE_KEYS.SESSION);
+          showLoginScreen();
+        }
       }
-    }
-
-    function fillAdminCredentials() {
-      document.getElementById("adminCodeInput").value = "ADMIN-MELANGE";
-      document.getElementById("adminPinInput").value = "9999";
-      showToast("Default credentials populated!", "info");
     }
 
     function togglePasswordVisibility(inputId, btn) {
@@ -3656,14 +3687,20 @@
           // Count students enrolled in this event
           const registeredCount = students.filter(s => s.assignedEventId === ev.id || s.assignedEventName === ev.title).length;
           const maxP = ev.maxParticipants || 50;
+          const eventIcon = ZONE_ICONS[ev.zone] || "fa-calendar-day";
 
           html += `
             <div class="event-card">
               <div class="event-card-header">
                 <div class="event-title-wrap">
-                  <h3>${escapeHtml(ev.title)}</h3>
-                  <div class="event-zone-badge" style="background: ${zoneColor}22; color: ${zoneColor}; border: 1px solid ${zoneColor}55;">
-                    ${escapeHtml(ev.zone)}
+                  <div class="event-icon" style="color: ${zoneColor}; background: ${zoneColor}22;">
+                    <i class="fa-solid ${eventIcon}" aria-hidden="true"></i>
+                  </div>
+                  <div class="event-title-content">
+                    <h3>${escapeHtml(ev.title)}</h3>
+                    <div class="event-zone-badge" style="background: ${zoneColor}22; color: ${zoneColor}; border: 1px solid ${zoneColor}55;">
+                      ${escapeHtml(ev.zone)}
+                    </div>
                   </div>
                 </div>
                 <div class="event-prize-tag">
