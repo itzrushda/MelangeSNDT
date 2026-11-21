@@ -1,0 +1,4304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <title>Melange - Inter-Collegiate Cultural & Technical Festival</title>
+  
+  <!-- Modern Clean Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & CSS VARIABLES
+       ========================================================================== */
+    :root {
+      --bg-warm: #fbf9f5;
+      --bg-white: #ffffff;
+      --sidebar-navy: #12123b;
+      --sidebar-navy-dark: #0b0b26;
+      --sidebar-hover: rgba(255, 255, 255, 0.08);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-light: #e2e8f0;
+      --gold-primary: #f59e0b;
+      --gold-dark: #d97706;
+      --gold-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+      --purple-primary: #1e1b4b;
+      --purple-accent: #2e266d;
+      --blue-accent: #2563eb;
+      --green-success: #10b981;
+      --red-danger: #ef4444;
+      --amber-warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-warm);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* Print styling */
+    @media print {
+      .app-sidebar, .app-topbar, .btn-action-pill, .right-detail-drawer, #appModalBackdrop, .no-print {
+        display: none !important;
+      }
+      .app-workspace-content, .screen-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+      }
+      body {
+        background: #ffffff !important;
+      }
+    }
+
+    #appShell {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ==========================================================================
+       AUTHENTICATION SCREEN (IMAGE 1 REPLICA)
+       ========================================================================== */
+    .auth-page-container {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+      background: var(--bg-warm);
+      flex-shrink: 0;
+    }
+
+    .auth-dual-grid {
+      width: 100%;
+      max-width: 980px;
+      display: grid;
+      grid-template-columns: 1fr 1.18fr;
+      gap: 32px;
+      align-items: stretch;
+      margin: 0 auto;
+    }
+
+    .auth-banner-card {
+      background: linear-gradient(180deg, #1b053a 0%, #150a48 45%, #0b1e68 100%);
+      border-radius: 28px;
+      padding: 38px 32px 34px;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 45px rgba(22, 10, 60, 0.22);
+    }
+
+    .auth-buntings-decor {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 140px;
+      height: 70px;
+      pointer-events: none;
+      opacity: 0.95;
+    }
+
+    .auth-banner-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .auth-brand-emblem {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .auth-crown-icon {
+      font-size: 1.5rem;
+      color: #f59e0b;
+      filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.4));
+    }
+
+    .auth-brand-logo {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .auth-brand-sub {
+      font-size: 0.72rem;
+      color: #fde68a;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-top: 2px;
+    }
+
+    .auth-gold-badge {
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 9999px;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .auth-headline {
+      font-size: 1.85rem;
+      font-weight: 800;
+      line-height: 1.25;
+      color: #ffffff;
+      margin-bottom: 30px;
+      letter-spacing: -0.01em;
+    }
+
+    .auth-feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .auth-feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .auth-feat-icon-gold {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(245, 158, 11, 0.18);
+      border: 1.5px solid rgba(245, 158, 11, 0.35);
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .auth-feat-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #fef08a;
+      margin-bottom: 2px;
+    }
+
+    .auth-feat-desc {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      line-height: 1.35;
+    }
+
+    .auth-form-card {
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 38px 34px 30px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(226, 232, 240, 0.85);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .auth-form-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #0f172a;
+      text-align: center;
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .auth-form-sub {
+      font-size: 0.82rem;
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    .auth-tab-row {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 22px;
+      width: 100%;
+    }
+
+    .auth-role-tab {
+      flex: 1;
+      min-width: 0;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 10px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .auth-role-tab:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+
+    .auth-role-tab.active-tab {
+      border: 2.5px solid #1e1b4b !important;
+      box-shadow: 0 8px 22px rgba(30, 27, 75, 0.12) !important;
+    }
+
+    .auth-corner-ribbon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, #f59e0b 50%, transparent 50%);
+    }
+
+    .auth-tab-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .icon-wrap-admin {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .icon-wrap-gs {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .auth-tab-label {
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+
+    .auth-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .auth-input-wrap i.input-icon-left {
+      position: absolute;
+      left: 14px;
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .auth-input-wrap input {
+      width: 100%;
+      height: 48px;
+      border-radius: 12px;
+      border: 1.5px solid #e2e8f0;
+      padding-left: 42px;
+      padding-right: 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0f172a;
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .auth-input-wrap input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .auth-security-footer {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 0.72rem;
+      color: #64748b;
+      line-height: 1.45;
+      padding-top: 14px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .auth-security-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      color: #b45309;
+      margin-bottom: 2px;
+    }
+
+    /* Ambient Festive Sparkle */
+    .ambient-sparkle {
+      position: fixed;
+      bottom: 24px;
+      right: 28px;
+      font-size: 1.4rem;
+      color: rgba(245, 158, 11, 0.35);
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       DASHBOARD PORTAL LAYOUT (IMAGES 5 & 6)
+       ========================================================================== */
+    .portal-wrapper {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+      background: var(--bg-warm);
+    }
+
+    .app-sidebar {
+      width: 250px;
+      background-color: var(--sidebar-navy);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 100;
+      transition: transform 0.25s ease;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .sidebar-top {
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .sidebar-brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f59e0b, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+    }
+
+    .sidebar-brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-brand-sub {
+      font-size: 0.68rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .sidebar-nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-nav-item:hover {
+      color: #ffffff;
+      background: var(--sidebar-hover);
+    }
+
+    .sidebar-nav-item.active {
+      color: #ffffff;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.28) 0%, rgba(217, 119, 6, 0.12) 100%);
+      font-weight: 700;
+    }
+
+    .sidebar-nav-item.active::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 15%;
+      height: 70%;
+      width: 3.5px;
+      background: #f59e0b;
+      border-radius: 4px 0 0 4px;
+      box-shadow: 0 0 8px #f59e0b;
+    }
+
+    .sidebar-nav-item i {
+      font-size: 1.05rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-bottom {
+      padding: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .sidebar-logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 0.9rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-logout-btn:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    /* Workspace Content Area */
+    .app-workspace-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 100vh;
+      background-color: var(--bg-warm);
+    }
+
+    .app-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 28px;
+      background: rgba(251, 249, 245, 0.94);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.65);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      gap: 20px;
+    }
+
+    .topbar-mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      font-size: 1.35rem;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .topbar-page-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar-page-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar-page-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .topbar-actions-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .topbar-search-box {
+      position: relative;
+      width: 240px;
+    }
+
+    .topbar-search-box input {
+      width: 100%;
+      height: 38px;
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding-left: 36px;
+      padding-right: 14px;
+      font-size: 0.82rem;
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    .topbar-search-box input:focus {
+      border-color: var(--purple-primary);
+      box-shadow: 0 0 0 3px rgba(30, 27, 75, 0.08);
+      width: 280px;
+    }
+
+    .topbar-search-box i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+
+    .topbar-user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 4px 12px 4px 6px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      transition: all 0.15s ease;
+    }
+
+    .topbar-user-profile:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .topbar-logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      color: #b91c1c;
+      background: #ffffff;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .topbar-logout-btn:hover {
+      background: #fef2f2;
+    }
+
+    .topbar-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .topbar-user-meta {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .topbar-user-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .topbar-user-role {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .screen-container {
+      padding: 24px 28px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      flex: 1;
+    }
+
+    /* Buttons */
+    .action-bar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn-action-pill {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      border: 1px solid var(--border-light);
+      background: #ffffff;
+      color: #334155;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-action-pill:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+
+    .btn-purple-fill {
+      background: var(--purple-primary) !important;
+      color: #ffffff !important;
+      border-color: var(--purple-primary) !important;
+      box-shadow: 0 4px 12px rgba(30, 27, 75, 0.22);
+    }
+
+    .btn-purple-fill:hover {
+      background: var(--purple-accent) !important;
+    }
+
+    .btn-green-fill {
+      background: #059669 !important;
+      color: #ffffff !important;
+      border-color: #059669 !important;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.22);
+    }
+
+    .btn-red-fill {
+      background: #dc2626 !important;
+      color: #ffffff !important;
+      border-color: #dc2626 !important;
+    }
+
+    /* 4 KPI Metric Cards */
+    .kpi-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .kpi-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 20px 22px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .kpi-meta-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kpi-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .kpi-big-num {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .kpi-subtext {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .kpi-icon-pill {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .kpi-icon-purple {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .kpi-icon-blue {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+
+    .kpi-icon-gold {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .kpi-icon-green {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .kpi-icon-red {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    /* Filters Card */
+    .filter-bar-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px 20px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .filter-dropdown-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .filter-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .filter-select {
+      height: 36px;
+      padding: 0 32px 0 12px;
+      background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") no-repeat right 10px center;
+      background-size: 14px;
+      border: 1px solid var(--border-light);
+      border-radius: 9px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .filter-status-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 10px;
+    }
+
+    .filter-status-pill {
+      padding: 5px 12px;
+      border-radius: 7px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #64748b;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      transition: all 0.15s ease;
+    }
+
+    .filter-status-pill.active {
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Dual Main Content Area (Registration Table + Right Participant Details) */
+    .table-details-dual-split {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .table-details-dual-split.full-width {
+      grid-template-columns: 1fr !important;
+    }
+
+    .melange-table-card {
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid rgba(226, 232, 240, 0.85);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-card-header {
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .table-card-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .table-scroll-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table.melange-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    table.melange-data-table th {
+      background: #f8fafc;
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    table.melange-data-table td {
+      padding: 14px 16px;
+      font-size: 0.84rem;
+      color: #1e293b;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    table.melange-data-table tr:hover td {
+      background-color: #fafbfc;
+    }
+
+    table.melange-data-table tr.selected-row td {
+      background-color: #f5f3ff !important;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-approved {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-pending {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-rejected {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .table-actions-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-row-action {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1px solid var(--border-light);
+      color: #64748b;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-row-action:hover {
+      background: #ffffff;
+      color: var(--text-main);
+      border-color: #94a3b8;
+      transform: scale(1.05);
+    }
+
+    .btn-row-action.action-approve:hover {
+      color: #15803d;
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+
+    .btn-row-action.action-delete:hover {
+      color: #b91c1c;
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+
+    .table-pagination-footer {
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #f1f5f9;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-page-nav {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border-light);
+      background: #ffffff;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .btn-page-nav.active {
+      background: var(--purple-primary);
+      color: #ffffff;
+      border-color: var(--purple-primary);
+    }
+
+    /* Right Participant Details Panel (Image 5 Replica) */
+    .right-detail-drawer {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid rgba(226, 232, 240, 0.85);
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .detail-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .detail-drawer-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .detail-actions-top {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .detail-section-block {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 14px;
+    }
+
+    .detail-section-heading {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .detail-data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+    }
+
+    .detail-data-label {
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .detail-data-val {
+      color: var(--text-main);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .detail-id-card-preview {
+      width: 100%;
+      height: 105px;
+      border-radius: 12px;
+      border: 1px dashed #cbd5e1;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .detail-id-card-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Event chip in table */
+    .event-chip-tag {
+      background: #ede9fe;
+      color: #6d28d9;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Modal dialog */
+    .sheet-overlay-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .sheet-content-wrap {
+      background: #ffffff;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      padding: 28px;
+      position: relative;
+    }
+
+    /* Toast */
+    .floating-toast-alert {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 10000;
+      background: #1e1b4b;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 9999px;
+      box-shadow: 0 10px 25px rgba(30, 27, 75, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes toastSlideIn {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ==========================================================================
+       MOBILE RESPONSIVENESS (< 1024px and < 768px)
+       ========================================================================== */
+    @media (max-width: 1024px) {
+      .table-details-dual-split {
+        grid-template-columns: 1fr;
+      }
+      .kpi-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app-sidebar {
+        position: fixed;
+        left: -270px;
+        top: 0;
+        bottom: 0;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+      }
+      .app-sidebar.sidebar-open {
+        transform: translateX(270px);
+      }
+      .topbar-mobile-menu-btn {
+        display: block;
+      }
+      .topbar-search-box {
+        display: none;
+      }
+      .topbar-actions-group {
+        gap: 8px;
+      }
+      .topbar-user-meta {
+        display: none;
+      }
+      .topbar-user-profile {
+        padding: 3px;
+      }
+      .app-topbar {
+        padding: 14px 16px;
+      }
+      .screen-container {
+        padding: 16px 14px 30px;
+        gap: 16px;
+      }
+      .kpi-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .auth-dual-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      .auth-banner-card {
+        padding: 24px 20px;
+      }
+      .auth-form-card {
+        padding: 26px 20px;
+      }
+      .auth-input-wrap input {
+        font-size: 16px !important;
+      }
+      .filter-bar-card {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-dropdown-group {
+        flex-direction: column;
+        width: 100%;
+      }
+      .filter-select {
+        width: 100%;
+      }
+      .filter-status-pills {
+        width: 100%;
+        justify-content: space-around;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Toast Notification -->
+  <div id="globalToast" class="floating-toast-alert" style="display: none;">
+    <i id="toastIcon" class="fa-solid fa-circle-check" style="color: #10b981; font-size: 1.15rem;"></i>
+    <span id="toastMessageText">Action completed successfully</span>
+  </div>
+
+  <!-- Main Application Container -->
+  <div id="appShell">
+    <!-- Rendered dynamically -->
+  </div>
+
+  <!-- Modal Dialog Backdrop & Container -->
+  <div id="appModalBackdrop" class="sheet-overlay-backdrop" style="display: none;" onclick="Software.closeModal(event)">
+    <div id="appModalContent" class="sheet-content-wrap" onclick="event.stopPropagation()">
+      <!-- Injected modal content -->
+    </div>
+  </div>
+
+  <!-- Ambient Festive Sparkle -->
+  <div class="ambient-sparkle">
+    <i class="fa-solid fa-wand-magic-sparkles"></i>
+  </div>
+
+  <!-- JavaScript Engine -->
+  <script>
+    const STORAGE_KEY_DATA = 'melange_webapp_store_v5';
+    const STORAGE_KEY_USERS = 'melange_stored_logins_v5';
+    const STORAGE_KEY_SESSION = 'melange_active_user_session_v5';
+
+    // Stored Logins (Admin & College GS)
+    const initialStoredUsers = [
+      {
+        id: 'usr_admin',
+        username: 'admin',
+        password: 'admin123',
+        name: 'Alex Carter',
+        role: 'admin',
+        title: 'Event Administrator',
+        collegeId: null,
+        collegeName: 'Melange Central Directorate',
+        email: 'admin@melange.edu',
+        lastLogin: 'Nov 18, 2026, 09:15 AM'
+      },
+      {
+        id: 'usr_gs_aec',
+        username: 'AEC04-GS',
+        password: 'password123',
+        name: 'Rohit Sharma',
+        role: 'college_gs',
+        title: 'General Secretary',
+        collegeId: 'AEC04',
+        collegeName: 'AEC Metro College',
+        email: 'gs.aec@gmail.com',
+        lastLogin: 'Nov 18, 2026, 08:45 AM'
+      },
+      {
+        id: 'usr_gs_stx',
+        username: 'STX01-GS',
+        password: 'password123',
+        name: 'Rahul Sharma',
+        role: 'college_gs',
+        title: 'General Secretary',
+        collegeId: 'STX01',
+        collegeName: "St. Xavier's College",
+        email: 'rahul.gs@stxaviers.edu',
+        lastLogin: 'Nov 17, 2026, 04:30 PM'
+      },
+      {
+        id: 'usr_gs_coep',
+        username: 'COEP01-GS',
+        password: 'password123',
+        name: 'Priya Deshmukh',
+        role: 'college_gs',
+        title: 'General Secretary',
+        collegeId: 'COEP01',
+        collegeName: 'COEP Technological University',
+        email: 'gs.gymkhana@coeptech.ac.in',
+        lastLogin: 'Nov 17, 2026, 06:12 PM'
+      }
+    ];
+
+    // Consolidated Seed Data
+    const initialFestData = {
+  "users": [
+    {
+      "_id": "usr_admin",
+      "username": "admin",
+      "email": "admin@melange.edu",
+      "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "passwordSalt": "melange_salt_2026",
+      "name": "Alex Carter",
+      "role": "admin",
+      "title": "Event Administrator",
+      "collegeId": null,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+      "lastLogin": "2026-11-18T05:16:54.687Z",
+      "activeSessions": 3,
+      "createdAt": "2026-10-01T00:00:00.000Z",
+      "password": "admin123",
+      "collegeName": "Melange Central Directorate",
+      "updatedAt": "2026-11-18T05:16:54.687Z"
+    },
+    {
+      "_id": "usr_gs_aec",
+      "username": "AEC04-GS",
+      "email": "gs.aec@gmail.com",
+      "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "passwordSalt": "melange_salt_2026",
+      "name": "Rohit Sharma",
+      "role": "college_gs",
+      "title": "General Secretary",
+      "collegeId": "AEC04",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+      "lastLogin": "2026-11-18T05:16:54.689Z",
+      "activeSessions": 4,
+      "createdAt": "2026-10-01T00:00:00.000Z",
+      "updatedAt": "2026-11-18T05:16:54.689Z",
+      "password": "password123",
+      "collegeName": "AEC Metro College"
+    },
+    {
+      "_id": "usr_gs_xyz",
+      "username": "XYZ-GS",
+      "email": "xyzur@gmail.com",
+      "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "passwordSalt": "melange_salt_2026",
+      "name": "XYZ",
+      "role": "college_gs",
+      "title": "General Secretary",
+      "collegeId": "XYZ01",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+      "lastLogin": "2026-11-17T18:20:00.000Z",
+      "activeSessions": 1,
+      "createdAt": "2026-10-01T00:00:00.000Z"
+    },
+    {
+      "_id": "usr_gs_coep",
+      "username": "COEP01-GS",
+      "email": "gs.gymkhana@coeptech.ac.in",
+      "password": "password123",
+      "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "passwordSalt": "melange_salt_2026",
+      "name": "Priya Deshmukh",
+      "role": "college_gs",
+      "title": "General Secretary",
+      "collegeId": "COEP01",
+      "collegeName": "COEP Technological University",
+      "lastLogin": "Nov 17, 2026, 06:20 PM"
+    },
+    {
+      "_id": "usr_gs_mit",
+      "username": "MIT02-GS",
+      "email": "gs.council@mitwpu.edu.in",
+      "password": "password123",
+      "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "passwordSalt": "melange_salt_2026",
+      "name": "Aryan Sharma",
+      "role": "college_gs",
+      "title": "General Secretary",
+      "collegeId": "MIT02",
+      "collegeName": "MIT World Peace University",
+      "lastLogin": "Nov 17, 2026, 05:10 PM"
+    },
+    {
+      "_id": "usr_gs_sx",
+      "username": "SX01-GS",
+      "email": "rahul.gs@stxaviers.edu",
+      "password": "password123",
+      "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "passwordSalt": "melange_salt_2026",
+      "name": "Rahul Sharma",
+      "role": "college_gs",
+      "title": "General Secretary",
+      "collegeId": "SX01",
+      "collegeName": "St. Xavier's College",
+      "lastLogin": "Nov 16, 2026, 02:30 PM"
+    }
+  ],
+  "colleges": [
+    {
+      "_id": "col_1",
+      "id": "AEC04",
+      "name": "AEC Metro College",
+      "code": "AEC",
+      "status": "Active",
+      "gsName": "Rohit Sharma",
+      "gsEmail": "gs.aec@gmail.com",
+      "contact": "+91 98765 43210",
+      "participantCount": 412,
+      "city": "Mumbai"
+    },
+    {
+      "_id": "col_2",
+      "id": "STX01",
+      "name": "St. Xavier's College",
+      "code": "STX",
+      "status": "Active",
+      "gsName": "Rahul Sharma",
+      "gsEmail": "rahul.gs@stxaviers.edu",
+      "contact": "+91 98765 43210",
+      "participantCount": 320,
+      "city": "Mumbai"
+    },
+    {
+      "_id": "col_3",
+      "id": "IITB02",
+      "name": "IIT Bombay",
+      "code": "IITB",
+      "status": "Active",
+      "gsName": "Sneha Patel",
+      "gsEmail": "sneha.gs@iitb.ac.in",
+      "contact": "+91 98765 11223",
+      "participantCount": 285,
+      "city": "Powai"
+    },
+    {
+      "_id": "col_4",
+      "id": "COEP03",
+      "name": "COEP Technological University",
+      "code": "COEP",
+      "status": "Active",
+      "gsName": "Priya Deshmukh",
+      "gsEmail": "gs.gymkhana@coeptech.ac.in",
+      "contact": "+91 98231 10022",
+      "participantCount": 198,
+      "city": "Pune"
+    },
+    {
+      "_id": "col_5",
+      "id": "KJS05",
+      "name": "KJ Somaiya College",
+      "code": "KJS",
+      "status": "Active",
+      "gsName": "Amit Varma",
+      "gsEmail": "amit.gs@somaiya.edu",
+      "contact": "+91 97654 32109",
+      "participantCount": 164,
+      "city": "Vidyavihar"
+    },
+    {
+      "_id": "col_6",
+      "id": "VJTI06",
+      "name": "VJTI Mumbai",
+      "code": "VJTI",
+      "status": "Active",
+      "gsName": "Kunal Patil",
+      "gsEmail": "gs.vjti@gmail.com",
+      "contact": "+91 98200 45678",
+      "participantCount": 145,
+      "city": "Matunga"
+    }
+  ],
+  "events": [
+    {
+      "_id": "ev_dance",
+      "id": "ev_dance",
+      "name": "Solo Dance Face-off",
+      "category": "Cultural",
+      "date": "Feb 22, 2026",
+      "time": "10:00 AM",
+      "venue": "Main Amphitheatre",
+      "status": "Open",
+      "maxParticipants": 50,
+      "fee": 200
+    },
+    {
+      "_id": "ev_band",
+      "id": "ev_band",
+      "name": "Battle of the Bands",
+      "category": "Music & Dance",
+      "date": "Feb 22, 2026",
+      "time": "02:00 PM",
+      "venue": "Rock Arena",
+      "status": "Open",
+      "maxParticipants": 20,
+      "fee": 800
+    },
+    {
+      "_id": "ev_fashion",
+      "id": "ev_fashion",
+      "name": "Fashion Show",
+      "category": "Fashion & Art",
+      "date": "Feb 23, 2026",
+      "time": "05:00 PM",
+      "venue": "Grand Auditorium",
+      "status": "Open",
+      "maxParticipants": 15,
+      "fee": 1000
+    },
+    {
+      "_id": "ev_drama",
+      "id": "ev_drama",
+      "name": "Street Play",
+      "category": "Drama",
+      "date": "Feb 24, 2026",
+      "time": "11:00 AM",
+      "venue": "Quadrangle",
+      "status": "Open",
+      "maxParticipants": 25,
+      "fee": 500
+    },
+    {
+      "_id": "ev_hack",
+      "id": "ev_hack",
+      "name": "24hr Code Hackathon",
+      "category": "Technical",
+      "date": "Feb 24, 2026",
+      "time": "09:00 AM",
+      "venue": "Tech Center Hall A",
+      "status": "Open",
+      "maxParticipants": 40,
+      "fee": 300
+    },
+    {
+      "_id": "ev_quiz",
+      "id": "ev_quiz",
+      "name": "National Quiz Bowl",
+      "category": "Literary",
+      "date": "Feb 25, 2026",
+      "time": "01:00 PM",
+      "venue": "Seminar Hall 3",
+      "status": "Open",
+      "maxParticipants": 30,
+      "fee": 150
+    }
+  ],
+  "registrations": [
+    {
+      "_id": "reg_0042",
+      "regId": "REG-0042",
+      "studentName": "Aryan Kapoor",
+      "gender": "Male",
+      "contact": "+91 98765 43210",
+      "email": "email@alentad.com",
+      "collegeId": "AEC04",
+      "collegeName": "AEC Metro College",
+      "department": "CSE",
+      "year": "3rd Yr",
+      "events": [
+        "Solo Dance Face-off",
+        "Street Play"
+      ],
+      "eventName": "Solo Dance Face-off, Street Play",
+      "teamName": "AEC Dance Crew",
+      "status": "Approved",
+      "registeredDate": "Oct 12, 2026",
+      "idCardUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=80",
+      "idCardUploaded": true,
+      "remarks": "Approved once for all festival events."
+    },
+    {
+      "_id": "reg_0043",
+      "regId": "REG-0043",
+      "studentName": "Tanvi Shah",
+      "gender": "Female",
+      "contact": "+91 98765 22334",
+      "email": "tanvi.shah@aec.edu",
+      "collegeId": "AEC04",
+      "collegeName": "AEC Metro College",
+      "department": "IT",
+      "year": "2nd Yr",
+      "events": [
+        "Fashion Show"
+      ],
+      "eventName": "Fashion Show",
+      "teamName": "AEC Haute",
+      "status": "Pending",
+      "registeredDate": "Oct 12, 2026",
+      "idCardUrl": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=240&q=80",
+      "idCardUploaded": true,
+      "remarks": "Awaiting single administrative approval."
+    },
+    {
+      "_id": "reg_0044",
+      "regId": "REG-0044",
+      "studentName": "Kabir Mehta",
+      "gender": "Male",
+      "contact": "+91 98765 33445",
+      "email": "kabir.m@aec.edu",
+      "collegeId": "AEC04",
+      "collegeName": "AEC Metro College",
+      "department": "Mechanical",
+      "year": "4th Yr",
+      "events": [
+        "Battle of the Bands",
+        "Solo Dance Face-off"
+      ],
+      "eventName": "Battle of the Bands, Solo Dance Face-off",
+      "teamName": "AEC Rock Crew",
+      "status": "Pending",
+      "registeredDate": "Oct 12, 2026",
+      "idCardUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=240&q=80",
+      "idCardUploaded": true,
+      "remarks": "Pending student verification."
+    },
+    {
+      "_id": "reg_0045",
+      "regId": "REG-0045",
+      "studentName": "Aarav Mehta",
+      "gender": "Male",
+      "contact": "+91 98765 43210",
+      "email": "aarav.m@stxaviers.edu",
+      "collegeId": "STX01",
+      "collegeName": "St. Xavier's College",
+      "department": "Computer Science",
+      "year": "3rd Yr",
+      "events": [
+        "Battle of the Bands"
+      ],
+      "eventName": "Battle of the Bands",
+      "teamName": "The Xavier Octave",
+      "status": "Approved",
+      "registeredDate": "Oct 11, 2026",
+      "idCardUrl": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=240&q=80",
+      "idCardUploaded": true,
+      "remarks": "Lead guitarist. Approved once."
+    },
+    {
+      "_id": "reg_0046",
+      "regId": "REG-0046",
+      "studentName": "Pooja Roy",
+      "gender": "Female",
+      "contact": "+91 98765 11223",
+      "email": "pooja.roy@iitb.ac.in",
+      "collegeId": "IITB02",
+      "collegeName": "IIT Bombay",
+      "department": "Design & Arts",
+      "year": "2nd Yr",
+      "events": [
+        "Fashion Show",
+        "National Quiz Bowl"
+      ],
+      "eventName": "Fashion Show, National Quiz Bowl",
+      "teamName": "Bombay Haute",
+      "status": "Pending",
+      "registeredDate": "Oct 10, 2026",
+      "idCardUrl": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=240&q=80",
+      "idCardUploaded": true,
+      "remarks": "Pending single verification for 2 events."
+    },
+    {
+      "_id": "reg_0047",
+      "regId": "REG-0047",
+      "studentName": "Rohan Das",
+      "gender": "Male",
+      "contact": "+91 97654 32109",
+      "email": "rohan.das@somaiya.edu",
+      "collegeId": "KJS05",
+      "collegeName": "KJ Somaiya College",
+      "department": "Commerce",
+      "year": "4th Yr",
+      "events": [
+        "Street Play"
+      ],
+      "eventName": "Street Play",
+      "teamName": "Nukkad Natak Dal",
+      "status": "Approved",
+      "registeredDate": "Oct 09, 2026",
+      "idCardUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=80",
+      "idCardUploaded": true,
+      "remarks": "Approved once."
+    },
+    {
+      "_id": "reg_0048",
+      "regId": "REG-0048",
+      "studentName": "Ananya Joshi",
+      "gender": "Female",
+      "contact": "+91 98231 10022",
+      "email": "ananya.j@coeptech.ac.in",
+      "collegeId": "COEP03",
+      "collegeName": "COEP Technological University",
+      "department": "ECE",
+      "year": "3rd Yr",
+      "events": [
+        "24hr Code Hackathon"
+      ],
+      "eventName": "24hr Code Hackathon",
+      "teamName": "COEP Coders",
+      "status": "Approved",
+      "registeredDate": "Oct 08, 2026",
+      "idCardUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=80",
+      "idCardUploaded": true,
+      "remarks": "Hackathon team lead. Approved."
+    },
+    {
+      "_id": "reg_0049",
+      "regId": "REG-0049",
+      "studentName": "Vikramaditya Rao",
+      "gender": "Male",
+      "contact": "+91 98200 45678",
+      "email": "vikram.rao@vjti.edu",
+      "collegeId": "VJTI06",
+      "collegeName": "VJTI Mumbai",
+      "department": "IT",
+      "year": "4th Yr",
+      "events": [
+        "National Quiz Bowl"
+      ],
+      "eventName": "National Quiz Bowl",
+      "teamName": "VJTI Quiz League",
+      "status": "Rejected",
+      "registeredDate": "Oct 07, 2026",
+      "idCardUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=80",
+      "idCardUploaded": true,
+      "remarks": "Rejected duplicate registration."
+    }
+  ],
+  "participants": [
+    {
+      "_id": "part_01",
+      "collegeId": "AEC04",
+      "name": "Aryan Kapoor",
+      "gender": "Male",
+      "department": "Computer Science",
+      "year": "2024",
+      "phone": "+91 98765 43210",
+      "email": "aryan.k@aecmetro.edu",
+      "eventId": "ev_dance",
+      "eventName": "Solo Dance Face-off",
+      "teamName": "Solo Entry",
+      "status": "Active",
+      "idCardUploaded": true,
+      "registeredAt": "2026-10-10T11:20:00.000Z"
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act_01",
+      "title": "ABC College added 20 participants",
+      "time": "Just now",
+      "timestamp": "2026-11-18T09:20:00.000Z",
+      "type": "participants_added",
+      "icon": "user-plus",
+      "color": "emerald"
+    },
+    {
+      "_id": "act_02",
+      "title": "New event 'Dance Competition' created",
+      "time": "2 hours ago",
+      "timestamp": "2026-11-18T07:20:00.000Z",
+      "type": "event_created",
+      "icon": "calendar-plus",
+      "color": "amber"
+    },
+    {
+      "_id": "act_03",
+      "title": "XYZ College registration completed",
+      "time": "2 hours ago",
+      "timestamp": "2026-11-18T07:15:00.000Z",
+      "type": "registration_complete",
+      "icon": "file-check",
+      "color": "blue"
+    }
+  ],
+  "notifications": [
+    {
+      "_id": "notif_01",
+      "title": "High Registration Alert",
+      "message": "Solo Dance Face-off is currently at 75% capacity with only 5 slots remaining.",
+      "type": "warning",
+      "targetRole": "all",
+      "read": false,
+      "time": "10 minutes ago"
+    }
+  ],
+  "announcements": [
+    {
+      "_id": "ann_01",
+      "title": "Official Welcome to Melange '26",
+      "content": "All participating colleges are requested to report with student ID credentials at the Central Quadrangle.",
+      "author": "Alex Carter (Fest Admin)",
+      "date": "2026-10-15"
+    }
+  ]
+};
+
+    const Software = {
+      state: {
+        activeRole: 'admin', // 'admin' | 'gs'
+        loginSelectedRole: 'gs', // 'admin' | 'gs' on login tabs
+        activeScreen: 'login', // Initial screen is login
+        currentUser: null,
+        storedUsers: [],
+        sidebarOpen: false,
+
+        // Module 5 (Registration Management) state
+        selectedRegistrations: [],
+        selectedRegistrationForDetail: 'REG-0042',
+        regFilters: {
+          college: 'All',
+          event: 'All',
+          dept: 'All',
+          year: 'All',
+          status: 'All',
+          search: ''
+        },
+        regPage: 1,
+        regPageSize: 10,
+
+        // Module 6 (Reports & Analytics) state
+        activeReportType: 'college_wise',
+        reportViewMode: 'admin', // 'admin' | 'gs'
+        reportGeneratedSuccess: true,
+        reportFilters: {
+          college: 'All',
+          event: 'All',
+          dept: 'All',
+          year: 'All',
+          status: 'All',
+          dateRange: 'Oct 01 - Nov 18, 2026'
+        },
+
+        // GS & Admin Student Enrollment & Directory state
+        enrollSelectedCollege: 'AEC Metro College',
+        selectedEventsForStudent: ['Solo Dance Face-off'],
+        selectedEventForEnroll: 'Solo Dance Face-off',
+        selectedDeptForEnroll: 'CSE',
+        showEnrollSuccessBanner: false,
+        lastEnrolledStudentName: '',
+        lastEnrolledEventsList: [],
+        enrollDirectorySearch: '',
+        enrollDirectoryCollegeFilter: 'All',
+
+        data: null
+      },
+
+      init() {
+        this.loadStoredUsers();
+        this.loadData();
+        this.checkExistingSession();
+        this.render();
+      },
+
+      loadStoredUsers() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_USERS);
+          if (raw) {
+            this.state.storedUsers = JSON.parse(raw);
+          } else {
+            this.state.storedUsers = JSON.parse(JSON.stringify(initialStoredUsers));
+            this.saveStoredUsers();
+          }
+        } catch (e) {
+          this.state.storedUsers = JSON.parse(JSON.stringify(initialStoredUsers));
+        }
+      },
+
+      saveStoredUsers() {
+        try {
+          localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(this.state.storedUsers));
+        } catch (e) {}
+      },
+
+      loadData() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_DATA);
+          if (raw) {
+            this.state.data = JSON.parse(raw);
+          } else {
+            this.state.data = JSON.parse(JSON.stringify(initialFestData));
+            this.saveData();
+          }
+        } catch (e) {
+          this.state.data = JSON.parse(JSON.stringify(initialFestData));
+        }
+      },
+
+      saveData() {
+        try {
+          localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(this.state.data));
+        } catch (e) {}
+      },
+
+      checkExistingSession() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_SESSION);
+          if (raw) {
+            const user = JSON.parse(raw);
+            if (user && user.username) {
+              this.state.currentUser = user;
+              this.state.activeRole = user.role === 'admin' ? 'admin' : 'gs';
+              this.state.activeScreen = user.role === 'admin' ? 'registrations' : 'gs_add_participant';
+            }
+          }
+        } catch (e) {}
+      },
+
+      // Navigation
+      navigateTo(screenId) {
+        this.state.activeScreen = screenId;
+        this.state.sidebarOpen = false;
+        this.render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+
+      toggleSidebar() {
+        this.state.sidebarOpen = !this.state.sidebarOpen;
+        const sb = document.querySelector('.app-sidebar');
+        if (sb) {
+          if (this.state.sidebarOpen) sb.classList.add('sidebar-open');
+          else sb.classList.remove('sidebar-open');
+        }
+      },
+
+      // Auth methods
+      setLoginRole(role) {
+        this.state.loginSelectedRole = role;
+        const adminTab = document.getElementById('roleTabAdmin');
+        const gsTab = document.getElementById('roleTabGs');
+        const userInput = document.getElementById('authUsernameInput');
+        const passInput = document.getElementById('authPasswordInput');
+        const submitBtn = document.getElementById('loginSubmitBtn');
+
+        if (role === 'admin') {
+          if (adminTab) adminTab.classList.add('active-tab');
+          if (gsTab) gsTab.classList.remove('active-tab');
+          if (userInput) userInput.value = 'admin';
+          if (passInput) passInput.value = 'admin123';
+          if (submitBtn) {
+            submitBtn.innerHTML = '<span>Login as Admin</span> <i class="fa-solid fa-arrow-right"></i>';
+            submitBtn.style.background = 'linear-gradient(135deg, #1e1b4b, #31104b)';
+          }
+        } else {
+          if (gsTab) gsTab.classList.add('active-tab');
+          if (adminTab) adminTab.classList.remove('active-tab');
+          if (userInput) userInput.value = 'AEC04-GS';
+          if (passInput) passInput.value = 'password123';
+          if (submitBtn) {
+            submitBtn.innerHTML = '<span>Login as GS</span> <i class="fa-solid fa-arrow-right"></i>';
+            submitBtn.style.background = 'linear-gradient(135deg, #2563eb, #1d4ed8)';
+          }
+        }
+      },
+
+      handleLoginSubmit() {
+        const uInput = document.getElementById('authUsernameInput');
+        const pInput = document.getElementById('authPasswordInput');
+        const remCheckbox = document.getElementById('rememberMeCheckbox');
+
+        const uVal = (uInput && uInput.value.trim()) || '';
+        const pVal = (pInput && pInput.value.trim()) || '';
+        const role = this.state.loginSelectedRole;
+        const expectedRoleKey = role === 'admin' ? 'admin' : 'college_gs';
+
+        if (!uVal || !pVal) {
+          this.showToast('Please enter username and password', true);
+          return;
+        }
+
+        const matched = this.state.storedUsers.find(u => {
+          return (u.username.toLowerCase() === uVal.toLowerCase() || (u.email && u.email.toLowerCase() === uVal.toLowerCase())) &&
+                 (u.password === pVal);
+        });
+
+        if (!matched) {
+          this.showToast('Invalid credentials! Verify username & password.', true);
+          return;
+        }
+
+        if (matched.role !== expectedRoleKey) {
+          this.showToast(`Role Mismatch: Account is '${matched.role === 'admin' ? 'Central Admin' : 'College GS'}'. Please switch tab.`, true);
+          return;
+        }
+
+        matched.lastLogin = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ', ' +
+                            new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        this.saveStoredUsers();
+
+        this.state.currentUser = matched;
+        this.state.activeRole = role;
+
+        if (remCheckbox && remCheckbox.checked) {
+          localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(matched));
+        } else {
+          sessionStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(matched));
+        }
+
+        this.showToast(`Welcome back, ${matched.name}!`);
+        this.state.activeScreen = (role === 'admin' ? 'registrations' : 'gs_add_participant');
+        this.render();
+      },
+
+      handleLogout() {
+        this.state.currentUser = null;
+        localStorage.removeItem(STORAGE_KEY_SESSION);
+        sessionStorage.removeItem(STORAGE_KEY_SESSION);
+        this.state.activeScreen = 'login';
+        this.showToast('Logged out securely.');
+        this.render();
+      },
+
+      togglePasswordVisibility() {
+        const pass = document.getElementById('authPasswordInput');
+        const eye = document.getElementById('passEyeIcon');
+        if (pass && eye) {
+          if (pass.type === 'password') {
+            pass.type = 'text';
+            eye.className = 'fa-solid fa-eye-slash';
+          } else {
+            pass.type = 'password';
+            eye.className = 'fa-solid fa-eye';
+          }
+        }
+      },
+
+      openStoredLoginsModal() {
+        const users = this.state.storedUsers;
+        let html = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">Stored Credentials</h3>
+            <button onclick="Software.closeModal()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
+          </div>
+          <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 16px;">
+            Select any registered account to pre-fill credentials instantly:
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto;">
+            ${users.map(u => `
+              <div style="border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.15s;" onclick="Software.fillCredentials('${u.username}', '${u.password}', '${u.role === 'admin' ? 'admin' : 'gs'}'); Software.closeModal();">
+                <div>
+                  <div style="font-weight: 800; font-size: 0.9rem; color: #0f172a;">${u.name}</div>
+                  <div style="font-size: 0.74rem; color: #64748b;">${u.collegeName || 'Central Directorate'} • <b>${u.username}</b></div>
+                </div>
+                <span class="badge-status ${u.role === 'admin' ? 'badge-approved' : 'badge-pending'}">${u.role === 'admin' ? 'Admin' : 'GS'}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        this.openModal(html);
+      },
+
+      fillCredentials(user, pass, role) {
+        this.setLoginRole(role);
+        const uInput = document.getElementById('authUsernameInput');
+        const pInput = document.getElementById('authPasswordInput');
+        if (uInput) uInput.value = user;
+        if (pInput) pInput.value = pass;
+        this.showToast(`Credentials populated for ${user}`);
+      },
+
+      openRegisterGsModal() {
+        let html = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">Register College General Secretary</h3>
+            <button onclick="Software.closeModal()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">College Name</label>
+              <input type="text" id="newGsCollegeName" class="filter-select" style="width: 100%; height: 42px;" placeholder="e.g. Sardar Patel Institute of Technology" />
+            </div>
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">GS Full Name</label>
+              <input type="text" id="newGsFullName" class="filter-select" style="width: 100%; height: 42px;" placeholder="e.g. Sameer Khanna" />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">Username</label>
+                <input type="text" id="newGsUsername" class="filter-select" style="width: 100%; height: 42px;" placeholder="SPIT01-GS" />
+              </div>
+              <div>
+                <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">Password</label>
+                <input type="password" id="newGsPassword" class="filter-select" style="width: 100%; height: 42px;" placeholder="••••••••" />
+              </div>
+            </div>
+            <button class="btn-action-pill btn-purple-fill" style="width: 100%; height: 44px; margin-top: 10px;" onclick="Software.saveNewGsLogin()">
+              <i class="fa-solid fa-check"></i> Create Stored GS Account
+            </button>
+          </div>
+        `;
+        this.openModal(html);
+      },
+
+      saveNewGsLogin() {
+        const cName = document.getElementById('newGsCollegeName').value.trim();
+        const gsName = document.getElementById('newGsFullName').value.trim();
+        const username = document.getElementById('newGsUsername').value.trim();
+        const pass = document.getElementById('newGsPassword').value.trim();
+
+        if (!cName || !gsName || !username || !pass) {
+          this.showToast('Please fill all fields', true);
+          return;
+        }
+
+        const newUser = {
+          id: 'usr_gs_' + Date.now(),
+          username: username,
+          password: pass,
+          name: gsName,
+          role: 'college_gs',
+          title: 'General Secretary',
+          collegeId: username.substring(0, 4).toUpperCase(),
+          collegeName: cName,
+          email: username.toLowerCase() + '@fest.edu',
+          lastLogin: 'Never'
+        };
+
+        this.state.storedUsers.push(newUser);
+        this.saveStoredUsers();
+        this.closeModal();
+        this.showToast(`GS Account '${username}' created! Switching...`);
+        this.fillCredentials(username, pass, 'gs');
+      },
+
+      // Modal & Toast
+      openModal(html) {
+        const bd = document.getElementById('appModalBackdrop');
+        const c = document.getElementById('appModalContent');
+        if (bd && c) {
+          c.innerHTML = html;
+          bd.style.display = 'flex';
+        }
+      },
+
+      closeModal() {
+        const bd = document.getElementById('appModalBackdrop');
+        if (bd) bd.style.display = 'none';
+      },
+
+      showToast(msg, isError = false) {
+        const toast = document.getElementById('globalToast');
+        const icon = document.getElementById('toastIcon');
+        const txt = document.getElementById('toastMessageText');
+        if (toast && txt) {
+          txt.innerText = msg;
+          if (isError) {
+            toast.style.background = '#991b1b';
+            if (icon) icon.className = 'fa-solid fa-circle-xmark';
+          } else {
+            toast.style.background = '#1e1b4b';
+            if (icon) icon.className = 'fa-solid fa-circle-check';
+          }
+          toast.style.display = 'flex';
+          clearTimeout(this._toastTimer);
+          this._toastTimer = setTimeout(() => {
+            toast.style.display = 'none';
+          }, 3500);
+        }
+      },
+
+      // -------------------------------------------------------------
+      // MODULE 5: REGISTRATION MANAGEMENT LOGIC (IMAGE 5)
+      // SINGLE APPROVAL: One approval approves student for all events!
+      // -------------------------------------------------------------
+      getFilteredRegistrations() {
+        const user = this.state.currentUser;
+        const isGs = this.state.activeRole === 'gs';
+        let regs = this.state.data.registrations || [];
+
+        // Scoping: If College GS, strictly filter to their own college!
+        if (isGs && user && user.collegeName) {
+          regs = regs.filter(r => (r.collegeName && r.collegeName.toLowerCase() === user.collegeName.toLowerCase()) || (r.college && r.college.toLowerCase() === user.collegeName.toLowerCase()));
+        }
+
+        // Apply filters
+        const f = this.state.regFilters;
+        if (f.college !== 'All' && !isGs) {
+          regs = regs.filter(r => (r.collegeName === f.college || r.college === f.college));
+        }
+        if (f.event !== 'All') {
+          regs = regs.filter(r => {
+            const evs = Array.isArray(r.events) ? r.events : (r.eventName ? r.eventName.split(', ') : [r.event]);
+            return evs.includes(f.event);
+          });
+        }
+        if (f.dept !== 'All') {
+          regs = regs.filter(r => (r.department === f.dept || r.dept === f.dept));
+        }
+        if (f.year !== 'All') {
+          regs = regs.filter(r => r.year === f.year);
+        }
+        if (f.status !== 'All') {
+          regs = regs.filter(r => r.status === f.status);
+        }
+        if (f.search) {
+          const q = f.search.toLowerCase();
+          regs = regs.filter(r => {
+            const evs = Array.isArray(r.events) ? r.events.join(' ').toLowerCase() : (r.eventName || '').toLowerCase();
+            return (r.studentName && r.studentName.toLowerCase().includes(q)) ||
+                   (r.regId && r.regId.toLowerCase().includes(q)) ||
+                   (r.collegeName && r.collegeName.toLowerCase().includes(q)) ||
+                   evs.includes(q) ||
+                   (r.contact && r.contact.includes(q));
+          });
+        }
+
+        return regs;
+      },
+
+      setRegFilter(key, val) {
+        this.state.regFilters[key] = val;
+        this.state.regPage = 1;
+        this.render();
+      },
+
+      toggleSelectAllRegs(checked) {
+        const regs = this.getFilteredRegistrations();
+        if (checked) {
+          this.state.selectedRegistrations = regs.map(r => r.regId || r._id);
+        } else {
+          this.state.selectedRegistrations = [];
+        }
+        this.render();
+      },
+
+      toggleSelectReg(regId, checked) {
+        if (checked) {
+          if (!this.state.selectedRegistrations.includes(regId)) {
+            this.state.selectedRegistrations.push(regId);
+          }
+        } else {
+          this.state.selectedRegistrations = this.state.selectedRegistrations.filter(id => id !== regId);
+        }
+        this.render();
+      },
+
+      // Bulk Approve: Approves all selected students once for all their events!
+      bulkApproveRegs() {
+        const ids = this.state.selectedRegistrations;
+        if (!ids.length) {
+          this.showToast('Please select at least one student checkbox', true);
+          return;
+        }
+
+        let approvedNames = [];
+        this.state.data.registrations.forEach(r => {
+          if (ids.includes(r.regId) || ids.includes(r._id)) {
+            r.status = 'Approved';
+            if (!approvedNames.includes(r.studentName)) approvedNames.push(r.studentName);
+          }
+        });
+
+        // Also unify any matching records for the same student
+        this.state.data.registrations.forEach(r => {
+          if (approvedNames.includes(r.studentName)) {
+            r.status = 'Approved';
+          }
+        });
+
+        this.saveData();
+        this.showToast(`✓ Approved ${approvedNames.length} student(s) once for all their festival events!`);
+        this.state.selectedRegistrations = [];
+        this.render();
+      },
+
+      selectRegDetail(regId) {
+        this.state.selectedRegistrationForDetail = regId;
+        this.render();
+      },
+
+      // SINGLE APPROVAL METHOD:
+      // When Admin clicks approve, the student is approved ONCE for all their events!
+      updateRegStatus(regId, newStatus) {
+        const reg = this.state.data.registrations.find(r => r.regId === regId || r._id === regId);
+        if (reg) {
+          const studentName = reg.studentName;
+          const collegeName = reg.collegeName || reg.college;
+
+          // Update this record and all matching student records
+          this.state.data.registrations.forEach(r => {
+            if ((r.regId === regId || r._id === regId) ||
+                (r.studentName.toLowerCase() === studentName.toLowerCase() && (r.collegeName === collegeName || r.college === collegeName))) {
+              r.status = newStatus;
+            }
+          });
+
+          this.saveData();
+
+          const evCount = Array.isArray(reg.events) ? reg.events.length : (reg.eventName ? reg.eventName.split(',').length : 1);
+          if (newStatus === 'Approved') {
+            this.showToast(`✓ ${studentName} approved once for all (${evCount}) enrolled festival events!`);
+          } else {
+            this.showToast(`${studentName} marked as ${newStatus}`);
+          }
+
+          this.render();
+        }
+      },
+
+      deleteReg(regId) {
+        const reg = this.state.data.registrations.find(r => r.regId === regId || r._id === regId);
+        const name = reg ? reg.studentName : regId;
+        if (!confirm(`Confirm permanent deletion of registration for ${name}?`)) return;
+
+        this.state.data.registrations = this.state.data.registrations.filter(r => r.regId !== regId && r._id !== regId);
+        this.saveData();
+        this.showToast(`Student ${name} deleted successfully.`);
+        this.render();
+      },
+
+      openAddRegistrationModal() {
+        this.navigateTo('gs_add_participant');
+      },
+
+      openEditRegModal(regId) {
+        const reg = this.state.data.registrations.find(r => r.regId === regId || r._id === regId);
+        if (!reg) return;
+
+        let html = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">Edit Student Info (${reg.regId})</h3>
+            <button onclick="Software.closeModal()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">Student Name</label>
+              <input type="text" id="editRegName" class="filter-select" style="width: 100%; height: 42px;" value="${reg.studentName}" />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">Contact</label>
+                <input type="text" id="editRegContact" class="filter-select" style="width: 100%; height: 42px;" value="${reg.contact}" />
+              </div>
+              <div>
+                <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">Status (Applies to all events)</label>
+                <select id="editRegStatus" class="filter-select" style="width: 100%; height: 42px;">
+                  <option value="Approved" ${reg.status === 'Approved' ? 'selected' : ''}>Approved (All events)</option>
+                  <option value="Pending" ${reg.status === 'Pending' ? 'selected' : ''}>Pending Verification</option>
+                  <option value="Rejected" ${reg.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">Team Name</label>
+              <input type="text" id="editRegTeam" class="filter-select" style="width: 100%; height: 42px;" value="${reg.teamName || ''}" />
+            </div>
+            <button class="btn-action-pill btn-purple-fill" style="width: 100%; height: 44px; margin-top: 10px;" onclick="Software.saveEditedRegistration('${reg.regId || reg._id}')">
+              <i class="fa-solid fa-check"></i> Save Changes
+            </button>
+          </div>
+        `;
+        this.openModal(html);
+      },
+
+      saveEditedRegistration(regId) {
+        const reg = this.state.data.registrations.find(r => r.regId === regId || r._id === regId);
+        if (reg) {
+          reg.studentName = document.getElementById('editRegName').value.trim();
+          reg.contact = document.getElementById('editRegContact').value.trim();
+          reg.status = document.getElementById('editRegStatus').value;
+          reg.teamName = document.getElementById('editRegTeam').value.trim();
+          this.saveData();
+          this.closeModal();
+          this.showToast(`${reg.studentName} updated successfully!`);
+          this.render();
+        }
+      },
+
+      // Export handlers
+      exportRegistrationsExcel() {
+        const list = this.getFilteredRegistrations();
+        if (!list.length) {
+          this.showToast('No registrations to export', true);
+          return;
+        }
+
+        let csv = 'Registration ID,Student Name,College Name,Department,Year,Enrolled Events,Contact,Email,Status,Date\n';
+        list.forEach(r => {
+          const evStr = Array.isArray(r.events) ? r.events.join('; ') : (r.eventName || r.event || '');
+          csv += `"${r.regId || ''}","${r.studentName || ''}","${r.collegeName || r.college || ''}","${r.department || r.dept || ''}","${r.year || ''}","${evStr}","${r.contact || ''}","${r.email || ''}","${r.status || ''}","${r.registeredDate || ''}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', `Melange_Registrations_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.showToast('Exported registrations to Excel (.csv)');
+      },
+
+      exportRegistrationsPDF() {
+        window.print();
+      },
+
+      printList() {
+        window.print();
+      },
+
+      // -------------------------------------------------------------
+      // MODULE 6: REPORTS & ANALYTICS LOGIC (IMAGE 6)
+      // -------------------------------------------------------------
+      generateReport(type) {
+        this.state.activeReportType = type;
+        this.state.reportGeneratedSuccess = true;
+        this.showToast(`Generated ${type.replace('_', ' ').toUpperCase()} report successfully!`);
+        this.render();
+      },
+
+      setReportFilter(key, val) {
+        this.state.reportFilters[key] = val;
+        this.render();
+      },
+
+      toggleReportScope() {
+        this.state.reportViewMode = this.state.reportViewMode === 'admin' ? 'gs' : 'admin';
+        this.showToast(`Switched report scope to ${this.state.reportViewMode === 'admin' ? 'Admin Full View' : 'College GS Scoped'}`);
+        this.render();
+      },
+
+      getReportPreviewRows() {
+        const isGsScoped = (this.state.reportViewMode === 'gs' || this.state.activeRole === 'gs');
+        const user = this.state.currentUser;
+        let regs = this.state.data.registrations || [];
+
+        if (isGsScoped && user && user.collegeName) {
+          regs = regs.filter(r => (r.collegeName && r.collegeName.toLowerCase() === user.collegeName.toLowerCase()) || (r.college && r.college.toLowerCase() === user.collegeName.toLowerCase()));
+        }
+
+        const rf = this.state.reportFilters;
+        if (rf.college !== 'All' && !isGsScoped) {
+          regs = regs.filter(r => r.collegeName === rf.college || r.college === rf.college);
+        }
+        if (rf.event !== 'All') {
+          regs = regs.filter(r => {
+            const evs = Array.isArray(r.events) ? r.events : (r.eventName ? r.eventName.split(', ') : [r.event]);
+            return evs.includes(rf.event);
+          });
+        }
+        if (rf.dept !== 'All') {
+          regs = regs.filter(r => r.department === rf.dept || r.dept === rf.dept);
+        }
+        if (rf.year !== 'All') {
+          regs = regs.filter(r => r.year === rf.year);
+        }
+        if (rf.status !== 'All') {
+          regs = regs.filter(r => r.status === rf.status);
+        }
+
+        return regs;
+      },
+
+      downloadReportExcel() {
+        const rows = this.getReportPreviewRows();
+        let csv = 'Registration ID,Student Name,College Name,Enrolled Events,Department,Year,Contact Number,Status\n';
+        rows.forEach(r => {
+          const evStr = Array.isArray(r.events) ? r.events.join('; ') : (r.eventName || r.event || '');
+          csv += `"${r.regId || ''}","${r.studentName || ''}","${r.collegeName || r.college || ''}","${evStr}","${r.department || r.dept || ''}","${r.year || ''}","${r.contact || ''}","${r.status || ''}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', `Melange_Report_${this.state.activeReportType}_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.showToast('Downloaded report Excel file');
+      },
+
+      downloadReportPDF() {
+        window.print();
+      },
+
+      // -------------------------------------------------------------
+      // ENROLL STUDENT (MULTI-EVENT TAGGING WITH SINGLE APPROVAL)
+      // -------------------------------------------------------------
+      toggleEventForStudent(eventName, isSelected) {
+        const selectedEvents = this.state.selectedEventsForStudent;
+        if (isSelected && !selectedEvents.includes(eventName)) {
+          selectedEvents.push(eventName);
+        } else if (!isSelected) {
+          this.state.selectedEventsForStudent = selectedEvents.filter(event => event !== eventName);
+        }
+
+        const dropdownWasOpen = document.getElementById('enrollEventsDropdown')?.open;
+        const scrollPosition = window.scrollY;
+        this.render();
+        const dropdown = document.getElementById('enrollEventsDropdown');
+        if (dropdown) dropdown.open = !!dropdownWasOpen;
+        window.scrollTo(0, scrollPosition);
+      },
+
+      removeEventFromStudent(evName) {
+        this.toggleEventForStudent(evName, false);
+      },
+
+      submitEnrollment() {
+        const user = this.state.currentUser;
+        const isAdmin = this.state.activeRole === 'admin';
+
+        const nameInput = document.getElementById('enrollStudentName');
+        const contactInput = document.getElementById('enrollContact');
+        const emailInput = document.getElementById('enrollEmail');
+        const deptSelect = document.getElementById('enrollDept');
+        const yearSelect = document.getElementById('enrollYear');
+        const collegeSelect = document.getElementById('enrollCollege');
+
+        const studentName = (nameInput && nameInput.value.trim()) || '';
+        const contact = (contactInput && contactInput.value.trim()) || '';
+        const email = (emailInput && emailInput.value.trim()) || '';
+        const dept = (deptSelect && deptSelect.value) || 'CSE';
+        const year = (yearSelect && yearSelect.value) || '3rd Yr';
+
+        let collegeName = 'AEC Metro College';
+        if (isAdmin) {
+          collegeName = (collegeSelect && collegeSelect.value) || 'AEC Metro College';
+        } else {
+          collegeName = (user && user.collegeName) || 'AEC Metro College';
+        }
+
+        if (!studentName || !contact) {
+          this.showToast('Please provide Student Name and Contact Number.', true);
+          return;
+        }
+
+        if (!this.state.selectedEventsForStudent.length) {
+          this.showToast('Please select at least one fest event from the dropdown.', true);
+          return;
+        }
+
+        const eventsList = [...this.state.selectedEventsForStudent];
+
+        // Check if this student already exists for this college
+        const existingStudent = this.state.data.registrations.find(r => 
+          r.studentName.toLowerCase() === studentName.toLowerCase() &&
+          (r.collegeName === collegeName || r.college === collegeName)
+        );
+
+        if (existingStudent) {
+          // Merge events into the existing record so Admin approves ONCE
+          if (!Array.isArray(existingStudent.events)) {
+            existingStudent.events = existingStudent.eventName ? existingStudent.eventName.split(', ') : [existingStudent.event];
+          }
+          eventsList.forEach(ev => {
+            if (!existingStudent.events.includes(ev)) {
+              existingStudent.events.push(ev);
+            }
+          });
+          existingStudent.eventName = existingStudent.events.join(', ');
+          existingStudent.contact = contact;
+          existingStudent.department = dept;
+          existingStudent.year = year;
+          this.showToast(`✓ ${studentName} updated with ${eventsList.length} events! Student is approved once across all events.`);
+        } else {
+          // Create ONE student record with all events
+          const nextId = 50 + (this.state.data.registrations.length + 1);
+          const regObj = {
+            _id: 'reg_' + Date.now(),
+            regId: 'REG-00' + nextId,
+            studentName: studentName,
+            gender: 'Male',
+            contact: contact,
+            email: email || (studentName.toLowerCase().replace(/\s+/g, '.') + '@fest.edu'),
+            collegeName: collegeName,
+            college: collegeName,
+            department: dept,
+            dept: dept,
+            year: year,
+            events: eventsList,
+            eventName: eventsList.join(', '),
+            teamName: collegeName + ' Delegation',
+            status: 'Pending', // Single approval required
+            registeredDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            idCardUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=80',
+            idCardUploaded: true,
+            remarks: `Enrolled via ${isAdmin ? 'Central Admin Directorate' : 'College GS Portal'}. Approved once across all events.`
+          };
+          this.state.data.registrations.unshift(regObj);
+          this.showToast(`✓ ${studentName} enrolled! Admin approves once for all ${eventsList.length} event(s).`);
+        }
+
+        this.saveData();
+
+        // Stays directly on Enroll Page!
+        this.state.lastEnrolledStudentName = studentName;
+        this.state.lastEnrolledEventsList = eventsList;
+        this.state.showEnrollSuccessBanner = true;
+        this.state.activeScreen = 'gs_add_participant';
+
+        this.render();
+
+        // Clear name, contact, email for next student, while retaining dept/college/event
+        const nextName = document.getElementById('enrollStudentName');
+        const nextContact = document.getElementById('enrollContact');
+        const nextEmail = document.getElementById('enrollEmail');
+        if (nextName) nextName.value = '';
+        if (nextContact) nextContact.value = '';
+        if (nextEmail) nextEmail.value = '';
+      },
+
+      // Get list of enrolled students for the Enrolled Directory (visible to BOTH Admin & GS)
+      getEnrolledStudentsForDirectory() {
+        const user = this.state.currentUser;
+        const isAdmin = this.state.activeRole === 'admin';
+        let regs = this.state.data.registrations || [];
+
+        // Scoping: If GS, filter strictly to their college
+        if (!isAdmin && user && user.collegeName) {
+          regs = regs.filter(r => (r.collegeName && r.collegeName.toLowerCase() === user.collegeName.toLowerCase()) || (r.college && r.college.toLowerCase() === user.collegeName.toLowerCase()));
+        }
+
+        // Admin college filter
+        if (isAdmin && this.state.enrollDirectoryCollegeFilter !== 'All') {
+          regs = regs.filter(r => r.collegeName === this.state.enrollDirectoryCollegeFilter || r.college === this.state.enrollDirectoryCollegeFilter);
+        }
+
+        // Search filter
+        if (this.state.enrollDirectorySearch) {
+          const q = this.state.enrollDirectorySearch.toLowerCase();
+          regs = regs.filter(r => {
+            const evs = Array.isArray(r.events) ? r.events.join(' ').toLowerCase() : (r.eventName || '').toLowerCase();
+            return (r.studentName && r.studentName.toLowerCase().includes(q)) ||
+                   (r.regId && r.regId.toLowerCase().includes(q)) ||
+                   (r.collegeName && r.collegeName.toLowerCase().includes(q)) ||
+                   evs.includes(q) ||
+                   (r.contact && r.contact.includes(q)) ||
+                   (r.email && r.email.toLowerCase().includes(q));
+          });
+        }
+
+        return regs;
+      },
+
+      // Open Complete Student Details Modal (with all personal, academic, event and verification data)
+      openStudentFullDetailsModal(regId) {
+        const reg = this.state.data.registrations.find(r => r.regId === regId || r._id === regId);
+        if (!reg) return;
+
+        const studentEvents = Array.isArray(reg.events) ? reg.events : (reg.eventName ? reg.eventName.split(', ') : [reg.event || 'Solo Dance Face-off']);
+
+        let html = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <h3 style="font-size: 1.3rem; font-weight: 800; color: #0f172a;">Student Profile & Dossier</h3>
+              <span class="badge-status ${reg.status === 'Approved' ? 'badge-approved' : (reg.status === 'Pending' ? 'badge-pending' : 'badge-rejected')}">
+                ${reg.status}
+              </span>
+            </div>
+            <button onclick="Software.closeModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 18px;">
+            <!-- Top Hero with Avatar & Name -->
+            <div style="display: flex; align-items: center; gap: 16px; padding: 16px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
+              <img src="${reg.idCardUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}" style="width: 64px; height: 64px; border-radius: 16px; object-fit: cover; border: 2px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" alt="Student photo" />
+              <div>
+                <div style="font-size: 1.2rem; font-weight: 800; color: #0f172a;">${reg.studentName}</div>
+                <div style="font-size: 0.82rem; color: #64748b; margin-top: 2px;">
+                  <b>${reg.regId}</b> • ${reg.collegeName || reg.college}
+                </div>
+                <div style="font-size: 0.76rem; color: #10b981; font-weight: 700; margin-top: 2px;">
+                  <i class="fa-solid fa-circle-check"></i> Enrolled for ${studentEvents.length} Event(s) (Single Approval Active)
+                </div>
+              </div>
+            </div>
+
+            <!-- Single Approval Action buttons -->
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-action-pill btn-green-fill" style="flex: 1; height: 42px; font-weight: 800;" onclick="Software.updateRegStatus('${reg.regId}', 'Approved'); Software.closeModal();">
+                <i class="fa-solid fa-check"></i> Approve Student (All ${studentEvents.length} Events)
+              </button>
+              <button class="btn-action-pill" style="color: #b91c1c; border-color: #fecaca; height: 42px;" onclick="Software.updateRegStatus('${reg.regId}', 'Rejected'); Software.closeModal();">
+                Reject
+              </button>
+              <button class="btn-action-pill" style="height: 42px;" onclick="Software.closeModal(); Software.openManageStudentEventsModal('${reg.regId}');">
+                <i class="fa-solid fa-calendar-plus"></i> Manage Events
+              </button>
+            </div>
+
+            <!-- Personal Details -->
+            <div class="detail-section-block">
+              <div class="detail-section-heading">Personal Details</div>
+              <div class="detail-data-row">
+                <span class="detail-data-label">Full Name</span>
+                <span class="detail-data-val">${reg.studentName}</span>
+              </div>
+              <div class="detail-data-row">
+                <span class="detail-data-label">Gender</span>
+                <span class="detail-data-val">${reg.gender || 'Male'}</span>
+              </div>
+              <div class="detail-data-row">
+                <span class="detail-data-label">Contact Number (WhatsApp)</span>
+                <span class="detail-data-val"><a href="tel:${reg.contact}" style="color: #2563eb; text-decoration: none;">${reg.contact || '+91 98765 43210'}</a></span>
+              </div>
+              <div class="detail-data-row">
+                <span class="detail-data-label">Email Address</span>
+                <span class="detail-data-val">${reg.email || 'email@fest.edu'}</span>
+              </div>
+            </div>
+
+            <!-- Academic Details -->
+            <div class="detail-section-block">
+              <div class="detail-section-heading">Academic Details</div>
+              <div class="detail-data-row">
+                <span class="detail-data-label">College / Institute</span>
+                <span class="detail-data-val">${reg.collegeName || reg.college}</span>
+              </div>
+              <div class="detail-data-row">
+                <span class="detail-data-label">Department</span>
+                <span class="detail-data-val">${reg.department || reg.dept || 'CSE'}</span>
+              </div>
+              <div class="detail-data-row">
+                <span class="detail-data-label">Academic Year</span>
+                <span class="detail-data-val">${reg.year || '3rd Yr'}</span>
+              </div>
+            </div>
+
+            <!-- Enrolled Events with Badges -->
+            <div class="detail-section-block">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="detail-section-heading">Enrolled Events (${studentEvents.length})</div>
+                <button class="btn-action-pill" style="height: 28px; padding: 0 10px; font-size: 0.74rem;" onclick="Software.closeModal(); Software.openManageStudentEventsModal('${reg.regId}');">
+                  + Add / Remove Events
+                </button>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+                ${studentEvents.map(ev => `
+                  <span class="event-chip-tag" style="padding: 6px 12px; font-size: 0.8rem;">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>${ev}</span>
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Verification Image / ID Card -->
+            <div class="detail-section-block">
+              <div class="detail-section-heading">College Verification ID Card</div>
+              <div class="detail-id-card-preview" style="height: 140px;">
+                <img src="${reg.idCardUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=80'}" alt="College Student ID" />
+              </div>
+              <div style="font-size: 0.72rem; color: #64748b; margin-top: 4px;">
+                Registered Date: <b>${reg.registeredDate || 'Oct 12, 2026'}</b> • Team: <b>${reg.teamName || 'Solo Entry'}</b>
+              </div>
+            </div>
+          </div>
+        `;
+        this.openModal(html);
+      },
+
+      // Edit all event assignments on the student's single registration record
+      openManageStudentEventsModal(regId) {
+        const reg = this.state.data.registrations.find(r => r.regId === regId || r._id === regId);
+        if (!reg) return;
+
+        const currentEvents = Array.isArray(reg.events) ? reg.events : (reg.eventName ? reg.eventName.split(', ') : [reg.event || 'Solo Dance Face-off']);
+        const allEvents = this.state.data.events || [];
+
+        let html = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">Manage Events for ${reg.studentName}</h3>
+            <button onclick="Software.closeModal()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
+          </div>
+
+          <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 14px;">
+            Select every event this student should be registered for. The student's existing approval status is preserved.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: #475569;">
+              Choose Events (${currentEvents.length} selected)
+            </label>
+            <div style="max-height: 320px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px;">
+              ${allEvents.map(event => `
+                <label style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer;">
+                  <input type="checkbox" name="managedStudentEvents" value="${event.name}" ${currentEvents.includes(event.name) ? 'checked' : ''} />
+                  <span style="font-size: 0.86rem; color: #1e293b;">${event.name} <span style="color: #64748b;">(${event.category})</span></span>
+                </label>
+              `).join('')}
+            </div>
+            <button class="btn-action-pill btn-purple-fill" style="height: 42px; justify-content: center;" onclick="Software.saveManagedStudentEvents('${regId}')">
+              <i class="fa-solid fa-check"></i> Save Event Changes
+            </button>
+          </div>
+        `;
+        this.openModal(html);
+      },
+
+      saveManagedStudentEvents(regId) {
+        const reg = this.state.data.registrations.find(r => r.regId === regId || r._id === regId);
+        if (!reg) return;
+
+        const selectedEvents = [...document.querySelectorAll('#appModalContent input[name="managedStudentEvents"]:checked')]
+          .map(input => input.value);
+        if (!selectedEvents.length) {
+          this.showToast('Select at least one event for this student.', true);
+          return;
+        }
+
+        reg.events = selectedEvents;
+        reg.eventName = selectedEvents.join(', ');
+        this.saveData();
+        this.closeModal();
+        this.showToast(`${reg.studentName}'s events updated.`);
+        this.render();
+      },
+
+      // -------------------------------------------------------------
+      // RENDERING ENGINE
+      // -------------------------------------------------------------
+      render() {
+        const shell = document.getElementById('appShell');
+        if (!shell) return;
+
+        if (this.state.activeScreen === 'login') {
+          shell.innerHTML = this.renderLoginScreen();
+          return;
+        }
+
+        // Render Authenticated Portal (Images 5 & 6)
+        shell.innerHTML = `
+          <div class="portal-wrapper">
+            <!-- Left Dark Indigo Navigation Sidebar -->
+            ${this.renderSidebar()}
+
+            <!-- Right Workspace Content -->
+            <div class="app-workspace-content">
+              <!-- Top App Header -->
+              ${this.renderTopHeader()}
+
+              <!-- Dynamic Workspace View -->
+              <div class="screen-container">
+                ${this.renderActiveScreenView()}
+              </div>
+            </div>
+          </div>
+        `;
+      },
+
+      renderSidebar() {
+        const role = this.state.activeRole;
+        const screen = this.state.activeScreen;
+        const isGs = role === 'gs';
+
+        return `
+          <aside class="app-sidebar ${this.state.sidebarOpen ? 'sidebar-open' : ''}">
+            <div class="sidebar-top">
+              <div class="sidebar-brand" onclick="Software.navigateTo('registrations')">
+                <div class="sidebar-brand-icon">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                  <div class="sidebar-brand-title">Melange</div>
+                  <div class="sidebar-brand-sub">Event Management Portal</div>
+                </div>
+              </div>
+
+              <nav class="sidebar-nav-menu">
+                <div class="sidebar-nav-item ${screen === 'admin_dashboard' ? 'active' : ''}" onclick="Software.navigateTo('admin_dashboard')">
+                  <i class="fa-solid fa-table-cells-large"></i>
+                  <span>Dashboard</span>
+                </div>
+
+                <div class="sidebar-nav-item ${screen === 'colleges' ? 'active' : ''}" onclick="Software.navigateTo('colleges')">
+                  <i class="fa-solid fa-graduation-cap"></i>
+                  <span>Colleges</span>
+                </div>
+
+                <div class="sidebar-nav-item ${screen === 'events' ? 'active' : ''}" onclick="Software.navigateTo('events')">
+                  <i class="fa-solid fa-calendar"></i>
+                  <span>Events</span>
+                </div>
+
+                <!-- REGISTRATIONS (MODULE 5) -->
+                <div class="sidebar-nav-item ${screen === 'registrations' ? 'active' : ''}" onclick="Software.navigateTo('registrations')">
+                  <i class="fa-solid fa-clipboard-list"></i>
+                  <span>Registrations</span>
+                </div>
+
+                <!-- REPORTS (MODULE 6) -->
+                <div class="sidebar-nav-item ${screen === 'reports' ? 'active' : ''}" onclick="Software.navigateTo('reports')">
+                  <i class="fa-solid fa-chart-column"></i>
+                  <span>Reports</span>
+                </div>
+
+                <!-- ENROLL STUDENT (VISIBLE TO BOTH ADMIN AND GS) -->
+                <div class="sidebar-nav-item ${screen === 'gs_add_participant' ? 'active' : ''}" onclick="Software.navigateTo('gs_add_participant')">
+                  <i class="fa-solid fa-user-plus"></i>
+                  <span>Enroll Student</span>
+                </div>
+
+                <div class="sidebar-nav-item ${screen === 'announcements' ? 'active' : ''}" onclick="Software.showToast('Announcements channel up to date!')">
+                  <i class="fa-solid fa-bullhorn"></i>
+                  <span>Announcements</span>
+                </div>
+
+                <div class="sidebar-nav-item ${screen === 'settings' ? 'active' : ''}" onclick="Software.showToast('Directorate security & fest preferences active')">
+                  <i class="fa-solid fa-gear"></i>
+                  <span>Settings</span>
+                </div>
+              </nav>
+            </div>
+
+            <div class="sidebar-bottom">
+              <button class="sidebar-logout-btn" onclick="Software.handleLogout()">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Logout</span>
+              </button>
+            </div>
+          </aside>
+        `;
+      },
+
+      renderTopHeader() {
+        const screen = this.state.activeScreen;
+        const user = this.state.currentUser;
+        const isGs = this.state.activeRole === 'gs';
+
+        let title = 'Registration Management';
+        let desc = 'Monitor, verify, and manage all participant registrations received from different colleges';
+
+        if (screen === 'reports') {
+          title = 'Reports & Analytics';
+          desc = 'Generate cross-college reports, track real-time attendance, and inspect festival analytics';
+        } else if (screen === 'gs_add_participant') {
+          title = 'Student Enrollment & Directory';
+          desc = isGs 
+            ? `Enroll students from ${(user && user.collegeName) || 'your college'} & view complete student details`
+            : 'Central Festival Directorate enrollment & complete student directory across all colleges';
+        } else if (screen === 'admin_dashboard') {
+          title = 'Festival Directorate Dashboard';
+          desc = 'Live metrics, college engagement indices, and recent activities';
+        }
+
+        return `
+          <header class="app-topbar">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <button class="topbar-mobile-menu-btn" onclick="Software.toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <div class="topbar-page-info">
+                <div class="topbar-page-title">
+                  <span>${title}</span>
+                  ${screen === 'reports' ? `<span class="auth-gold-badge" style="background: #2563eb; font-size: 0.68rem; padding: 2px 10px;">🔒 Admin Access</span>` : ''}
+                </div>
+                <div class="topbar-page-desc">${desc}</div>
+              </div>
+            </div>
+
+            <div class="topbar-actions-group">
+              <div class="topbar-search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search ${screen === 'reports' ? 'reports...' : 'registrations...'}" value="${this.state.regFilters.search}" oninput="Software.setRegFilter('search', this.value)" />
+              </div>
+
+              <div style="cursor: pointer; position: relative;" onclick="Software.showToast('You have 3 unread festival notifications')">
+                <i class="fa-regular fa-bell" style="font-size: 1.15rem; color: #475569;"></i>
+                <span style="position: absolute; top: -4px; right: -4px; width: 8px; height: 8px; background: #2563eb; border-radius: 50%;"></span>
+              </div>
+
+              <div class="topbar-user-profile">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" class="topbar-avatar" alt="Avatar" />
+                <div class="topbar-user-meta">
+                  <span class="topbar-user-name">${(user && user.name) || (isGs ? 'Rohit Sharma' : 'Alex Carter')}</span>
+                  <span class="topbar-user-role">${isGs ? 'College GS' : 'Event Administrator'}</span>
+                </div>
+              </div>
+              <button class="topbar-logout-btn" onclick="Software.handleLogout()" title="Log out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Logout</span>
+              </button>
+            </div>
+          </header>
+        `;
+      },
+
+      renderActiveScreenView() {
+        const screen = this.state.activeScreen;
+        if (screen === 'registrations') {
+          return this.renderRegistrationManagementScreen();
+        } else if (screen === 'reports') {
+          return this.renderReportsManagementScreen();
+        } else if (screen === 'gs_add_participant') {
+          return this.renderEnrollmentAndDirectoryScreen();
+        } else {
+          return this.renderRegistrationManagementScreen();
+        }
+      },
+
+      // -------------------------------------------------------------
+      // IMAGE 5: REGISTRATION MANAGEMENT SCREEN
+      // SINGLE-APPROVAL REPLICA: One row per student, one single approval!
+      // -------------------------------------------------------------
+      renderRegistrationManagementScreen() {
+        const regs = this.getFilteredRegistrations();
+        const totalCount = regs.length;
+        const pendingCount = regs.filter(r => r.status === 'Pending').length;
+        const approvedCount = regs.filter(r => r.status === 'Approved').length;
+        const rejectedCount = regs.filter(r => r.status === 'Rejected').length;
+
+        const isGs = this.state.activeRole === 'gs';
+        const user = this.state.currentUser;
+        const colleges = this.state.data.colleges || [];
+        const events = this.state.data.events || [];
+        const rf = this.state.regFilters;
+
+        // Selected registration detail
+        const currentDetailId = this.state.selectedRegistrationForDetail;
+        const selectedReg = regs.find(r => r.regId === currentDetailId || r._id === currentDetailId) || regs[0] || null;
+
+        // Pagination
+        const pageSize = this.state.regPageSize;
+        const curPage = this.state.regPage;
+        const startIdx = (curPage - 1) * pageSize;
+        const pagedRegs = regs.slice(startIdx, startIdx + pageSize);
+
+        return `
+          <!-- TOP ACTION BAR ROW (Approve Selected, Export Excel, Export PDF, Print List) -->
+          <div class="action-bar-row">
+            <div style="font-size: 0.95rem; font-weight: 800; color: #1e293b;">
+              Overview & Controls <span style="font-size: 0.76rem; font-weight: 600; color: #059669; background: #ecfdf5; padding: 2px 8px; border-radius: 6px; margin-left: 8px;">Single Student Approval Active</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <button class="btn-action-pill btn-purple-fill" onclick="Software.bulkApproveRegs()">
+                <i class="fa-solid fa-plus"></i> Approve Selected Students (${this.state.selectedRegistrations.length})
+              </button>
+              <button class="btn-action-pill" onclick="Software.exportRegistrationsExcel()">
+                <i class="fa-regular fa-file-excel" style="color: #10b981;"></i> Export Excel
+              </button>
+              <button class="btn-action-pill" onclick="Software.exportRegistrationsPDF()">
+                <i class="fa-regular fa-file-pdf" style="color: #ef4444;"></i> Export PDF
+              </button>
+              <button class="btn-action-pill" onclick="Software.printList()">
+                <i class="fa-solid fa-print"></i> Print List
+              </button>
+              <button class="btn-action-pill btn-green-fill" onclick="Software.navigateTo('gs_add_participant')">
+                <i class="fa-solid fa-user-plus"></i> + Enroll Student
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 KPI METRIC CARDS (Total, Pending, Approved, Rejected) -->
+          <div class="kpi-cards-grid">
+            <div class="kpi-card">
+              <div class="kpi-meta-left">
+                <div class="kpi-title">Total Registrations</div>
+                <div class="kpi-big-num">${totalCount >= 8 ? '1,240' : totalCount}</div>
+                <div class="kpi-subtext">Across ${isGs ? user.collegeName : 'all colleges'}</div>
+              </div>
+              <div class="kpi-icon-pill kpi-icon-purple">
+                <i class="fa-solid fa-users"></i>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-meta-left">
+                <div class="kpi-title">Pending Verification</div>
+                <div class="kpi-big-num" style="color: #d97706;">${pendingCount >= 2 ? '184' : pendingCount}</div>
+                <div class="kpi-subtext" style="color: #d97706;">
+                  <i class="fa-solid fa-triangle-exclamation"></i> Action required
+                </div>
+              </div>
+              <div class="kpi-icon-pill kpi-icon-gold">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-meta-left">
+                <div class="kpi-title">Approved Participants</div>
+                <div class="kpi-big-num" style="color: #15803d;">${approvedCount >= 4 ? '982' : approvedCount}</div>
+                <div class="kpi-subtext" style="color: #15803d;">
+                  <i class="fa-solid fa-circle-check"></i> Confirmed entries
+                </div>
+              </div>
+              <div class="kpi-icon-pill kpi-icon-green">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-meta-left">
+                <div class="kpi-title">Rejected Entries</div>
+                <div class="kpi-big-num" style="color: #b91c1c;">${rejectedCount >= 1 ? '74' : rejectedCount}</div>
+                <div class="kpi-subtext" style="color: #b91c1c;">
+                  <i class="fa-solid fa-circle-xmark"></i> Issues found
+                </div>
+              </div>
+              <div class="kpi-icon-pill kpi-icon-red">
+                <i class="fa-solid fa-circle-xmark"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- FILTER BAR (College, Event, Department, Year, Status) -->
+          <div class="filter-bar-card">
+            <div class="filter-dropdown-group">
+              <div class="filter-item">
+                <label class="filter-label">Select College</label>
+                <select class="filter-select" onchange="Software.setRegFilter('college', this.value)" ${isGs ? 'disabled style="background: #f1f5f9;"' : ''}>
+                  ${isGs ? `<option value="${user.collegeName}">${user.collegeName}</option>` : `
+                    <option value="All" ${rf.college === 'All' ? 'selected' : ''}>All Colleges</option>
+                    ${colleges.map(c => `<option value="${c.name}" ${rf.college === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}
+                  `}
+                </select>
+              </div>
+
+              <div class="filter-item">
+                <label class="filter-label">Select Event</label>
+                <select class="filter-select" onchange="Software.setRegFilter('event', this.value)">
+                  <option value="All" ${rf.event === 'All' ? 'selected' : ''}>All Events</option>
+                  ${events.map(e => `<option value="${e.name}" ${rf.event === e.name ? 'selected' : ''}>${e.name}</option>`).join('')}
+                </select>
+              </div>
+
+              <div class="filter-item">
+                <label class="filter-label">Select Department</label>
+                <select class="filter-select" onchange="Software.setRegFilter('dept', this.value)">
+                  <option value="All" ${rf.dept === 'All' ? 'selected' : ''}>All Departments</option>
+                  <option value="CSE" ${rf.dept === 'CSE' ? 'selected' : ''}>CSE</option>
+                  <option value="IT" ${rf.dept === 'IT' ? 'selected' : ''}>IT</option>
+                  <option value="ECE" ${rf.dept === 'ECE' ? 'selected' : ''}>ECE</option>
+                  <option value="Design & Arts" ${rf.dept === 'Design & Arts' ? 'selected' : ''}>Design & Arts</option>
+                  <option value="Commerce" ${rf.dept === 'Commerce' ? 'selected' : ''}>Commerce</option>
+                </select>
+              </div>
+
+              <div class="filter-item">
+                <label class="filter-label">Select Year</label>
+                <select class="filter-select" onchange="Software.setRegFilter('year', this.value)">
+                  <option value="All" ${rf.year === 'All' ? 'selected' : ''}>All Years</option>
+                  <option value="1st Yr" ${rf.year === '1st Yr' ? 'selected' : ''}>1st Yr</option>
+                  <option value="2nd Yr" ${rf.year === '2nd Yr' ? 'selected' : ''}>2nd Yr</option>
+                  <option value="3rd Yr" ${rf.year === '3rd Yr' ? 'selected' : ''}>3rd Yr</option>
+                  <option value="4th Yr" ${rf.year === '4th Yr' ? 'selected' : ''}>4th Yr</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="filter-item">
+              <label class="filter-label">Registration Status</label>
+              <div class="filter-status-pills">
+                <button class="filter-status-pill ${rf.status === 'All' ? 'active' : ''}" onclick="Software.setRegFilter('status', 'All')">All</button>
+                <button class="filter-status-pill ${rf.status === 'Pending' ? 'active' : ''}" onclick="Software.setRegFilter('status', 'Pending')">Pending</button>
+                <button class="filter-status-pill ${rf.status === 'Approved' ? 'active' : ''}" onclick="Software.setRegFilter('status', 'Approved')">Approved</button>
+                <button class="filter-status-pill ${rf.status === 'Rejected' ? 'active' : ''}" onclick="Software.setRegFilter('status', 'Rejected')">Rejected</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- DUAL MAIN AREA: Recent Registrations Table + Participant Details Drawer -->
+          <div class="table-details-dual-split">
+            <!-- Table Container -->
+            <div class="melange-table-card">
+              <div class="table-card-header">
+                <div class="table-card-title">
+                  <span>Recent Registrations</span>
+                  <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">(${regs.length} Students)</span>
+                </div>
+                <div style="font-size: 0.78rem; color: #64748b;">
+                  Selected: <b>${this.state.selectedRegistrations.length}</b>
+                </div>
+              </div>
+
+              <div class="table-scroll-wrap">
+                <table class="melange-data-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 38px;">
+                        <input type="checkbox" onchange="Software.toggleSelectAllRegs(this.checked)" ${this.state.selectedRegistrations.length === regs.length && regs.length > 0 ? 'checked' : ''} style="cursor: pointer;" />
+                      </th>
+                      <th>Registration ID</th>
+                      <th>Student Name</th>
+                      <th>College Name</th>
+                      <th>Department & Year</th>
+                      <th>Enrolled Events</th>
+                      <th>Contact</th>
+                      <th>Status</th>
+                      <th style="text-align: center;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${pagedRegs.length > 0 ? pagedRegs.map(r => {
+                      const id = r.regId || r._id;
+                      const isSel = this.state.selectedRegistrations.includes(id);
+                      const isDetailActive = selectedReg && (selectedReg.regId === id || selectedReg._id === id);
+                      const stClass = r.status === 'Approved' ? 'badge-approved' : (r.status === 'Pending' ? 'badge-pending' : 'badge-rejected');
+                      const evList = Array.isArray(r.events) ? r.events : (r.eventName ? r.eventName.split(', ') : [r.event || 'Solo Dance Face-off']);
+
+                      return `
+                        <tr class="${isSel || isDetailActive ? 'selected-row' : ''}">
+                          <td>
+                            <input type="checkbox" onchange="Software.toggleSelectReg('${id}', this.checked)" ${isSel ? 'checked' : ''} style="cursor: pointer;" />
+                          </td>
+                          <td>
+                            <span style="font-weight: 700; color: #1e1b4b; cursor: pointer;" onclick="Software.selectRegDetail('${id}')">${r.regId || id}</span>
+                          </td>
+                          <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                              <img src="${r.idCardUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80'}" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover;" alt="Avatar" />
+                              <span style="font-weight: 800; color: #0f172a; cursor: pointer;" onclick="Software.selectRegDetail('${id}')">${r.studentName}</span>
+                            </div>
+                          </td>
+                          <td>${r.collegeName || r.college || 'AEC Metro College'}</td>
+                          <td>${r.department || r.dept || 'CSE'} / ${r.year || '3rd Yr'}</td>
+                          <td>
+                            <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 240px;">
+                              ${evList.map(ev => `
+                                <span class="event-chip-tag" title="Click to manage events" onclick="Software.openManageStudentEventsModal('${id}')" style="cursor: pointer;">
+                                  <i class="fa-solid fa-trophy"></i> ${ev}
+                                </span>
+                              `).join('')}
+                            </div>
+                          </td>
+                          <td>${r.contact || '+91 98765 43210'}</td>
+                          <td>
+                            <span class="badge-status ${stClass}">${r.status}</span>
+                          </td>
+                          <td>
+                            <div class="table-actions-cell" style="justify-content: center;">
+                              <button class="btn-row-action" title="View Details" onclick="Software.selectRegDetail('${id}')">
+                                <i class="fa-regular fa-eye"></i>
+                              </button>
+                              <button class="btn-row-action" title="Manage Events" onclick="Software.openManageStudentEventsModal('${id}')">
+                                <i class="fa-solid fa-calendar-plus"></i>
+                              </button>
+                              <button class="btn-row-action" title="Edit Student" onclick="Software.openEditRegModal('${id}')">
+                                <i class="fa-solid fa-pen"></i>
+                              </button>
+                              <button class="btn-row-action action-approve" title="Approve Student (All Events)" onclick="Software.updateRegStatus('${id}', 'Approved')">
+                                <i class="fa-solid fa-check"></i>
+                              </button>
+                              <button class="btn-row-action action-delete" title="Delete Student" onclick="Software.deleteReg('${id}')">
+                                <i class="fa-regular fa-trash-can"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      `;
+                    }).join('') : `
+                      <tr>
+                        <td colspan="9" style="text-align: center; padding: 36px 20px; color: #64748b;">
+                          No participant registrations found matching current filters.
+                        </td>
+                      </tr>
+                    `}
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Pagination Footer (Showing 1-10 of 1,240, < 1 >) -->
+              <div class="table-pagination-footer">
+                <div>
+                  Showing ${pagedRegs.length > 0 ? (startIdx + 1) : 0}-${Math.min(startIdx + pageSize, regs.length)} of ${regs.length >= 8 ? '1,240' : regs.length}
+                </div>
+                <div class="pagination-controls">
+                  <button class="btn-page-nav" onclick="Software.state.regPage = Math.max(1, Software.state.regPage - 1); Software.render();">
+                    <i class="fa-solid fa-chevron-left"></i>
+                  </button>
+                  <button class="btn-page-nav active">1</button>
+                  <button class="btn-page-nav" onclick="Software.showToast('Showing next registered batch')">2</button>
+                  <button class="btn-page-nav" onclick="Software.state.regPage = Software.state.regPage + 1; Software.render();">
+                    <i class="fa-solid fa-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Participant Details Panel (Image 5 Replica) -->
+            ${selectedReg ? (() => {
+              const selEvents = Array.isArray(selectedReg.events) ? selectedReg.events : (selectedReg.eventName ? selectedReg.eventName.split(', ') : [selectedReg.event || 'Solo Dance Face-off']);
+
+              return `
+                <aside class="right-detail-drawer">
+                  <div class="detail-drawer-header">
+                    <div class="detail-drawer-title">Participant Details</div>
+                    <span class="badge-status ${selectedReg.status === 'Approved' ? 'badge-approved' : (selectedReg.status === 'Pending' ? 'badge-pending' : 'badge-rejected')}">
+                      ${selectedReg.status}
+                    </span>
+                  </div>
+
+                  <!-- SINGLE APPROVAL BUTTON (Approves student once for all events) -->
+                  <div class="detail-actions-top">
+                    <button class="btn-action-pill btn-purple-fill" style="width: 100%; height: 44px; font-weight: 800;" onclick="Software.updateRegStatus('${selectedReg.regId || selectedReg._id}', 'Approved')">
+                      <i class="fa-solid fa-check"></i> Approve Student (All ${selEvents.length} Events)
+                    </button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                      <button class="btn-action-pill" style="color: #b91c1c; border-color: #fecaca;" onclick="Software.updateRegStatus('${selectedReg.regId || selectedReg._id}', 'Rejected')">
+                        Reject
+                      </button>
+                      <button class="btn-action-pill" onclick="Software.openEditRegModal('${selectedReg.regId || selectedReg._id}')">
+                        Edit Details
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Personal Details -->
+                  <div class="detail-section-block">
+                    <div class="detail-section-heading">Personal Details</div>
+                    <div class="detail-data-row">
+                      <span class="detail-data-label">Full Name</span>
+                      <span class="detail-data-val">${selectedReg.studentName}</span>
+                    </div>
+                    <div class="detail-data-row">
+                      <span class="detail-data-label">Gender</span>
+                      <span class="detail-data-val">${selectedReg.gender || 'Male'}</span>
+                    </div>
+                    <div class="detail-data-row">
+                      <span class="detail-data-label">Contact</span>
+                      <span class="detail-data-val">${selectedReg.contact || '+91 98765 43210'}</span>
+                    </div>
+                    <div class="detail-data-row">
+                      <span class="detail-data-label">Email</span>
+                      <span class="detail-data-val">${selectedReg.email || 'email@alentad.com'}</span>
+                    </div>
+                  </div>
+
+                  <!-- Academic Details -->
+                  <div class="detail-section-block">
+                    <div class="detail-section-heading">Academic Details</div>
+                    <div class="detail-data-row">
+                      <span class="detail-data-label">College</span>
+                      <span class="detail-data-val">${selectedReg.collegeName || selectedReg.college || 'AEC Metro College'}</span>
+                    </div>
+                    <div class="detail-data-row">
+                      <span class="detail-data-label">Department</span>
+                      <span class="detail-data-val">${selectedReg.department || selectedReg.dept || 'CSE'}</span>
+                    </div>
+                    <div class="detail-data-row">
+                      <span class="detail-data-label">Year</span>
+                      <span class="detail-data-val">${selectedReg.year || '3rd'}</span>
+                    </div>
+                  </div>
+
+                  <!-- Event Details: Lists all enrolled events -->
+                  <div class="detail-section-block">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div class="detail-section-heading">Enrolled Events (${selEvents.length})</div>
+                      <button class="btn-action-pill" style="height: 26px; padding: 0 8px; font-size: 0.72rem;" onclick="Software.openManageStudentEventsModal('${selectedReg.regId || selectedReg._id}')">
+                        + Add / Remove
+                      </button>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0;">
+                      ${selEvents.map(ev => `
+                        <span class="event-chip-tag" style="padding: 5px 10px; font-size: 0.78rem;">
+                          <i class="fa-solid fa-trophy"></i> ${ev}
+                        </span>
+                      `).join('')}
+                    </div>
+                    <div class="detail-data-row">
+                      <span class="detail-data-label">Team Name</span>
+                      <span class="detail-data-val">"${selectedReg.teamName || 'Solo Entry'}"</span>
+                    </div>
+                    <div class="detail-data-row">
+                      <span class="detail-data-label">Registration Date</span>
+                      <span class="detail-data-val">${selectedReg.registeredDate || 'Oct 12, 2026'}</span>
+                    </div>
+                    <div class="detail-data-row">
+                      <span class="detail-data-label">Approval Status</span>
+                      <span class="detail-data-val" style="color: ${selectedReg.status === 'Approved' ? '#059669' : '#d97706'}; font-weight: 800;">
+                        ${selectedReg.status === 'Approved' ? 'Approved (All events)' : (selectedReg.status === 'Pending' ? 'Pending Approval' : 'Rejected')}
+                      </span>
+                    </div>
+                    <div>
+                      <span class="detail-data-label" style="display: block; margin-bottom: 6px;">Verification ID card</span>
+                      <div class="detail-id-card-preview">
+                        <img src="${selectedReg.idCardUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=80'}" alt="Uploaded College ID" />
+                      </div>
+                    </div>
+                  </div>
+                </aside>
+              `;
+            })() : ''}
+          </div>
+        `;
+      },
+
+      // -------------------------------------------------------------
+      // ENROLL STUDENT & DETAILED ENROLLED DIRECTORY SCREEN
+      // -------------------------------------------------------------
+      renderEnrollmentAndDirectoryScreen() {
+        const user = this.state.currentUser;
+        const isAdmin = this.state.activeRole === 'admin';
+        const userCollege = (user && user.collegeName) || 'AEC Metro College';
+        const events = this.state.data.events || [];
+        const colleges = this.state.data.colleges || [];
+        const selectedEvents = this.state.selectedEventsForStudent;
+
+        // Enrolled students list
+        const enrolledStudents = this.getEnrolledStudentsForDirectory();
+
+        return `
+          <!-- Role Adaptive Header Notice -->
+          <div style="background: linear-gradient(90deg, #1e1b4b 0%, #2e266d 100%); color: #ffffff; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; box-shadow: 0 4px 14px rgba(30, 27, 75, 0.2);">
+            <div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.25rem; font-weight: 800;">
+                  ${isAdmin ? 'Central Festival Directorate • Student Enrollment' : userCollege + ' • Official Enrollment'}
+                </span>
+                <span class="auth-gold-badge" style="font-size: 0.72rem; padding: 2px 10px;">
+                  ${isAdmin ? 'Full Admin Access' : 'College GS Scoped'}
+                </span>
+              </div>
+              <div style="font-size: 0.82rem; color: #cbd5e1; margin-top: 3px;">
+                Authorized User: <b>${(user && user.name) || (isAdmin ? 'Alex Carter' : 'Rohit Sharma')}</b> • 
+                ${isAdmin ? 'Enrolling & viewing students across ALL participating colleges' : 'Enrolling students for ' + userCollege}
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-action-pill" style="height: 38px; background: rgba(255,255,255,0.15); color: #ffffff; border-color: rgba(255,255,255,0.3);" onclick="Software.navigateTo('registrations')">
+                <i class="fa-solid fa-list-check"></i> View Full Registrations Table
+              </button>
+            </div>
+          </div>
+
+          <!-- SUCCESS ALERT: Displays prominently after enrolling and stays on page -->
+          ${this.state.showEnrollSuccessBanner ? `
+            <div style="background: #ecfdf5; border: 1.5px solid #a7f3d0; border-radius: 16px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 14px; animation: toastSlideIn 0.3s ease;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fa-solid fa-circle-check" style="color: #059669; font-size: 1.5rem;"></i>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.95rem; color: #065f46;">
+                    ✓ ${this.state.lastEnrolledStudentName} enrolled successfully!
+                  </div>
+                  <div style="font-size: 0.82rem; color: #047857; margin-top: 2px;">
+                    Enrolled in: <b>${this.state.lastEnrolledEventsList.join(', ')}</b>. Admin approves once across all events.
+                  </div>
+                </div>
+              </div>
+              <button onclick="Software.state.showEnrollSuccessBanner = false; Software.render();" style="background: none; border: none; font-size: 1.1rem; color: #047857; cursor: pointer;">✕</button>
+            </div>
+          ` : ''}
+
+          <!-- Enrollment Form Container -->
+          <div class="melange-table-card" style="padding: 26px 28px; width: 100%;">
+            <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">Quick Student Enrollment Form</h2>
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 2px;">
+                  Tag multiple events from dropdown. The student is approved once by Admin covering all tagged events.
+                </p>
+              </div>
+              <span class="badge-status badge-approved" style="font-size: 0.78rem;">
+                <i class="fa-solid fa-shield-halved"></i> Single-Approval Mode
+              </span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <!-- College Selector -->
+              <div>
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">
+                  College / Institute *
+                </label>
+                ${isAdmin ? `
+                  <select id="enrollCollege" class="filter-select" style="width: 100%; height: 44px; font-size: 0.92rem;">
+                    ${colleges.map(c => `<option value="${c.name}" ${c.name === 'AEC Metro College' ? 'selected' : ''}>${c.name} (${c.city || 'Active College'})</option>`).join('')}
+                  </select>
+                ` : `
+                  <div style="position: relative; display: flex; align-items: center;">
+                    <input type="text" id="enrollCollege" class="filter-select" style="width: 100%; height: 44px; font-size: 0.92rem; background: #f8fafc; font-weight: 700; color: #1e1b4b; cursor: not-allowed;" value="${userCollege}" readonly />
+                    <span style="position: absolute; right: 12px; font-size: 0.75rem; font-weight: 700; color: #059669; background: #ecfdf5; padding: 2px 8px; border-radius: 6px;">
+                      <i class="fa-solid fa-lock"></i> Locked to Your GS Account
+                    </span>
+                  </div>
+                `}
+              </div>
+
+              <!-- Student Full Name & Gender -->
+              <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px;">
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Student Full Name *</label>
+                  <input type="text" id="enrollStudentName" class="filter-select" style="width: 100%; height: 44px; font-size: 0.92rem;" placeholder="e.g. Aryan Kapoor" />
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Gender</label>
+                  <select id="enrollGender" class="filter-select" style="width: 100%; height: 44px; font-size: 0.92rem;">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Contact & Email -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">WhatsApp / Contact Number *</label>
+                  <input type="text" id="enrollContact" class="filter-select" style="width: 100%; height: 44px; font-size: 0.92rem;" placeholder="+91 98765 43210" />
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Student Email</label>
+                  <input type="email" id="enrollEmail" class="filter-select" style="width: 100%; height: 44px; font-size: 0.92rem;" placeholder="student@college.edu" />
+                </div>
+              </div>
+
+              <!-- Department & Year (Retained across entries) -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Department *</label>
+                  <select id="enrollDept" class="filter-select" style="width: 100%; height: 44px; font-size: 0.92rem;">
+                    <option value="CSE" selected>Computer Science (CSE)</option>
+                    <option value="IT">Information Technology (IT)</option>
+                    <option value="ECE">Electronics (ECE)</option>
+                    <option value="Mechanical">Mechanical Engineering</option>
+                    <option value="Commerce">Commerce & Management</option>
+                    <option value="Design & Arts">Design & Fine Arts</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Academic Year *</label>
+                  <select id="enrollYear" class="filter-select" style="width: 100%; height: 44px; font-size: 0.92rem;">
+                    <option value="1st Yr">1st Year (FE)</option>
+                    <option value="2nd Yr">2nd Year (SE)</option>
+                    <option value="3rd Yr" selected>3rd Year (TE)</option>
+                    <option value="4th Yr">4th Year (BE)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- FEST EVENTS DROPDOWN (Events appear in dropdown automatically) -->
+              <div style="border-top: 1px solid #f1f5f9; padding-top: 14px;">
+                <label style="font-size: 0.85rem; font-weight: 800; color: #0f172a; margin-bottom: 6px; display: block;">
+                  Select Events for This Student * (Multi-select)
+                </label>
+                <details id="enrollEventsDropdown" style="margin-bottom: 10px;">
+                  <summary style="height: 44px; display: flex; align-items: center; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #ffffff; cursor: pointer; font-size: 0.88rem;">
+                    Choose events (${selectedEvents.length} selected)
+                  </summary>
+                  <div style="max-height: 240px; overflow-y: auto; margin-top: 6px; border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff;">
+                    ${events.map(event => `
+                      <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer;">
+                        <input type="checkbox" name="enrollEvents" value="${event.name}" ${selectedEvents.includes(event.name) ? 'checked' : ''} onchange="Software.toggleEventForStudent('${event.name}', this.checked)" />
+                        <span style="font-size: 0.84rem; color: #1e293b;">${event.name} <span style="color: #64748b;">(${event.category})</span></span>
+                      </label>
+                    `).join('')}
+                  </div>
+                </details>
+
+                <!-- Selected Events Badges (Add & Remove events chips) -->
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 40px; padding: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px;">
+                  ${selectedEvents.length > 0 ? selectedEvents.map(ev => `
+                    <span style="background: #1e1b4b; color: #ffffff; padding: 6px 12px; border-radius: 9999px; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+                      <span>${ev}</span>
+                      <i class="fa-solid fa-xmark" style="cursor: pointer; opacity: 0.8;" onclick="Software.removeEventFromStudent('${ev}')" title="Remove event"></i>
+                    </span>
+                  `).join('') : `
+                    <span style="color: #94a3b8; font-size: 0.8rem; font-weight: 600;">No events selected yet. Pick an event from the dropdown above.</span>
+                  `}
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <button class="btn-action-pill btn-purple-fill" style="width: 100%; height: 48px; font-size: 0.98rem; border-radius: 12px; margin-top: 6px;" onclick="Software.submitEnrollment()">
+                <i class="fa-solid fa-check"></i> Enroll Student & Add Another
+              </button>
+            </div>
+          </div>
+
+          <!-- =================================================================
+               ENROLLED STUDENTS DIRECTORY WITH COMPLETE DETAILS
+               ================================================================= -->
+          <div class="melange-table-card" style="width: 100%;">
+            <div class="table-card-header" style="flex-wrap: wrap; gap: 14px;">
+              <div>
+                <div class="table-card-title">
+                  <i class="fa-solid fa-id-card" style="color: #6d28d9;"></i>
+                  <span>Enrolled Students Directory</span>
+                  <span style="font-size: 0.82rem; font-weight: 600; color: #64748b;">(${enrolledStudents.length} Students)</span>
+                </div>
+                <div style="font-size: 0.76rem; color: #64748b; margin-top: 2px;">
+                  One unified row per student. Admin approves once for all events!
+                </div>
+              </div>
+
+              <!-- Directory Search & Filters -->
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                ${isAdmin ? `
+                  <select class="filter-select" style="height: 36px;" onchange="Software.state.enrollDirectoryCollegeFilter = this.value; Software.render();">
+                    <option value="All">All Colleges</option>
+                    ${colleges.map(c => `<option value="${c.name}" ${Software.state.enrollDirectoryCollegeFilter === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}
+                  </select>
+                ` : ''}
+
+                <div class="topbar-search-box" style="display: block; width: 220px;">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" placeholder="Search enrolled students..." value="${this.state.enrollDirectorySearch}" oninput="Software.state.enrollDirectorySearch = this.value; Software.render();" />
+                </div>
+              </div>
+            </div>
+
+            <div class="table-scroll-wrap">
+              <table class="melange-data-table">
+                <thead>
+                  <tr>
+                    <th>Registration ID</th>
+                    <th>Student Name</th>
+                    <th>College Name</th>
+                    <th>Department & Year</th>
+                    <th>Enrolled Events</th>
+                    <th>Contact Info</th>
+                    <th>Status</th>
+                    <th style="text-align: center;">Single Approval & Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${enrolledStudents.length > 0 ? enrolledStudents.map(r => {
+                    const id = r.regId || r._id;
+                    const stClass = r.status === 'Approved' ? 'badge-approved' : (r.status === 'Pending' ? 'badge-pending' : 'badge-rejected');
+                    const evList = Array.isArray(r.events) ? r.events : (r.eventName ? r.eventName.split(', ') : [r.event || 'Solo Dance Face-off']);
+
+                    return `
+                      <tr>
+                        <td>
+                          <span style="font-weight: 800; color: #1e1b4b; cursor: pointer;" onclick="Software.openStudentFullDetailsModal('${id}')">
+                            ${r.regId || id}
+                          </span>
+                        </td>
+                        <td>
+                          <div style="display: flex; align-items: center; gap: 8px;">
+                            <img src="${r.idCardUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80'}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" alt="Avatar" />
+                            <span style="font-weight: 800; color: #0f172a; cursor: pointer;" onclick="Software.openStudentFullDetailsModal('${id}')">
+                              ${r.studentName}
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <span style="font-weight: 600; color: #334155;">${r.collegeName || r.college}</span>
+                        </td>
+                        <td>
+                          ${r.department || r.dept || 'CSE'} • ${r.year || '3rd Yr'}
+                        </td>
+                        <td>
+                          <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 230px;">
+                            ${evList.map(ev => `
+                              <span class="event-chip-tag" title="Click to manage events" onclick="Software.openManageStudentEventsModal('${id}')" style="cursor: pointer;">
+                                <i class="fa-solid fa-trophy"></i> ${ev}
+                              </span>
+                            `).join('')}
+                          </div>
+                        </td>
+                        <td>
+                          <div style="font-size: 0.8rem; line-height: 1.2;">
+                            <div style="font-weight: 700; color: #1e293b;">${r.contact || '+91 98765 43210'}</div>
+                            <div style="font-size: 0.72rem; color: #64748b;">${r.email || 'email@fest.edu'}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <span class="badge-status ${stClass}">${r.status}</span>
+                        </td>
+                        <td>
+                          <div class="table-actions-cell" style="justify-content: center;">
+                            <button class="btn-action-pill ${r.status === 'Approved' ? 'btn-green-fill' : ''}" style="height: 30px; padding: 0 10px; font-size: 0.76rem;" onclick="Software.updateRegStatus('${id}', 'Approved')" title="Approve student once for all events">
+                              <i class="fa-solid fa-check"></i> ${r.status === 'Approved' ? 'Approved' : 'Approve Once'}
+                            </button>
+                            <button class="btn-row-action" title="View Full Dossier" onclick="Software.openStudentFullDetailsModal('${id}')">
+                              <i class="fa-regular fa-eye"></i>
+                            </button>
+                            <button class="btn-row-action" title="Manage Events" onclick="Software.openManageStudentEventsModal('${id}')">
+                              <i class="fa-solid fa-calendar-plus"></i>
+                            </button>
+                            <button class="btn-row-action action-delete" title="Delete Student" onclick="Software.deleteReg('${id}')">
+                              <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('') : `
+                    <tr>
+                      <td colspan="8" style="text-align: center; padding: 36px 20px; color: #64748b;">
+                        No enrolled students found matching current directory search.
+                      </td>
+                    </tr>
+                  `}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      },
+
+      // -------------------------------------------------------------
+      // IMAGE 6: REPORTS & ANALYTICS SCREEN
+      // -------------------------------------------------------------
+      renderReportsManagementScreen() {
+        const previewRows = this.getReportPreviewRows();
+        const colleges = this.state.data.colleges || [];
+        const events = this.state.data.events || [];
+        const rf = this.state.reportFilters;
+
+        return `
+          <!-- Mode Switch & Controls -->
+          <div class="action-bar-row">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-weight: 800; font-size: 0.95rem; color: #1e293b;">Report Scope:</span>
+              <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.82rem; font-weight: 600; color: #475569;">
+                <input type="checkbox" onchange="Software.toggleReportScope()" ${this.state.reportViewMode === 'gs' ? 'checked' : ''} style="cursor: pointer;" />
+                <span>Only College GS preview if needed, but primarily Admin View</span>
+              </label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="badge-status badge-approved" style="font-size: 0.78rem;">
+                View: ${this.state.reportViewMode === 'admin' ? 'Admin Mode' : 'College GS Mode'}
+              </span>
+            </div>
+          </div>
+
+          <!-- 4 KPI METRIC CARDS -->
+          <div class="kpi-cards-grid">
+            <div class="kpi-card">
+              <div class="kpi-meta-left">
+                <div class="kpi-title">Total Registered Colleges</div>
+                <div class="kpi-big-num">42</div>
+                <div class="kpi-subtext">All active</div>
+              </div>
+              <div class="kpi-icon-pill kpi-icon-purple">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-meta-left">
+                <div class="kpi-title">Total Participants</div>
+                <div class="kpi-big-num">1,240</div>
+                <div class="kpi-subtext">Across all events</div>
+              </div>
+              <div class="kpi-icon-pill kpi-icon-blue">
+                <i class="fa-solid fa-users"></i>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-meta-left">
+                <div class="kpi-title">Total Events</div>
+                <div class="kpi-big-num">28</div>
+                <div class="kpi-subtext">Cultural & sports</div>
+              </div>
+              <div class="kpi-icon-pill kpi-icon-gold">
+                <i class="fa-regular fa-calendar"></i>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-meta-left">
+                <div class="kpi-title">Completed Registrations</div>
+                <div class="kpi-big-num" style="color: #15803d;">1,110</div>
+                <div class="kpi-subtext" style="color: #15803d;">Verifications done</div>
+              </div>
+              <div class="kpi-icon-pill kpi-icon-green">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reports & Charts -->
+          <div class="reports-charts-split">
+            <div style="display: flex; flex-direction: column; gap: 18px;">
+              <div class="reports-types-grid">
+                <div class="report-card-item">
+                  <div>
+                    <div class="report-card-title">College-wise Report</div>
+                    <div class="report-card-desc">View participant details based on colleges</div>
+                  </div>
+                  <button class="btn-action-pill" style="width: 100%; border-color: #cbd5e1;" onclick="Software.generateReport('college_wise')">
+                    Generate Report
+                  </button>
+                </div>
+
+                <div class="report-card-item">
+                  <div>
+                    <div class="report-card-title">Event-wise Report</div>
+                    <div class="report-card-desc">Analyze registrations for each event</div>
+                  </div>
+                  <button class="btn-action-pill" style="width: 100%; border-color: #cbd5e1;" onclick="Software.generateReport('event_wise')">
+                    Generate Report
+                  </button>
+                </div>
+
+                <div class="report-card-item">
+                  <div>
+                    <div class="report-card-title">Participant Report</div>
+                    <div class="report-card-desc">Complete list of registered participants</div>
+                  </div>
+                  <button class="btn-action-pill" style="width: 100%; border-color: #cbd5e1;" onclick="Software.generateReport('participant')">
+                    Generate Report
+                  </button>
+                </div>
+
+                <div class="report-card-item">
+                  <div>
+                    <div class="report-card-title">Attendance Report</div>
+                    <div class="report-card-desc">Track event day attendance</div>
+                  </div>
+                  <button class="btn-action-pill" style="width: 100%; border-color: #cbd5e1;" onclick="Software.generateReport('attendance')">
+                    Generate Report
+                  </button>
+                </div>
+              </div>
+
+              <!-- Advanced Filters Card -->
+              <div class="report-card-item">
+                <div class="report-card-title" style="margin-bottom: 4px;">Advanced Filters</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <div class="filter-item">
+                    <label class="filter-label">Select College</label>
+                    <select class="filter-select" onchange="Software.setReportFilter('college', this.value)">
+                      <option value="All">All Colleges</option>
+                      ${colleges.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
+                    </select>
+                  </div>
+
+                  <div class="filter-item">
+                    <label class="filter-label">Select Event</label>
+                    <select class="filter-select" onchange="Software.setReportFilter('event', this.value)">
+                      <option value="All">All Events</option>
+                      ${events.map(e => `<option value="${e.name}">${e.name}</option>`).join('')}
+                    </select>
+                  </div>
+
+                  <div class="filter-item">
+                    <label class="filter-label">Select Department</label>
+                    <select class="filter-select" onchange="Software.setReportFilter('dept', this.value)">
+                      <option value="All">All Departments</option>
+                      <option value="CSE">CSE</option>
+                      <option value="Design & Arts">Design & Arts</option>
+                      <option value="Commerce">Commerce</option>
+                    </select>
+                  </div>
+
+                  <div class="filter-item">
+                    <label class="filter-label">Select Year</label>
+                    <select class="filter-select" onchange="Software.setReportFilter('year', this.value)">
+                      <option value="All">All Years</option>
+                      <option value="1st Yr">1st Yr</option>
+                      <option value="2nd Yr">2nd Yr</option>
+                      <option value="3rd Yr">3rd Yr</option>
+                      <option value="4th Yr">4th Yr</option>
+                    </select>
+                  </div>
+
+                  <div class="filter-item">
+                    <label class="filter-label">Registration Status</label>
+                    <select class="filter-select" onchange="Software.setReportFilter('status', this.value)">
+                      <option value="All">All Statuses</option>
+                      <option value="Approved">Approved</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                  </div>
+
+                  <div class="filter-item">
+                    <label class="filter-label">Registration Date Range</label>
+                    <input type="text" class="filter-select" value="Oct 01 - Nov 18, 2026" readonly />
+                  </div>
+                </div>
+
+                <button class="btn-action-pill btn-purple-fill" style="width: 100%; height: 42px; margin-top: 6px;" onclick="Software.showToast('Advanced filters applied!')">
+                  Apply Filters
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Side: Analytics Charts -->
+            <div class="analytics-chart-card">
+              <div class="chart-header">
+                <div class="chart-title">Analytics</div>
+                <div class="chart-legend">
+                  <div class="legend-item">
+                    <div class="legend-color-box" style="background: #1e1b4b;"></div>
+                    <span>College Participation</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color-box" style="background: #d97706;"></div>
+                    <span>Registration Trends</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="font-size: 0.88rem; font-weight: 700; color: #1e293b;">College Participation</div>
+
+              <div style="width: 100%; height: 210px; position: relative;">
+                <svg viewBox="0 0 460 200" style="width: 100%; height: 100%;">
+                  <line x1="40" y1="20" x2="440" y2="20" stroke="#f1f5f9" stroke-width="1.5" />
+                  <text x="15" y="24" font-size="10" fill="#94a3b8">130</text>
+
+                  <line x1="40" y1="55" x2="440" y2="55" stroke="#f1f5f9" stroke-width="1.5" />
+                  <text x="15" y="59" font-size="10" fill="#94a3b8">100</text>
+
+                  <line x1="40" y1="90" x2="440" y2="90" stroke="#f1f5f9" stroke-width="1.5" />
+                  <text x="15" y="94" font-size="10" fill="#94a3b8">80</text>
+
+                  <line x1="40" y1="125" x2="440" y2="125" stroke="#f1f5f9" stroke-width="1.5" />
+                  <text x="15" y="129" font-size="10" fill="#94a3b8">60</text>
+
+                  <line x1="40" y1="160" x2="440" y2="160" stroke="#f1f5f9" stroke-width="1.5" />
+                  <text x="15" y="164" font-size="10" fill="#94a3b8">20</text>
+
+                  <!-- Jan -->
+                  <rect x="70" y="80" width="16" height="80" rx="4" fill="#6d28d9" />
+                  <rect x="90" y="120" width="16" height="40" rx="4" fill="#3b82f6" />
+
+                  <!-- Feb -->
+                  <rect x="150" y="110" width="16" height="50" rx="4" fill="#6d28d9" />
+                  <rect x="170" y="90" width="16" height="70" rx="4" fill="#3b82f6" />
+
+                  <!-- Mar -->
+                  <rect x="230" y="45" width="16" height="115" rx="4" fill="#d97706" />
+                  <rect x="250" y="70" width="16" height="90" rx="4" fill="#2563eb" />
+
+                  <!-- Apr -->
+                  <rect x="310" y="130" width="16" height="30" rx="4" fill="#6d28d9" />
+                  <rect x="330" y="115" width="16" height="45" rx="4" fill="#d97706" />
+
+                  <!-- May -->
+                  <rect x="390" y="125" width="16" height="35" rx="4" fill="#d97706" />
+
+                  <!-- Trend Line -->
+                  <polyline points="78,135 158,110 238,80 318,120 398,90" fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round" />
+                  <circle cx="78" cy="135" r="4" fill="#ffffff" stroke="#d97706" stroke-width="2" />
+                  <circle cx="158" cy="110" r="4" fill="#ffffff" stroke="#d97706" stroke-width="2" />
+                  <circle cx="238" cy="80" r="4" fill="#ffffff" stroke="#d97706" stroke-width="2" />
+                  <circle cx="318" cy="120" r="4" fill="#ffffff" stroke="#d97706" stroke-width="2" />
+                  <circle cx="398" cy="90" r="4" fill="#ffffff" stroke="#d97706" stroke-width="2" />
+
+                  <text x="75" y="180" font-size="11" fill="#64748b" font-weight="600">Jan</text>
+                  <text x="155" y="180" font-size="11" fill="#64748b" font-weight="600">Feb</text>
+                  <text x="235" y="180" font-size="11" fill="#64748b" font-weight="600">Mar</text>
+                  <text x="315" y="180" font-size="11" fill="#64748b" font-weight="600">Apr</text>
+                  <text x="395" y="180" font-size="11" fill="#64748b" font-weight="600">May</text>
+                </svg>
+              </div>
+
+              <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f5f9; padding-top: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <span style="font-size: 0.8rem; font-weight: 700; color: #475569;">Event Category Distribution</span>
+                  <div style="font-size: 0.74rem; color: #64748b; display: flex; gap: 10px;">
+                    <span>● Cultural (42%)</span>
+                    <span>● Technical (28%)</span>
+                    <span>● Sports (30%)</span>
+                  </div>
+                </div>
+                <svg width="60" height="60" viewBox="0 0 42 42">
+                  <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#e2e8f0" stroke-width="6"></circle>
+                  <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#6d28d9" stroke-width="6" stroke-dasharray="42 58" stroke-dashoffset="25"></circle>
+                  <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#f59e0b" stroke-width="6" stroke-dasharray="28 72" stroke-dashoffset="83"></circle>
+                  <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#2563eb" stroke-width="6" stroke-dasharray="30 70" stroke-dashoffset="55"></circle>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Report Preview -->
+          <div class="melange-table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">
+                <span>Report Preview</span>
+                ${this.state.reportGeneratedSuccess ? `
+                  <span class="badge-status badge-approved" style="font-size: 0.76rem; font-weight: 700; margin-left: 10px;">
+                    Report generated successfully ✓
+                  </span>
+                ` : ''}
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="btn-action-pill btn-green-fill" onclick="Software.downloadReportExcel()">
+                  <i class="fa-solid fa-download"></i> Download Excel
+                </button>
+                <button class="btn-action-pill btn-red-fill" onclick="Software.downloadReportPDF()">
+                  <i class="fa-solid fa-download"></i> Download PDF
+                </button>
+                <button class="btn-action-pill" onclick="window.print()">
+                  <i class="fa-solid fa-print"></i> Print Report
+                </button>
+              </div>
+            </div>
+
+            <div class="table-scroll-wrap">
+              <table class="melange-data-table">
+                <thead>
+                  <tr>
+                    <th>Registration ID</th>
+                    <th>Student Name</th>
+                    <th>College Name</th>
+                    <th>Enrolled Events</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th>Contact Number</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${previewRows.length > 0 ? previewRows.map(r => {
+                    const evStr = Array.isArray(r.events) ? r.events.join(', ') : (r.eventName || r.event || '');
+                    return `
+                      <tr>
+                        <td style="font-weight: 700; color: #1e1b4b;">${r.regId || r._id}</td>
+                        <td style="font-weight: 700; color: #0f172a;">${r.studentName}</td>
+                        <td>${r.collegeName || r.college || 'AEC Metro College'}</td>
+                        <td>${evStr}</td>
+                        <td>${r.department || r.dept || 'CSE'}</td>
+                        <td>${r.year || '3rd Yr'}</td>
+                        <td>${r.contact || '+91 98765 43210'}</td>
+                        <td>
+                          <span class="badge-status ${r.status === 'Approved' ? 'badge-approved' : (r.status === 'Pending' ? 'badge-pending' : 'badge-rejected')}">
+                            ${r.status}
+                          </span>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('') : `
+                    <tr>
+                      <td colspan="8" style="text-align: center; padding: 30px; color: #64748b;">
+                        No report records matching criteria. Click 'Generate Report' above.
+                      </td>
+                    </tr>
+                  `}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      },
+
+      // -------------------------------------------------------------
+      // IMAGE 1 AUTHENTICATION SCREEN REPLICA
+      // -------------------------------------------------------------
+      renderLoginScreen() {
+        const isGs = this.state.loginSelectedRole === 'gs';
+
+        return `
+          <div class="auth-page-container">
+            <div class="auth-dual-grid">
+
+              <!-- Left Branding Card -->
+              <div class="auth-banner-card">
+                <svg class="auth-buntings-decor" viewBox="0 0 140 70" fill="none">
+                  <path d="M0 8 Q70 30 140 8" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-dasharray="3 3"/>
+                  <polygon points="15,12 25,32 5,32" fill="#f59e0b" opacity="0.9"/>
+                  <polygon points="40,17 52,38 30,38" fill="#8b5cf6" opacity="0.9"/>
+                  <polygon points="68,20 80,42 58,42" fill="#ec4899" opacity="0.9"/>
+                  <polygon points="98,17 110,38 88,38" fill="#3b82f6" opacity="0.9"/>
+                  <polygon points="124,12 134,30 114,30" fill="#10b981" opacity="0.9"/>
+                </svg>
+
+                <div>
+                  <div class="auth-banner-top">
+                    <div class="auth-brand-emblem">
+                      <i class="fa-solid fa-crown auth-crown-icon"></i>
+                      <div>
+                        <div class="auth-brand-logo">Melange</div>
+                        <div class="auth-brand-sub">ANNUAL INTER-COLLEGIATE FEST</div>
+                      </div>
+                    </div>
+                    <span class="auth-gold-badge">FESTIVAL EDITION 2026</span>
+                  </div>
+
+                  <h1 class="auth-headline">
+                    Melange Event<br/>Management Portal
+                  </h1>
+
+                  <div class="auth-feature-list">
+                    <div class="auth-feature-item">
+                      <div class="auth-feat-icon-gold">
+                        <i class="fa-solid fa-chess-king"></i>
+                      </div>
+                      <div>
+                        <div class="auth-feat-title">Festival Administrators:</div>
+                        <div class="auth-feat-desc">Full central control, event schedule & cross-college analytics.</div>
+                      </div>
+                    </div>
+
+                    <div class="auth-feature-item">
+                      <div class="auth-feat-icon-gold">
+                        <i class="fa-solid fa-users"></i>
+                      </div>
+                      <div>
+                        <div class="auth-feat-title">College General Secretaries:</div>
+                        <div class="auth-feat-desc">Manage your college participants & event entries seamlessly.</div>
+                      </div>
+                    </div>
+
+                    <div class="auth-feature-item">
+                      <div class="auth-feat-icon-gold">
+                        <i class="fa-solid fa-shield-halved"></i>
+                      </div>
+                      <div>
+                        <div class="auth-feat-title">Security & Stored Logins:</div>
+                        <div class="auth-feat-desc">Secure tokens, remember-me session persistence, role separation.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 24px; position: relative; z-index: 2;">
+                  <button class="btn-action-pill" style="height: 38px; font-size: 0.8rem; font-weight: 800; background: #f59e0b; color: #1e1b4b; border: none; border-radius: 9999px; padding: 0 16px;" onclick="Software.openStoredLoginsModal()">
+                    <i class="fa-solid fa-key" style="margin-right: 4px;"></i> Stored Logins (${this.state.storedUsers.length})
+                  </button>
+                  <button class="btn-action-pill" style="height: 38px; font-size: 0.8rem; font-weight: 700; background: rgba(255,255,255,0.12); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); border-radius: 9999px; padding: 0 14px;" onclick="Software.openRegisterGsModal()">
+                    <i class="fa-solid fa-user-plus" style="margin-right: 4px;"></i> + New GS
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right Form Card -->
+              <div class="auth-form-card">
+                <div>
+                  <h2 class="auth-form-title">Welcome Back</h2>
+                  <p class="auth-form-sub">Sign in to access your designated role portal</p>
+
+                  <!-- Dual Role Toggle Tabs -->
+                  <div class="auth-tab-row">
+                    <div id="roleTabAdmin" class="auth-role-tab ${!isGs ? 'active-tab' : ''}" onclick="Software.setLoginRole('admin')">
+                      <div class="auth-tab-icon-wrap icon-wrap-admin">
+                        <i class="fa-solid fa-shield-halved"></i>
+                      </div>
+                      <span class="auth-tab-label">Central Admin</span>
+                    </div>
+
+                    <div id="roleTabGs" class="auth-role-tab ${isGs ? 'active-tab' : ''}" onclick="Software.setLoginRole('gs')">
+                      <div class="auth-corner-ribbon"></div>
+                      <div class="auth-tab-icon-wrap icon-wrap-gs">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                      </div>
+                      <span class="auth-tab-label">College GS</span>
+                    </div>
+                  </div>
+
+                  <!-- Username Field -->
+                  <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">Username / Official ID</label>
+                    <div class="auth-input-wrap">
+                      <i class="fa-solid fa-user input-icon-left"></i>
+                      <input type="text" id="authUsernameInput" placeholder="Username" value="${isGs ? 'AEC04-GS' : 'admin'}" />
+                    </div>
+                  </div>
+
+                  <!-- Password Field -->
+                  <div style="margin-bottom: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                      <label style="font-size: 0.82rem; font-weight: 700; color: #334155; margin: 0;">Password</label>
+                      <span style="font-size: 0.74rem; color: #64748b; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="Software.togglePasswordVisibility()">
+                        <span>Show password</span>
+                        <i id="passEyeIcon" class="fa-solid fa-eye" style="font-size: 0.76rem;"></i>
+                      </span>
+                    </div>
+                    <div class="auth-input-wrap">
+                      <i class="fa-solid fa-lock input-icon-left"></i>
+                      <input type="password" id="authPasswordInput" placeholder="•••••••••" value="${isGs ? 'password123' : 'admin123'}" />
+                    </div>
+                  </div>
+
+                  <!-- Remember Me -->
+                  <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; margin: 16px 0 24px;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 7px; color: #475569; font-weight: 600;">
+                      <input type="checkbox" id="rememberMeCheckbox" checked style="width: 17px; height: 17px; accent-color: #1e1b4b; cursor: pointer;" />
+                      <span>Remember me</span>
+                    </label>
+                    <span style="color: #6366f1; font-weight: 700; cursor: pointer;" onclick="Software.showToast('Recovery token generated: 9999');">
+                      Forgot Password?
+                    </span>
+                  </div>
+
+                  <!-- Submit Pill Button -->
+                  <button id="loginSubmitBtn" style="width: 100%; height: 50px; background: ${isGs ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'linear-gradient(135deg, #1e1b4b, #31104b)'}; color: #ffffff; border: none; border-radius: 9999px; font-size: 0.98rem; font-weight: 800; cursor: pointer; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;" onclick="Software.handleLoginSubmit()">
+                    <span>${isGs ? 'Login as GS' : 'Login as Admin'}</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                  </button>
+                </div>
+
+                <div class="auth-security-footer">
+                  <div class="auth-security-badge">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Secure Directorate Gateway</span>
+                  </div>
+                  <div>Role separation enforced. Only authorized logins permitted.</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }
+    };
+
+    // Auto-boot
+    window.addEventListener('DOMContentLoaded', () => {
+      Software.init();
+    });
+  </script>
+</body>
+</html>

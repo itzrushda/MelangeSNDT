@@ -55,7 +55,15 @@ The application replicates all **5 design boards (20 distinct smartphone screens
 
 ## 🚀 How to Run
 
-Simply **double-click** either:
+The default `index.html` opens the **GS Portal login**. The previous event-management app is kept separately as `app.html` (or `public/app.html`).
+
+For GitHub Pages, publish the `main` branch from the repository root. The build script generates matching entry points for the repository root and the `public` folder, so the default route works with either Pages source.
+
+To rebuild the static entry points, run `node build_webapp.js` from this folder.
+
+For local use, **double-click** either:
 * [`open.bat`](open.bat)
 * [`run.bat`](run.bat)
 * Or double-click [`index.html`](index.html) directly!
+
+The GS login currently uses browser-local demo data; it is not connected to a secure production authentication backend.
