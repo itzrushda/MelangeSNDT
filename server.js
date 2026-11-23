@@ -194,6 +194,30 @@ function migrateLegacyPasswords() {
 
 migrateLegacyPasswords();
 
+const LEGACY_DEMO_USER_IDS = new Set([
+  'usr_admin',
+  'usr_gs_aec',
+  'usr_gs_xyz',
+  'usr_gs_coep',
+  'usr_gs_mit',
+  'usr_gs_sx'
+]);
+
+function removeLegacyDemoUsers() {
+  const users = Array.isArray(db.data.users) ? db.data.users : [];
+  const remainingUsers = users.filter(user => !LEGACY_DEMO_USER_IDS.has(user._id));
+  if (remainingUsers.length !== users.length) {
+    db.data.users = remainingUsers;
+    db.save();
+  }
+}
+
+removeLegacyDemoUsers();
+
+let adminSetupToken = db.getCollection('users').find().some(user => user.role === 'admin')
+  ? null
+  : crypto.randomBytes(32).toString('hex');
+
 function recordLoginAttempt(username, role, success, reason, userId) {
   const attempt = {
     username: String(username || '').trim().slice(0, 120),
@@ -415,6 +439,58 @@ const server = http.createServer(async (req, res) => {
         code: college.code || college.id || college._id
       }));
     return sendJSON(res, 200, { success: true, colleges });
+  }
+
+  if (pathname === '/api/auth/admin-setup-status' && method === 'GET') {
+    return sendJSON(res, 200, { success: true, available: Boolean(adminSetupToken) });
+  }
+
+  if (pathname === '/api/auth/setup-admin' && method === 'POST') {
+    if (!adminSetupToken || db.getCollection('users').find().some(user => user.role === 'admin')) {
+      adminSetupToken = null;
+      return sendJSON(res, 409, { success: false, message: 'Owner Admin setup has already been completed.' });
+    }
+
+    const setupCode = typeof body.setupCode === 'string' ? body.setupCode.trim() : '';
+    const suppliedCodeHash = crypto.createHash('sha256').update(setupCode).digest();
+    const expectedCodeHash = crypto.createHash('sha256').update(adminSetupToken).digest();
+    if (!setupCode || !crypto.timingSafeEqual(suppliedCodeHash, expectedCodeHash)) {
+      return sendJSON(res, 403, { success: false, message: 'The one-time owner setup code is invalid.' });
+    }
+
+    const name = typeof body.name === 'string' ? body.name.trim() : '';
+    const username = typeof body.username === 'string' ? body.username.trim() : '';
+    const password = typeof body.password === 'string' ? body.password.trim() : '';
+    if (!name || name.length > 100 || !/^[a-zA-Z0-9._-]{3,32}$/.test(username)) {
+      return sendJSON(res, 400, { success: false, message: 'Enter a name and a username with 3-32 letters, numbers, dots, underscores or hyphens.' });
+    }
+    if (password.length < 8 || password.length > 128) {
+      return sendJSON(res, 400, { success: false, message: 'Password must be between 8 and 128 characters.' });
+    }
+
+    const usernameExists = db.getCollection('users').find().some(user =>
+      String(user.username || '').toLowerCase() === username.toLowerCase()
+    );
+    if (usernameExists) {
+      return sendJSON(res, 409, { success: false, message: 'That username is already in use. Please choose another.' });
+    }
+
+    const admin = db.getCollection('users').create({
+      _id: 'usr_admin_' + crypto.randomBytes(12).toString('hex'),
+      username,
+      ...hashPassword(password),
+      name,
+      role: 'admin',
+      title: 'Event Administrator',
+      activeSessions: 0
+    });
+    adminSetupToken = null;
+
+    return sendJSON(res, 201, {
+      success: true,
+      message: 'Owner Admin account created. Sign in with your new username and password.',
+      username: admin.username
+    });
   }
 
   // GS accounts are created for an existing college and passwords are never persisted in plaintext.
@@ -756,21 +832,6 @@ const server = http.createServer(async (req, res) => {
       completedRegistrations: 0
     });
 
-    // Also provision a GS account for this college.
-    const gsCredentials = hashPassword('password123');
-    db.getCollection('users').create({
-      _id: 'usr_gs_' + code.toLowerCase(),
-      username: `${code.toUpperCase()}-GS`,
-      email: email.trim().toLowerCase(),
-      ...gsCredentials,
-      name: gsName.trim(),
-      role: 'college_gs',
-      title: 'General Secretary',
-      collegeId: newCollege._id,
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
-      activeSessions: 0
-    });
-
     // Log Activity
     db.getCollection('activities').create({
       title: `College '${name}' added by Admin`,
@@ -780,7 +841,7 @@ const server = http.createServer(async (req, res) => {
       color: 'purple'
     });
 
-    return sendJSON(res, 201, { success: true, message: 'College and GS account created!', college: newCollege });
+    return sendJSON(res, 201, { success: true, message: 'College added. Its GS can now create an account from the GS Portal.', college: newCollege });
   }
 
   if (pathname.startsWith('/api/admin/colleges/') && method === 'PUT') {
@@ -1592,5 +1653,9 @@ server.listen(PORT, () => {
   console.log(` Server URL : http://localhost:${PORT}`);
   console.log(` Mode       : Production REST + React SPA`);
   console.log(` Database   : Persistent JSON Engine (${DB_FILE})`);
+  if (adminSetupToken) {
+    console.log(` One-time owner Admin setup code: ${adminSetupToken}`);
+    console.log(` Keep this code private; it is required to create the first Admin account.`);
+  }
   console.log(`=======================================================`);
 });

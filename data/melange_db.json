@@ -1,92 +1,18 @@
 {
   "users": [
     {
-      "_id": "usr_admin",
-      "username": "admin",
-      "email": "admin@melange.edu",
-      "passwordHash": "fb8926615e8c597c71639340d02e0c47e1ef89b7d841e7fa8a122075292150eaf42af7343f17c2ced2a76d7a5ef88d1756f4eaed0aac7f38bbba36ee2555858e",
-      "passwordSalt": "9a2da448b8eb5441f46e22ff973938b4",
-      "name": "Alex Carter",
-      "role": "admin",
-      "title": "Event Administrator",
-      "collegeId": null,
-      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
-      "lastLogin": "2026-11-18T05:16:54.687Z",
-      "activeSessions": 3,
-      "createdAt": "2026-10-01T00:00:00.000Z",
-      "collegeName": "Melange Central Directorate",
-      "updatedAt": "2026-11-18T05:16:54.687Z"
-    },
-    {
-      "_id": "usr_gs_aec",
-      "username": "AEC04-GS",
-      "email": "gs.aec@gmail.com",
-      "passwordHash": "6091043a6d78f67f4a7f1faff048605967101ef24d472c10d3bb0c52b5c7273fefa80c924bc8d6b9affa8e6e15b8ffe015e54c63857559dbd448d9120b929b44",
-      "passwordSalt": "66a51293b4ea72a61d935f1802597508",
-      "name": "Rohit Sharma",
+      "_id": "usr_gs_bf864358b76c53be4b34e778",
+      "username": "iiii",
+      "passwordHash": "f257b99e91599cb25bb2464076534c8a3f5c832273a45667d9c6beaeba56c04b884cb0ffefc52ae95b51020276c2e80280968c4d57d18fb86ce036b6e38ea294",
+      "passwordSalt": "c77b829ddd7c4d203f25cda0eff4f6fb",
+      "name": "uuuu",
       "role": "college_gs",
       "title": "General Secretary",
-      "collegeId": "AEC04",
-      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
-      "lastLogin": "2026-11-18T05:16:54.689Z",
-      "activeSessions": 4,
-      "createdAt": "2026-10-01T00:00:00.000Z",
-      "updatedAt": "2026-11-18T05:16:54.689Z",
-      "collegeName": "AEC Metro College"
-    },
-    {
-      "_id": "usr_gs_xyz",
-      "username": "XYZ-GS",
-      "email": "xyzur@gmail.com",
-      "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
-      "passwordSalt": "melange_salt_2026",
-      "name": "XYZ",
-      "role": "college_gs",
-      "title": "General Secretary",
-      "collegeId": "XYZ01",
-      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
-      "lastLogin": "2026-11-17T18:20:00.000Z",
-      "activeSessions": 1,
-      "createdAt": "2026-10-01T00:00:00.000Z"
-    },
-    {
-      "_id": "usr_gs_coep",
-      "username": "COEP01-GS",
-      "email": "gs.gymkhana@coeptech.ac.in",
-      "passwordHash": "c906d35b433ce9543bd11d8d99fc513f2ecfde3dcb2f53fc721ebd19103db7a896165082b0a18db7ea77e073d3b480a72c26682898277906d122f3e60f3ff10a",
-      "passwordSalt": "ba14bd4ea1eed021bd2c85dcb366aabd",
-      "name": "Priya Deshmukh",
-      "role": "college_gs",
-      "title": "General Secretary",
-      "collegeId": "COEP01",
-      "collegeName": "COEP Technological University",
-      "lastLogin": "Nov 17, 2026, 06:20 PM"
-    },
-    {
-      "_id": "usr_gs_mit",
-      "username": "MIT02-GS",
-      "email": "gs.council@mitwpu.edu.in",
-      "passwordHash": "bb50e4c7e14bd49f2a786f60316ded0d64f8f42b54526ae15341cc916079fdd9c298618057d7effd00bbc908b92a844713a0f0fee395d8e50db022c30a498880",
-      "passwordSalt": "c58a547c0be45f7d44379ce9ef763f15",
-      "name": "Aryan Sharma",
-      "role": "college_gs",
-      "title": "General Secretary",
-      "collegeId": "MIT02",
-      "collegeName": "MIT World Peace University",
-      "lastLogin": "Nov 17, 2026, 05:10 PM"
-    },
-    {
-      "_id": "usr_gs_sx",
-      "username": "SX01-GS",
-      "email": "rahul.gs@stxaviers.edu",
-      "passwordHash": "22480484e584a9a4fa2b67f621eef36195087e4211a3761b10f3356e51c069dd0b8696a0c3f110b08fee62f22806849490b6e91a85d88ff73f04eaaeeda8b1ff",
-      "passwordSalt": "703492ddbb5ac770cb40c2fa8b614801",
-      "name": "Rahul Sharma",
-      "role": "college_gs",
-      "title": "General Secretary",
-      "collegeId": "SX01",
-      "collegeName": "St. Xavier's College",
-      "lastLogin": "Nov 16, 2026, 02:30 PM"
+      "collegeId": "KJS05",
+      "activeSessions": 0,
+      "createdAt": "2026-11-23T04:07:31.042Z",
+      "lastLogin": "2026-11-23T04:07:48.970Z",
+      "updatedAt": "2026-11-23T04:08:24.529Z"
     }
   ],
   "colleges": [
@@ -525,6 +451,30 @@
       "success": false,
       "reason": "invalid_credentials",
       "createdAt": "2026-11-21T07:45:23.270Z"
+    },
+    {
+      "_id": "id_3w6dui8ow",
+      "username": "uuuu",
+      "role": "college_gs",
+      "success": false,
+      "reason": "invalid_credentials",
+      "createdAt": "2026-11-23T04:06:54.051Z"
+    },
+    {
+      "_id": "id_4ekl72g9g",
+      "username": "uuuu",
+      "role": "college_gs",
+      "success": false,
+      "reason": "invalid_credentials",
+      "createdAt": "2026-11-23T04:07:43.001Z"
+    },
+    {
+      "_id": "id_ggsazc212",
+      "username": "iiii",
+      "role": "college_gs",
+      "success": true,
+      "userId": "usr_gs_bf864358b76c53be4b34e778",
+      "createdAt": "2026-11-23T04:07:48.979Z"
     }
   ]
 }

@@ -61,9 +61,10 @@ For GitHub Pages, publish the `main` branch from the repository root. The build 
 
 To rebuild the static entry points, run `node build_webapp.js` from this folder.
 
-For local use, **double-click** either:
-* [`open.bat`](open.bat)
-* [`run.bat`](run.bat)
-* Or double-click [`index.html`](index.html) directly!
+For local use, run `start-server.bat` or start the server with `node server.js`, then open `http://localhost:8080`. Opening an HTML file directly does not start the authentication API.
 
-Admin and GS sign-ins use the Node authentication API. First-time GS users can select a registered college and create their own username and password from the GS login screen; the account is stored in `data/melange_db.json` with a server-generated password hash, and they must sign in afterward. Login history is stored in the same database. Start the Node server for registration and database-backed login. GitHub Pages alone cannot run the API or write to this database.
+GS users can select a registered college and create their own username and password from the GS login screen. The account is stored in `data/melange_db.json` with a server-generated password hash, and they can then sign in with those credentials.
+
+The first Admin account is created by the owner from `admin-portal.html`. When no Admin account exists, the server prints a one-time setup code in its terminal; enter that code in the owner setup form and choose the Admin username and password. Keep the code private. Legacy demo accounts are removed when the server starts, so users must create their own accounts.
+
+GitHub Pages can serve the static pages but cannot run the authentication API or write to this database. Database-backed sign-in requires deploying the Node server separately.

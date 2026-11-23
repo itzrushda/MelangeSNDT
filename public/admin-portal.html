@@ -2467,6 +2467,83 @@
             </button>
           </form>
 
+          <button
+            type="button"
+            id="showAdminSetupButton"
+            onclick="showAdminSetupForm()"
+            style="display: none; width: 100%; margin-top: 16px; padding: 10px; border: 0; background: transparent; color: #d6b36a; font: inherit; cursor: pointer;"
+          >
+            First time? Set up the owner Admin account
+          </button>
+
+          <form id="adminSetupForm" onsubmit="handleAdminSetup(event)" style="display: none;">
+            <p style="margin: 0 0 16px; color: #d1d5db; font-size: 0.9rem;">
+              The one-time setup code is shown in the server terminal. Only the owner should use it.
+            </p>
+            <div class="form-group">
+              <label class="form-label" for="adminSetupCode">
+                <i class="fa-solid fa-key"></i> One-time owner setup code
+              </label>
+              <input
+                type="password"
+                id="adminSetupCode"
+                class="form-input"
+                autocomplete="one-time-code"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="adminSetupName">Your name</label>
+              <input type="text" id="adminSetupName" class="form-input" maxlength="100" autocomplete="name" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="adminSetupUsername">Choose username</label>
+              <input
+                type="text"
+                id="adminSetupUsername"
+                class="form-input"
+                minlength="3"
+                maxlength="32"
+                pattern="[A-Za-z0-9._-]+"
+                autocomplete="username"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="adminSetupPassword">Choose password</label>
+              <input
+                type="password"
+                id="adminSetupPassword"
+                class="form-input"
+                minlength="8"
+                maxlength="128"
+                autocomplete="new-password"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="adminSetupPasswordConfirm">Confirm password</label>
+              <input
+                type="password"
+                id="adminSetupPasswordConfirm"
+                class="form-input"
+                minlength="8"
+                maxlength="128"
+                autocomplete="new-password"
+                required
+              />
+            </div>
+            <button type="submit" class="btn-gold-primary" id="btnAdminSetupSubmit">
+              Create owner Admin account
+            </button>
+            <button
+              type="button"
+              onclick="showAdminLoginForm()"
+              style="width: 100%; margin-top: 12px; padding: 10px; border: 0; background: transparent; color: #d1d5db; font: inherit; cursor: pointer;"
+            >
+              Back to Admin login
+            </button>
+          </form>
         </div>
       </div>
 
@@ -3037,6 +3114,7 @@
         localStorage.removeItem(STORAGE_KEYS.IS_ADMIN);
         localStorage.removeItem(STORAGE_KEYS.SESSION);
         showLoginScreen();
+        refreshAdminSetupAvailability();
         return;
       }
 
@@ -3062,6 +3140,67 @@
         const input = document.getElementById(id);
         input.value = "";
         input.setAttribute("readonly", "readonly");
+      }
+    }
+
+    async function refreshAdminSetupAvailability() {
+      try {
+        const data = await authRequest("/api/auth/admin-setup-status");
+        document.getElementById("showAdminSetupButton").style.display = data.available ? "block" : "none";
+      } catch (error) {
+        console.error("Could not check Admin setup status:", error);
+      }
+    }
+
+    function showAdminSetupForm() {
+      document.getElementById("adminLoginForm").style.display = "none";
+      document.getElementById("showAdminSetupButton").style.display = "none";
+      document.getElementById("adminSetupForm").style.display = "block";
+    }
+
+    function showAdminLoginForm() {
+      document.getElementById("adminSetupForm").style.display = "none";
+      document.getElementById("adminLoginForm").style.display = "block";
+      document.getElementById("adminSetupCode").value = "";
+      document.getElementById("adminSetupPassword").value = "";
+      document.getElementById("adminSetupPasswordConfirm").value = "";
+      refreshAdminSetupAvailability();
+    }
+
+    async function handleAdminSetup(event) {
+      event.preventDefault();
+      const name = document.getElementById("adminSetupName").value.trim();
+      const setupCode = document.getElementById("adminSetupCode").value.trim();
+      const username = document.getElementById("adminSetupUsername").value.trim();
+      const password = document.getElementById("adminSetupPassword").value;
+      const confirmPassword = document.getElementById("adminSetupPasswordConfirm").value;
+      const submitButton = document.getElementById("btnAdminSetupSubmit");
+
+      if (password !== confirmPassword) {
+        showToast("Passwords do not match.", "error");
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Creating Admin account...";
+      try {
+        const data = await authRequest("/api/auth/setup-admin", "POST", {
+          name,
+          setupCode,
+          username,
+          password
+        });
+        document.getElementById("adminSetupForm").reset();
+        document.getElementById("adminSetupForm").style.display = "none";
+        document.getElementById("adminLoginForm").style.display = "block";
+        document.getElementById("adminCodeInput").value = data.username;
+        document.getElementById("showAdminSetupButton").style.display = "none";
+        showToast(data.message, "success");
+      } catch (error) {
+        showToast(authErrorMessage(error), "error");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = "Create owner Admin account";
       }
     }
 
