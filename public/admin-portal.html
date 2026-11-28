@@ -2418,15 +2418,15 @@
           <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
             <div class="form-group">
               <label class="form-label">
-                <i class="fa-solid fa-id-badge"></i> Admin Access Code
+                <i class="fa-solid fa-user"></i> Username
               </label>
               <div class="input-wrapper">
-                <i class="fa-solid fa-shield input-icon-left"></i>
+                <i class="fa-solid fa-user input-icon-left"></i>
                 <input
                   type="text"
                   id="adminCodeInput"
                   class="form-input"
-                  placeholder="Database username (e.g. admin)"
+                  placeholder="Enter admin username"
                   autocomplete="off"
                   readonly
                   onfocus="this.removeAttribute('readonly')"
@@ -2437,7 +2437,7 @@
 
             <div class="form-group">
               <label class="form-label">
-                <i class="fa-solid fa-key"></i> Security PIN
+                <i class="fa-solid fa-key"></i> Password
               </label>
               <div class="input-wrapper">
                 <i class="fa-solid fa-lock input-icon-left"></i>
@@ -2445,7 +2445,7 @@
                   type="password"
                   id="adminPinInput"
                   class="form-input"
-                  placeholder="Enter your database password"
+                  placeholder="Enter admin password"
                   autocomplete="new-password"
                   readonly
                   onfocus="this.removeAttribute('readonly')"
@@ -2455,7 +2455,7 @@
                   type="button"
                   class="input-btn-toggle"
                   onclick="togglePasswordVisibility('adminPinInput', this)"
-                  title="Show/Hide PIN"
+                  title="Show/Hide password"
                 >
                   <i class="fa-solid fa-eye"></i>
                 </button>
@@ -2473,25 +2473,11 @@
             onclick="showAdminSetupForm()"
             style="display: none; width: 100%; margin-top: 16px; padding: 10px; border: 0; background: transparent; color: #d6b36a; font: inherit; cursor: pointer;"
           >
-            First time? Set up the owner Admin account
+            First time? Create Admin account
           </button>
+          <p id="adminSetupStatus" style="display: none; margin-top: 14px; color: #d1d5db; font-size: 0.85rem; text-align: center;"></p>
 
           <form id="adminSetupForm" onsubmit="handleAdminSetup(event)" style="display: none;">
-            <p style="margin: 0 0 16px; color: #d1d5db; font-size: 0.9rem;">
-              The one-time setup code is shown in the server terminal. Only the owner should use it.
-            </p>
-            <div class="form-group">
-              <label class="form-label" for="adminSetupCode">
-                <i class="fa-solid fa-key"></i> One-time owner setup code
-              </label>
-              <input
-                type="password"
-                id="adminSetupCode"
-                class="form-input"
-                autocomplete="one-time-code"
-                required
-              />
-            </div>
             <div class="form-group">
               <label class="form-label" for="adminSetupName">Your name</label>
               <input type="text" id="adminSetupName" class="form-input" maxlength="100" autocomplete="name" required />
@@ -3147,6 +3133,11 @@
       try {
         const data = await authRequest("/api/auth/admin-setup-status");
         document.getElementById("showAdminSetupButton").style.display = data.available ? "block" : "none";
+        const status = document.getElementById("adminSetupStatus");
+        status.textContent = data.available
+          ? ""
+          : "Admin account setup is already complete. Sign in with an existing Admin account.";
+        status.style.display = data.available ? "none" : "block";
       } catch (error) {
         console.error("Could not check Admin setup status:", error);
       }
@@ -3161,7 +3152,6 @@
     function showAdminLoginForm() {
       document.getElementById("adminSetupForm").style.display = "none";
       document.getElementById("adminLoginForm").style.display = "block";
-      document.getElementById("adminSetupCode").value = "";
       document.getElementById("adminSetupPassword").value = "";
       document.getElementById("adminSetupPasswordConfirm").value = "";
       refreshAdminSetupAvailability();
@@ -3170,7 +3160,6 @@
     async function handleAdminSetup(event) {
       event.preventDefault();
       const name = document.getElementById("adminSetupName").value.trim();
-      const setupCode = document.getElementById("adminSetupCode").value.trim();
       const username = document.getElementById("adminSetupUsername").value.trim();
       const password = document.getElementById("adminSetupPassword").value;
       const confirmPassword = document.getElementById("adminSetupPasswordConfirm").value;
@@ -3186,7 +3175,6 @@
       try {
         const data = await authRequest("/api/auth/setup-admin", "POST", {
           name,
-          setupCode,
           username,
           password
         });
@@ -3260,7 +3248,7 @@
           sessionStorage.removeItem(AUTH_TOKEN_KEY);
           localStorage.removeItem(STORAGE_KEYS.IS_ADMIN);
           localStorage.removeItem(STORAGE_KEYS.SESSION);
-          showLoginScreen();
+          window.location.replace("gs-portal.html");
         }
       }
     }

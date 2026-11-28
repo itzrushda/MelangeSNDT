@@ -65,6 +65,6 @@ For local use, run `start-server.bat` or start the server with `node server.js`,
 
 GS users can select a registered college and create their own username and password from the GS login screen. The account is stored in `data/melange_db.json` with a server-generated password hash, and they can then sign in with those credentials.
 
-The first Admin account is created by the owner from `admin-portal.html`. When no Admin account exists, the server prints a one-time setup code in its terminal; enter that code in the owner setup form and choose the Admin username and password. Keep the code private. Legacy demo accounts are removed when the server starts, so users must create their own accounts.
+The first Admin account is created by the owner from `admin-portal.html`. When no Admin account exists, the owner setup form lets the owner choose the Admin name, username, and password. Legacy demo accounts are removed when the server starts, so users must create their own accounts.
 
 GitHub Pages can serve the static pages but cannot run the authentication API or write to this database. Database-backed sign-in requires deploying the Node server separately.

@@ -214,10 +214,6 @@ function removeLegacyDemoUsers() {
 
 removeLegacyDemoUsers();
 
-let adminSetupToken = db.getCollection('users').find().some(user => user.role === 'admin')
-  ? null
-  : crypto.randomBytes(32).toString('hex');
-
 function recordLoginAttempt(username, role, success, reason, userId) {
   const attempt = {
     username: String(username || '').trim().slice(0, 120),
@@ -442,20 +438,15 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (pathname === '/api/auth/admin-setup-status' && method === 'GET') {
-    return sendJSON(res, 200, { success: true, available: Boolean(adminSetupToken) });
+    return sendJSON(res, 200, {
+      success: true,
+      available: !db.getCollection('users').find().some(user => user.role === 'admin')
+    });
   }
 
   if (pathname === '/api/auth/setup-admin' && method === 'POST') {
-    if (!adminSetupToken || db.getCollection('users').find().some(user => user.role === 'admin')) {
-      adminSetupToken = null;
+    if (db.getCollection('users').find().some(user => user.role === 'admin')) {
       return sendJSON(res, 409, { success: false, message: 'Owner Admin setup has already been completed.' });
-    }
-
-    const setupCode = typeof body.setupCode === 'string' ? body.setupCode.trim() : '';
-    const suppliedCodeHash = crypto.createHash('sha256').update(setupCode).digest();
-    const expectedCodeHash = crypto.createHash('sha256').update(adminSetupToken).digest();
-    if (!setupCode || !crypto.timingSafeEqual(suppliedCodeHash, expectedCodeHash)) {
-      return sendJSON(res, 403, { success: false, message: 'The one-time owner setup code is invalid.' });
     }
 
     const name = typeof body.name === 'string' ? body.name.trim() : '';
@@ -484,7 +475,6 @@ const server = http.createServer(async (req, res) => {
       title: 'Event Administrator',
       activeSessions: 0
     });
-    adminSetupToken = null;
 
     return sendJSON(res, 201, {
       success: true,
@@ -493,15 +483,20 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
-  // GS accounts are created for an existing college and passwords are never persisted in plaintext.
+  // GS accounts can register a college by name. Existing names reuse the college record.
   if (pathname === '/api/auth/register-gs' && method === 'POST') {
     const name = typeof body.name === 'string' ? body.name.trim() : '';
-    const collegeId = typeof body.collegeId === 'string' ? body.collegeId.trim() : '';
+    const collegeName = typeof body.collegeName === 'string'
+      ? body.collegeName.trim()
+      : (typeof body.collegeId === 'string' ? body.collegeId.trim() : '');
     const username = typeof body.username === 'string' ? body.username.trim() : '';
     const password = typeof body.password === 'string' ? body.password.trim() : '';
 
-    if (!name || !collegeId || !username || !password) {
+    if (!name || !collegeName || !username || !password) {
       return sendJSON(res, 400, { success: false, message: 'Name, college, username and password are required.' });
+    }
+    if (collegeName.length > 150) {
+      return sendJSON(res, 400, { success: false, message: 'College name must be 150 characters or fewer.' });
     }
     if (name.length > 100 || !/^[a-zA-Z0-9._-]{3,32}$/.test(username)) {
       return sendJSON(res, 400, { success: false, message: 'Enter a name and a username with 3-32 letters, numbers, dots, underscores or hyphens.' });
@@ -510,9 +505,36 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 400, { success: false, message: 'Password must be between 8 and 128 characters.' });
     }
 
-    const college = findCollegeByIdentifier(collegeId);
+    let college = typeof body.collegeName === 'string'
+      ? db.getCollection('colleges').find().find(item =>
+          String(item.name || '').toLowerCase() === collegeName.toLowerCase()
+        )
+      : findCollegeByIdentifier(collegeName);
+
     if (!college) {
-      return sendJSON(res, 400, { success: false, message: 'Choose a college from the registered college list.' });
+      const words = collegeName.split(/\s+/).filter(Boolean);
+      const code = words.length > 1
+        ? words.map(word => word[0]).join('').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6)
+        : collegeName.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+      const colleges = db.getCollection('colleges');
+      let collegeCode = code || 'COL';
+      let suffix = 1;
+      while (colleges.find().some(item => String(item.code || '').toUpperCase() === collegeCode)) {
+        collegeCode = `${code || 'COL'}${suffix++}`;
+      }
+
+      college = colleges.create({
+        _id: 'col_' + crypto.randomBytes(6).toString('hex'),
+        id: collegeCode + String(colleges.countDocuments() + 1).padStart(2, '0'),
+        name: collegeName,
+        code: collegeCode,
+        status: 'Active',
+        gsName: name,
+        gsEmail: '',
+        contact: '',
+        participantCount: 0,
+        city: ''
+      });
     }
 
     const usernameExists = db.getCollection('users').find().some(user =>
@@ -1653,9 +1675,5 @@ server.listen(PORT, () => {
   console.log(` Server URL : http://localhost:${PORT}`);
   console.log(` Mode       : Production REST + React SPA`);
   console.log(` Database   : Persistent JSON Engine (${DB_FILE})`);
-  if (adminSetupToken) {
-    console.log(` One-time owner Admin setup code: ${adminSetupToken}`);
-    console.log(` Keep this code private; it is required to create the first Admin account.`);
-  }
   console.log(`=======================================================`);
 });

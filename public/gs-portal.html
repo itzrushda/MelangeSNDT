@@ -1972,7 +1972,7 @@
             <span>Login as GS</span>
             <i class="fa-solid fa-arrow-right"></i>
           </button>
-          <button type="button" class="login-form-toggle" onclick="showGsRegistrationForm()">First time? Create a GS account</button>
+          <button type="button" class="login-form-toggle" onclick="showGsRegistrationForm()">First time? Create College / GS account</button>
         </form>
 
         <form id="gsRegistrationForm" onsubmit="handleGsRegistrationSubmit(event)" style="display: none;">
@@ -1983,9 +1983,7 @@
 
           <div class="form-group">
             <label class="form-label" for="registerGsCollege">College <span class="req">*</span></label>
-            <select id="registerGsCollege" class="glass-select" required>
-              <option value="">Loading registered colleges...</option>
-            </select>
+            <input type="text" id="registerGsCollege" class="glass-input no-icon" maxlength="150" required autocomplete="organization" placeholder="Enter your college name" />
           </div>
 
           <div class="form-group">
@@ -2956,28 +2954,6 @@
     async function showGsRegistrationForm() {
       document.getElementById('loginForm').style.display = 'none';
       document.getElementById('gsRegistrationForm').style.display = 'block';
-      const collegeSelect = document.getElementById('registerGsCollege');
-      if (collegeSelect.dataset.loaded === 'true') return;
-
-      try {
-        const data = await authRequest('/api/auth/gs-registration-options', 'GET', null, null);
-        collegeSelect.replaceChildren();
-        const placeholder = document.createElement('option');
-        placeholder.value = '';
-        placeholder.textContent = data.colleges.length ? 'Select your college' : 'No colleges are available';
-        collegeSelect.appendChild(placeholder);
-
-        for (const college of data.colleges) {
-          const option = document.createElement('option');
-          option.value = college.id;
-          option.textContent = `${college.name} (${college.code})`;
-          collegeSelect.appendChild(option);
-        }
-        collegeSelect.disabled = data.colleges.length === 0;
-        collegeSelect.dataset.loaded = 'true';
-      } catch (error) {
-        showToast(authErrorMessage(error), 'error');
-      }
     }
 
     function showGsLoginForm() {
@@ -2995,11 +2971,16 @@
     async function handleGsRegistrationSubmit(event) {
       event.preventDefault();
       const name = document.getElementById('registerGsName').value.trim();
-      const collegeId = document.getElementById('registerGsCollege').value;
+      const collegeName = document.getElementById('registerGsCollege').value.trim();
       const username = document.getElementById('registerGsUsername').value.trim();
       const password = document.getElementById('registerGsPassword').value;
       const confirmPassword = document.getElementById('registerGsPasswordConfirm').value;
       const submitButton = document.getElementById('registerGsSubmitBtn');
+
+      if (!collegeName) {
+        showToast('Please enter your college name.', 'error');
+        return;
+      }
 
       if (password !== confirmPassword) {
         showToast('Passwords do not match.', 'error');
@@ -3011,7 +2992,7 @@
       try {
         const data = await authRequest('/api/auth/register-gs', 'POST', {
           name,
-          collegeId,
+          collegeName,
           username,
           password
         }, null);

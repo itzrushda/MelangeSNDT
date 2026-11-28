@@ -2477,21 +2477,6 @@
           </button>
 
           <form id="adminSetupForm" onsubmit="handleAdminSetup(event)" style="display: none;">
-            <p style="margin: 0 0 16px; color: #d1d5db; font-size: 0.9rem;">
-              The one-time setup code is shown in the server terminal. Only the owner should use it.
-            </p>
-            <div class="form-group">
-              <label class="form-label" for="adminSetupCode">
-                <i class="fa-solid fa-key"></i> One-time owner setup code
-              </label>
-              <input
-                type="password"
-                id="adminSetupCode"
-                class="form-input"
-                autocomplete="one-time-code"
-                required
-              />
-            </div>
             <div class="form-group">
               <label class="form-label" for="adminSetupName">Your name</label>
               <input type="text" id="adminSetupName" class="form-input" maxlength="100" autocomplete="name" required />
@@ -3161,7 +3146,6 @@
     function showAdminLoginForm() {
       document.getElementById("adminSetupForm").style.display = "none";
       document.getElementById("adminLoginForm").style.display = "block";
-      document.getElementById("adminSetupCode").value = "";
       document.getElementById("adminSetupPassword").value = "";
       document.getElementById("adminSetupPasswordConfirm").value = "";
       refreshAdminSetupAvailability();
@@ -3170,7 +3154,6 @@
     async function handleAdminSetup(event) {
       event.preventDefault();
       const name = document.getElementById("adminSetupName").value.trim();
-      const setupCode = document.getElementById("adminSetupCode").value.trim();
       const username = document.getElementById("adminSetupUsername").value.trim();
       const password = document.getElementById("adminSetupPassword").value;
       const confirmPassword = document.getElementById("adminSetupPasswordConfirm").value;
@@ -3186,7 +3169,6 @@
       try {
         const data = await authRequest("/api/auth/setup-admin", "POST", {
           name,
-          setupCode,
           username,
           password
         });

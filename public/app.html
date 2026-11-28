@@ -2063,6 +2063,7 @@
       },
 
       async handleLogout() {
+        const loggedOutAdmin = this.state.currentUser && this.state.currentUser.role === 'admin';
         const token = sessionStorage.getItem(AUTH_TOKEN_KEY) || localStorage.getItem(AUTH_TOKEN_KEY);
         let logoutRecorded = true;
         try {
@@ -2076,6 +2077,10 @@
         sessionStorage.removeItem(AUTH_TOKEN_KEY);
         this.state.activeScreen = 'login';
         this.showToast(logoutRecorded ? 'Logged out securely.' : 'Signed out here, but the server could not record the logout.', !logoutRecorded);
+        if (loggedOutAdmin) {
+          window.location.replace('gs-portal.html');
+          return;
+        }
         this.render();
       },
 
@@ -4090,7 +4095,7 @@
 
                   <!-- Username Field -->
                   <div style="margin-bottom: 16px;">
-                    <label style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">Username / Official ID</label>
+                    <label style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">Username</label>
                     <div class="auth-input-wrap">
                       <i class="fa-solid fa-user input-icon-left"></i>
                       <input type="text" id="authUsernameInput" placeholder="Username" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" />

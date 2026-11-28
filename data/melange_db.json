@@ -13,6 +13,47 @@
       "createdAt": "2026-11-23T04:07:31.042Z",
       "lastLogin": "2026-11-23T04:07:48.970Z",
       "updatedAt": "2026-11-23T04:08:24.529Z"
+    },
+    {
+      "_id": "usr_gs_4062701dd5195de86ec14237",
+      "username": "diiya",
+      "passwordHash": "8edb2c5577966c036d7a566e6d0509ea05ef5e0800745e2e1a015560ffc75a70233ab130ee3bcb03fbc4b3a8b368792f593a87ad0444f216d835bb274e2ad257",
+      "passwordSalt": "ec388f45a4264c706eb912891ec268d1",
+      "name": "Diya",
+      "role": "college_gs",
+      "title": "General Secretary",
+      "collegeId": "COEP03",
+      "activeSessions": 0,
+      "createdAt": "2026-11-24T09:52:02.816Z",
+      "lastLogin": "2026-11-24T09:52:10.248Z",
+      "updatedAt": "2026-11-24T09:55:09.816Z"
+    },
+    {
+      "_id": "usr_gs_be219234c5b1d3e29deefaec",
+      "username": "Diya",
+      "passwordHash": "86e433a1f51a875a22109bc9b03aead6340f8da8e7af5b7ab1438edb7a2730be7bc14657b44ed36c7f60777642f87cc1524e2c1ca78daa76f3eb2ad403c42036",
+      "passwordSalt": "1b61c3e0eae779dd01a344e8783f6452",
+      "name": "Diya",
+      "role": "college_gs",
+      "title": "General Secretary",
+      "collegeId": "SC07",
+      "activeSessions": 1,
+      "createdAt": "2026-11-27T17:29:33.121Z",
+      "lastLogin": "2026-11-27T18:14:49.763Z",
+      "updatedAt": "2026-11-27T18:14:49.763Z"
+    },
+    {
+      "_id": "usr_admin_9b8975829dc388941520596b",
+      "username": "Vikas",
+      "passwordHash": "2d665c2a0969f70dd9ed5c7e784c75cf34efd5b3328ae44319be36b33dafdd6a0a9c3a7b45389628d498c71575cf7dacfc2ece3836577bde63ef5fbfa42128c6",
+      "passwordSalt": "2099d1a5543e32ea8e5d74ca4d2c5db0",
+      "name": "Vikas Shirode",
+      "role": "admin",
+      "title": "Event Administrator",
+      "activeSessions": 1,
+      "createdAt": "2026-11-27T18:02:02.253Z",
+      "lastLogin": "2026-11-27T18:14:05.634Z",
+      "updatedAt": "2026-11-27T18:14:39.802Z"
     }
   ],
   "colleges": [
@@ -87,6 +128,19 @@
       "contact": "+91 98200 45678",
       "participantCount": 145,
       "city": "Matunga"
+    },
+    {
+      "_id": "col_4ea83ceda6f7",
+      "id": "SC07",
+      "name": "SNDT College",
+      "code": "SC",
+      "status": "Active",
+      "gsName": "Diya",
+      "gsEmail": "",
+      "contact": "",
+      "participantCount": 0,
+      "city": "",
+      "createdAt": "2026-11-27T17:29:32.959Z"
     }
   ],
   "events": [
@@ -475,6 +529,142 @@
       "success": true,
       "userId": "usr_gs_bf864358b76c53be4b34e778",
       "createdAt": "2026-11-23T04:07:48.979Z"
+    },
+    {
+      "_id": "id_3k0dv7mei",
+      "username": "diiya",
+      "role": "college_gs",
+      "success": true,
+      "userId": "usr_gs_4062701dd5195de86ec14237",
+      "createdAt": "2026-11-24T09:52:10.250Z"
+    },
+    {
+      "_id": "id_rxtjv32q9",
+      "username": "vik",
+      "role": "admin",
+      "success": true,
+      "userId": "usr_admin_bfcd2583bbc8635b7d605808",
+      "createdAt": "2026-11-24T10:02:22.941Z"
+    },
+    {
+      "_id": "id_bi38y7u6c",
+      "username": "Diya",
+      "role": "college_gs",
+      "success": true,
+      "userId": "usr_gs_be219234c5b1d3e29deefaec",
+      "createdAt": "2026-11-27T17:29:41.878Z"
+    },
+    {
+      "_id": "id_s56oj9s0v",
+      "username": "Vikas",
+      "role": "admin",
+      "success": false,
+      "reason": "invalid_credentials",
+      "createdAt": "2026-11-27T17:30:46.144Z"
+    },
+    {
+      "_id": "id_21k01bf8x",
+      "username": "Vikas",
+      "role": "admin",
+      "success": false,
+      "reason": "invalid_credentials",
+      "createdAt": "2026-11-27T17:30:47.146Z"
+    },
+    {
+      "_id": "id_xhqrp8xm9",
+      "username": "Vikas",
+      "role": "admin",
+      "success": false,
+      "reason": "invalid_credentials",
+      "createdAt": "2026-11-27T17:32:56.811Z"
+    },
+    {
+      "_id": "id_c9o9jtylz",
+      "username": "Vikas",
+      "role": "admin",
+      "success": false,
+      "reason": "invalid_credentials",
+      "createdAt": "2026-11-27T17:33:01.346Z"
+    },
+    {
+      "_id": "id_oybd3lowj",
+      "username": "Vikas",
+      "role": "admin",
+      "success": false,
+      "reason": "invalid_credentials",
+      "createdAt": "2026-11-27T17:33:01.979Z"
+    },
+    {
+      "_id": "id_qmuwntwnk",
+      "username": "",
+      "role": "admin",
+      "success": false,
+      "reason": "missing_credentials",
+      "createdAt": "2026-11-27T17:35:04.857Z"
+    },
+    {
+      "_id": "id_t813qhz6a",
+      "username": "Vikas",
+      "role": "admin",
+      "success": false,
+      "reason": "invalid_credentials",
+      "createdAt": "2026-11-27T17:58:55.072Z"
+    },
+    {
+      "_id": "id_utmpwtlv3",
+      "username": "Vikas",
+      "role": "admin",
+      "success": false,
+      "reason": "invalid_credentials",
+      "createdAt": "2026-11-27T17:58:57.650Z"
+    },
+    {
+      "_id": "id_3bz8oqpii",
+      "username": "Vikas",
+      "role": "admin",
+      "success": true,
+      "userId": "usr_admin_9b8975829dc388941520596b",
+      "createdAt": "2026-11-27T18:02:10.446Z"
+    },
+    {
+      "_id": "id_ead13hdcq",
+      "username": "Diya",
+      "role": "college_gs",
+      "success": true,
+      "userId": "usr_gs_be219234c5b1d3e29deefaec",
+      "createdAt": "2026-11-27T18:02:29.334Z"
+    },
+    {
+      "_id": "id_r9hlt72mv",
+      "username": "Vikas",
+      "role": "admin",
+      "success": true,
+      "userId": "usr_admin_9b8975829dc388941520596b",
+      "createdAt": "2026-11-27T18:08:41.291Z"
+    },
+    {
+      "_id": "id_ly1a9f0rw",
+      "username": "Diya",
+      "role": "college_gs",
+      "success": true,
+      "userId": "usr_gs_be219234c5b1d3e29deefaec",
+      "createdAt": "2026-11-27T18:10:22.903Z"
+    },
+    {
+      "_id": "id_qc6odb8nb",
+      "username": "Vikas",
+      "role": "admin",
+      "success": true,
+      "userId": "usr_admin_9b8975829dc388941520596b",
+      "createdAt": "2026-11-27T18:14:05.640Z"
+    },
+    {
+      "_id": "id_ajg9c9vi9",
+      "username": "Diya",
+      "role": "college_gs",
+      "success": true,
+      "userId": "usr_gs_be219234c5b1d3e29deefaec",
+      "createdAt": "2026-11-27T18:14:49.768Z"
     }
   ]
 }
