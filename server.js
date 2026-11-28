@@ -761,6 +761,65 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
+  // Admin account credentials can only be changed by the authenticated Admin.
+  if (pathname === '/api/auth/change-admin-credentials' && method === 'POST') {
+    if (!currentUser) {
+      return sendJSON(res, 401, { success: false, message: 'Authentication required.' });
+    }
+    if (currentUser.role !== 'admin') {
+      return sendJSON(res, 403, { success: false, message: 'Only Admin accounts can use this endpoint.' });
+    }
+
+    const currentPassword = typeof body.currentPassword === 'string' ? body.currentPassword.trim() : '';
+    const newUsername = typeof body.newUsername === 'string' ? body.newUsername.trim() : '';
+    const newPassword = typeof body.newPassword === 'string' ? body.newPassword.trim() : '';
+
+    if (!currentPassword) {
+      return sendJSON(res, 400, { success: false, message: 'Current password is required.' });
+    }
+    if (!newUsername && !newPassword) {
+      return sendJSON(res, 400, { success: false, message: 'Enter a new username or password.' });
+    }
+    if (newUsername && !/^[a-zA-Z0-9._-]{3,32}$/.test(newUsername)) {
+      return sendJSON(res, 400, { success: false, message: 'Username must be 3-32 letters, numbers, dots, underscores or hyphens.' });
+    }
+    if (newPassword && (newPassword.length < 8 || newPassword.length > 128)) {
+      return sendJSON(res, 400, { success: false, message: 'Password must be between 8 and 128 characters.' });
+    }
+    if (!verifyPassword(currentPassword, currentUser)) {
+      return sendJSON(res, 400, { success: false, message: 'Current password does not match.' });
+    }
+
+    if (newUsername) {
+      const usernameExists = db.getCollection('users').find().some(user =>
+        user._id !== currentUser._id &&
+        String(user.username || '').toLowerCase() === newUsername.toLowerCase()
+      );
+      if (usernameExists) {
+        return sendJSON(res, 409, { success: false, message: 'That username is already in use. Please choose another.' });
+      }
+    }
+
+    const updates = {};
+    if (newUsername) updates.username = newUsername;
+    if (newPassword) Object.assign(updates, hashPassword(newPassword));
+
+    const updatedUser = db.getCollection('users').updateOne({ _id: currentUser._id }, updates);
+    if (updatedUser && Object.prototype.hasOwnProperty.call(updatedUser, 'password')) {
+      delete updatedUser.password;
+      db.save();
+    }
+
+    return sendJSON(res, 200, {
+      success: true,
+      message: 'Admin account credentials updated successfully.',
+      user: {
+        id: updatedUser._id,
+        username: updatedUser.username
+      }
+    });
+  }
+
   // 6. Logout
   if (pathname === '/api/auth/logout' && method === 'POST') {
     if (currentUser) {

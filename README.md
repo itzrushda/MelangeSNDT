@@ -67,4 +67,6 @@ GS users can select a registered college and create their own username and passw
 
 The first Admin account is created by the owner from `admin-portal.html`. When no Admin account exists, the owner setup form lets the owner choose the Admin name, username, and password. Legacy demo accounts are removed when the server starts, so users must create their own accounts.
 
+After signing in, Admins can open **Settings** in the Admin Portal to change their username, password, or both. The current password is required to save changes.
+
 GitHub Pages can serve the static pages but cannot run the authentication API or write to this database. Database-backed sign-in requires deploying the Node server separately.

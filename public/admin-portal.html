@@ -2778,6 +2778,81 @@
             </div>
           </section>
 
+          <!-- ================================================================
+               TAB 5: ADMIN ACCOUNT SETTINGS
+               ================================================================ -->
+          <section id="tabSettings" class="tab-view">
+            <div class="section-header-row">
+              <div class="section-title">
+                <i class="fa-solid fa-shield-halved"></i> Account &amp; Security
+              </div>
+            </div>
+            <div class="glass-card" style="padding: 20px; max-width: 560px;">
+              <div class="card-title" style="margin-bottom: 6px;">
+                <i class="fa-solid fa-user-shield"></i> Admin Login Credentials
+              </div>
+              <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 18px;">
+                Verify your current password before changing your username or password.
+                Leave either new field blank to keep it unchanged.
+              </p>
+              <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 18px;">
+                Current username: <strong id="adminCurrentUsername" style="color: var(--text-white);"></strong>
+              </div>
+              <form id="adminCredentialsForm" onsubmit="handleAdminCredentialsUpdate(event)">
+                <div class="form-group">
+                  <label class="form-label" for="adminCurrentPassword">Current password</label>
+                  <input
+                    type="password"
+                    id="adminCurrentPassword"
+                    class="form-input"
+                    autocomplete="current-password"
+                    maxlength="128"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="adminNewUsername">New username</label>
+                  <input
+                    type="text"
+                    id="adminNewUsername"
+                    class="form-input"
+                    placeholder="Leave blank to keep current username"
+                    minlength="3"
+                    maxlength="32"
+                    pattern="[A-Za-z0-9._-]+"
+                    autocomplete="username"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="adminNewPassword">New password</label>
+                  <input
+                    type="password"
+                    id="adminNewPassword"
+                    class="form-input"
+                    placeholder="Leave blank to keep current password"
+                    minlength="8"
+                    maxlength="128"
+                    autocomplete="new-password"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="adminConfirmNewPassword">Confirm new password</label>
+                  <input
+                    type="password"
+                    id="adminConfirmNewPassword"
+                    class="form-input"
+                    minlength="8"
+                    maxlength="128"
+                    autocomplete="new-password"
+                  />
+                </div>
+                <button type="submit" class="btn-gold-primary" id="btnAdminCredentialsSubmit">
+                  <i class="fa-solid fa-floppy-disk"></i> Save account changes
+                </button>
+              </form>
+            </div>
+          </section>
+
           <!-- Footer Admin Info & Reset Demo Option -->
           <div class="footer-admin-info">
             <p>Melange '26 Central Admin Portal • Synchronized with GS Roster</p>
@@ -2810,6 +2885,10 @@
           <button class="nav-item" data-tab="colleges" onclick="switchTab('colleges')">
             <i class="fa-solid fa-building-columns"></i>
             <span>Colleges</span>
+          </button>
+          <button class="nav-item" data-tab="settings" onclick="switchTab('settings')">
+            <i class="fa-solid fa-gear"></i>
+            <span>Settings</span>
           </button>
         </nav>
       </div>
@@ -3195,6 +3274,8 @@
     function showMainApp() {
       document.getElementById("loginScreen").style.display = "none";
       document.getElementById("mainAppShell").style.display = "flex";
+      const session = JSON.parse(localStorage.getItem(STORAGE_KEYS.SESSION) || "{}");
+      document.getElementById("adminCurrentUsername").textContent = session.username || "";
       populateCollegeFilterDropdown();
       renderAll();
     }
@@ -3236,6 +3317,45 @@
       }
     }
 
+    async function handleAdminCredentialsUpdate(event) {
+      event.preventDefault();
+      const currentPassword = document.getElementById("adminCurrentPassword").value;
+      const newUsername = document.getElementById("adminNewUsername").value.trim();
+      const newPassword = document.getElementById("adminNewPassword").value;
+      const confirmPassword = document.getElementById("adminConfirmNewPassword").value;
+      const submitButton = document.getElementById("btnAdminCredentialsSubmit");
+
+      if (!newUsername && !newPassword) {
+        showToast("Enter a new username or password.", "error");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        showToast("New passwords do not match.", "error");
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Saving account changes...";
+      try {
+        const data = await authRequest("/api/auth/change-admin-credentials", "POST", {
+          currentPassword,
+          newUsername,
+          newPassword
+        });
+        const session = JSON.parse(localStorage.getItem(STORAGE_KEYS.SESSION) || "{}");
+        session.username = data.user.username;
+        localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session));
+        document.getElementById("adminCurrentUsername").textContent = data.user.username;
+        document.getElementById("adminCredentialsForm").reset();
+        showToast(data.message, "success");
+      } catch (error) {
+        showToast(authErrorMessage(error), "error");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save account changes';
+      }
+    }
+
     async function handleAdminLogout() {
       if (confirm("Logout from Fest Admin Control Center?")) {
         try {
@@ -3274,7 +3394,7 @@
       State.activeTab = tabId;
 
       // Update Tab Views
-      const tabs = ["dashboard", "approvals", "events", "colleges"];
+      const tabs = ["dashboard", "approvals", "events", "colleges", "settings"];
       tabs.forEach(t => {
         const el = document.getElementById("tab" + capitalize(t));
         if (el) {

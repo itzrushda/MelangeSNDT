@@ -39,21 +39,21 @@
       "collegeId": "SC07",
       "activeSessions": 1,
       "createdAt": "2026-11-27T17:29:33.121Z",
-      "lastLogin": "2026-11-27T18:14:49.763Z",
-      "updatedAt": "2026-11-27T18:14:49.763Z"
+      "lastLogin": "2026-11-28T10:26:38.740Z",
+      "updatedAt": "2026-11-28T10:26:52.045Z"
     },
     {
       "_id": "usr_admin_9b8975829dc388941520596b",
-      "username": "Vikas",
-      "passwordHash": "2d665c2a0969f70dd9ed5c7e784c75cf34efd5b3328ae44319be36b33dafdd6a0a9c3a7b45389628d498c71575cf7dacfc2ece3836577bde63ef5fbfa42128c6",
-      "passwordSalt": "2099d1a5543e32ea8e5d74ca4d2c5db0",
+      "username": "Vikass",
+      "passwordHash": "bbd51c224a4f094fd2a001b8a16df5ee9a37b618c1e935b52287a8c400e8ab5dbc336ec670802bbe5dcd8e88e6f0ed4a3a6c5cc4c97af0b9e5408e8d91aa67df",
+      "passwordSalt": "e2a193cba08d5104107e512a253444a0",
       "name": "Vikas Shirode",
       "role": "admin",
       "title": "Event Administrator",
-      "activeSessions": 1,
+      "activeSessions": 3,
       "createdAt": "2026-11-27T18:02:02.253Z",
-      "lastLogin": "2026-11-27T18:14:05.634Z",
-      "updatedAt": "2026-11-27T18:14:39.802Z"
+      "lastLogin": "2026-11-28T10:47:36.653Z",
+      "updatedAt": "2026-11-28T10:48:07.629Z"
     }
   ],
   "colleges": [
@@ -665,6 +665,30 @@
       "success": true,
       "userId": "usr_gs_be219234c5b1d3e29deefaec",
       "createdAt": "2026-11-27T18:14:49.768Z"
+    },
+    {
+      "_id": "id_cz34uldra",
+      "username": "Diya",
+      "role": "college_gs",
+      "success": true,
+      "userId": "usr_gs_be219234c5b1d3e29deefaec",
+      "createdAt": "2026-11-28T10:26:38.746Z"
+    },
+    {
+      "_id": "id_816qfa7kk",
+      "username": "Vikas",
+      "role": "admin",
+      "success": true,
+      "userId": "usr_admin_9b8975829dc388941520596b",
+      "createdAt": "2026-11-28T10:27:04.132Z"
+    },
+    {
+      "_id": "id_d9otjj8lv",
+      "username": "Vikas",
+      "role": "admin",
+      "success": true,
+      "userId": "usr_admin_9b8975829dc388941520596b",
+      "createdAt": "2026-11-28T10:47:36.655Z"
     }
   ]
 }
